@@ -6,13 +6,13 @@ const config = {
         password: process.env.MYSQL_ROOT_PASSWORD,
         dialect: 'mysql',
         database: process.env.MYSQL_DATABASE,
-        host: process.env.MYSQL_HOST || '127.0.0.1',
+        host: process.env.MYSQL_HOST ,
     },
     development: {
         extend: 'default',
         database: process.env.MYSQL_DATABASE,
         dialect: 'mysql',
-        host: process.env.MYSQL_HOST || '127.0.0.1',
+        host: process.env.MYSQL_HOST,
 
     },
     test: {
