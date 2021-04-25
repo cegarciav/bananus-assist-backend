@@ -42,3 +42,13 @@ Cada commit debería incluir un tipo y mensaje lo suficientemente claro con la e
 2. **fix**: para corregir errores dentro de la branch. Debería ser particularmente útil en branches de tipo hotfix y bugfix, pero no exclusivo
 3. **improvement**: para mejoras en alguna feature ya existente. Incluiría refactors, mejoras en performance, mejoras en aspecto, etc
 4. **setup**: cualquier tipo de commit que no pueda ser incluido en los tipos anteriores
+
+
+### Protocolos para hacer merge de las branches
+
+1. Uso de pull requests mediante la plataforma web de GitHub y no mediante consola
+2. Un pull request debería tener a lo menos la siguiente información:
+    1. Título: puede ser el nombre de la branch, pues se asume que será descriptivo
+    2. Descriptión: Una pequeña síntesis de lo que se esperaría poder realizar gracias al contenido del pull request (scope de la branch). Puede incluir un listado de características que deberían cumplirse
+    3. Resultados de los tests unitarios: la persona que hace el pull request debería poder mostrar que la suite de tests unitarios funcionó correctamente. Al ejecutar `npm test`, todos los tests unitarios deberían ser ejecutados y, al final de este proceso, un resumen de la ejecución será retornado
+3. Un pull request debe ser aprobado y mezclado (merge) por una persona diferente a quien crea el pull request. Como caso excepcional, el merge de develop a main deberá ser aprobado por al menos dos personas
