@@ -5,9 +5,20 @@
 ### Primeros pasos
 **Despues de clonar el repositorio correr los siguientes comandos**
 - docker-compose build
-- docker-compose up
 - docker-compose run app yarn sequelize db:create
 - docker-compose run app yarn sequelize db:migrate:undo:all
+- docker-compose up
+
+
+### Revisión de base de datos
+- docker ps
+- docker exec -it YOUR_MYSQL_CONTAINER_ID bash
+- mysql -u root -p
+- put the password(root)
+- enter
+- use example_db;
+- show tables;
+- describe name_table;
 
 ### Consideraciones
 
