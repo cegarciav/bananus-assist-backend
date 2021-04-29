@@ -4,8 +4,10 @@
 
 ### Primeros pasos
 **Despues de clonar el repositorio correr los siguientes comandos**
-- docker-compose build;
-- docker-compose up;
+- docker-compose build
+- docker-compose up
+- docker-compose run app yarn sequelize db:create
+- docker-compose run app yarn sequelize db:migrate:undo:all
 
 ### Consideraciones
 
