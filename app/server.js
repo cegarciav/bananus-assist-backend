@@ -1,13 +1,19 @@
 require("dotenv").config()
 const express = require('express')
 
+const index = require('./routes/index');
+const users = require('./routes/users');
+
 const db = require( './models' );
 const app = express();
 const port = process.env.NODEJS_LOCAL_PORT;
 
-app.get('/', (req, res) => {
-  res.send('Hello World')
-});
+
+
+app.use(express.json()); 
+app.use('/', index);
+app.use('/users', users);
+
 
 db.sequelize
   .authenticate()
