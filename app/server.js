@@ -3,6 +3,7 @@ const express = require('express')
 
 const index = require('./routes/index');
 const users = require('./routes/users');
+const sell_points = require('./routes/sale_points');
 
 const db = require( './models' );
 const app = express();
@@ -13,6 +14,8 @@ const port = process.env.NODEJS_LOCAL_PORT;
 app.use(express.json()); 
 app.use('/', index);
 app.use('/users', users);
+app.use('/sell-points', sell_points);
+
 
 
 db.sequelize
