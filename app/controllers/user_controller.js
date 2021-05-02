@@ -8,8 +8,8 @@ async function  ucreate(req, res) {
             password: req.body.password,
             email: req.body.email,
         });
-        res.json({
-            state: 'OK'
+        res.status(201).json({
+            state: 'OK',
         });
     } catch(error){
         res.json({
