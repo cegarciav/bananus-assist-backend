@@ -1,7 +1,7 @@
 "use strict"
 const express = require('express');
 const router = express.Router();
-const handlers = require("../controllers/user_controller");
+const handlers = require("../controllers/product_controller");
 
 //CREATE
 router.post("/", handlers.create);
@@ -11,5 +11,7 @@ router.get("/", handlers.show_all);
 router.get("/:id", handlers.show_one);
 //DELETE
 router.delete("/:id", handlers.delete);
+//UPDATE
+router.patch("/:id", handlers.update);
 
 module.exports = router;
