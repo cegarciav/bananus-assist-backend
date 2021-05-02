@@ -45,15 +45,11 @@ async function update(req, res) {
             name: ((req.body.name)? req.body.name: current_user.name),
             password: ((req.body.password)? req.body.password:current_user.password),
             email: ((req.body.new_email)? req.body.new_email:current_user.email)
-        },{
-            where: {
-                email: current_user.email
-            }
+        },{where: {email: current_user.email}
         });
-        console.log(user_update)
-        res.json({
-            state: 'OK'
-        });
+
+        res.json({state: 'OK'});
+        
     } catch (error){
         res.json({
             state: 'F',
