@@ -21,12 +21,12 @@
 - describe name_table;
 
 ### Test de prueba
-- Correr aplicacion en seegundo plano: docker-compose up -d
-- docker-compose run app npm test
-- Para parar la aplicación: docker ps
-- docker stop YOUR_MYSQL_CONTAINER_ID
-- docker stop YOUR_APP_CONTAINER_ID
+OJO QUE SE AGREGO NUEVA VARIABLE DE ENTORNO AL .ENV PARA QUE LA AGREGUEN
 
+O agregar la linea MYSQL_TEST_DATABASE=test_db a sus archivos .env
+- Crear base de datos test: docker-compose -f docker-compose.test.yaml run app yarn sequelize db:create
+- Correr migraciones en base de datos test: docker-compose -f docker-compose.test.yaml run app yarn sequelize db:migrate
+- Correr tests: docker-compose -f docker-compose.test.yaml run app npm test
 ### Consideraciones
 
 - Se encuentra seteada para correr con nodemon.
