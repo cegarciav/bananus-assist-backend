@@ -5,7 +5,6 @@ const config = {
         username: process.env.MYSQL_USERNAME,
         password: process.env.MYSQL_ROOT_PASSWORD,
         dialect: 'mysql',
-        database: process.env.MYSQL_DATABASE,
         host: process.env.MYSQL_HOST ,
     },
     development: {
@@ -17,7 +16,7 @@ const config = {
     },
     test: {
         extend: 'default',
-        database: process.env.MYSQL_DATABASE,
+        database: process.env.MYSQL_TEST_DATABASE,
         dialect: 'mysql',
 
     },
