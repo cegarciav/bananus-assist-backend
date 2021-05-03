@@ -12,7 +12,7 @@ async function  ucreate(req, res) {
             state: 'OK',
         });
     } catch(error){
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
@@ -37,7 +37,7 @@ async function  ushow(req, res) {
 async function update(req, res) {
     let current_user = await user.findOne({where : {email: req.body.email}})
     if (!current_user){
-        return res.json({state: 'F',error: 'User email doesnt exist'});
+        return res.status(400).json({state: 'F',error: 'User email doesnt exist'});
     }
     try{
         const user_update = await user.update({
@@ -47,10 +47,10 @@ async function update(req, res) {
         },{where: {email: current_user.email}
         });
 
-        res.status(201).json({state: 'OK'});
+        res.status(200).json({state: 'OK'});
         
     } catch (error){
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
@@ -61,7 +61,7 @@ async function update(req, res) {
 async function  udelete(req, res) {
     let current_user = await user.findOne({where : {email: req.body.email}})
     if (!current_user){
-        return res.status(500).json({state: 'F',error: 'User email doesnt exist'});
+        return res.status(400).json({state: 'F',error: 'User email doesnt exist'});
     }
     try{
         const udestroy = await user.destroy({ 

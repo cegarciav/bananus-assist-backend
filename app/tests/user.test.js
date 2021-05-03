@@ -1,6 +1,8 @@
 const request = require('supertest')
 const app = require('../server')
+
 describe('User CRUD Testing', () => {
+
   it('should create a new user', async () => {
     const res = await request(app)
       .post('/users')
@@ -10,7 +12,6 @@ describe('User CRUD Testing', () => {
         password: "1233"
       })
     expect(res.statusCode).toEqual(201)
-    expect(res.body.state).toEqual('OK')
   }),
   it('should read all users', async () => {
     const res = await request(app)
@@ -20,7 +21,7 @@ describe('User CRUD Testing', () => {
   }),
   it('should read one user', async () => {
     const res = await request(app)
-      .get('/users/test')
+      .get('/users')
       .send({
         email: "test01@test.cl",
       })
@@ -33,7 +34,7 @@ describe('User CRUD Testing', () => {
         new_email: "testupdate@test.cl",
         email: "test01@test.cl",
       })
-    expect(res.statusCode).toEqual(201)
+    expect(res.statusCode).toEqual(200)
   }),
   it('should fail delete one user', async () => {
     const res = await request(app)
@@ -41,7 +42,7 @@ describe('User CRUD Testing', () => {
       .send({
         email: "test01@test.cl",
       })
-    expect(res.statusCode).toEqual(500)
+    expect(res.statusCode).toEqual(400)
   }),
   it('should update the name of one user', async () => {
     const res = await request(app)
@@ -50,7 +51,7 @@ describe('User CRUD Testing', () => {
         name: "update",
         email: "testupdate@test.cl",
       })
-    expect(res.statusCode).toEqual(201)
+    expect(res.statusCode).toEqual(200)
   }),
   it('should update the password of one user', async () => {
     const res = await request(app)
@@ -59,7 +60,7 @@ describe('User CRUD Testing', () => {
         email: "testupdate@test.cl",
         password: "update",
       })
-    expect(res.statusCode).toEqual(201)
+    expect(res.statusCode).toEqual(200)
   }),
   it('should delete one user', async () => {
     const res = await request(app)

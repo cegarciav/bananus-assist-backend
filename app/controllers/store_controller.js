@@ -8,11 +8,11 @@ async function  screate(req, res) {
             name: req.body.name,
             address: req.body.address,
         });
-        res.json({
+        res.status(201).json({
             state: 'OK'
         });
     } catch(error){
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
@@ -22,32 +22,40 @@ async function  screate(req, res) {
 //READ ALL
 async function  sshow_all(req, res) {
     const stores = await store.findAll();
-    res.json(stores);
+    res.status(200).json(stores);
 };
 
 //READ ONE
 async function  sshow(req, res) {
+    let current_store = await store.findOne({where : {address: req.body.address}})
+    if (!current_store){
+        return res.status(400).json({state: 'F',error: 'Store adress doesnt exist'});
+    }
     const store_id = await store.findOne({ 
         where: {
-            id: req.params.id,
+            address: req.body.address,
         }
     });
-    res.json(store_id);
+    res.status(200).json(store_id);
 };
 
 //DELETE
 async function  sdelete(req, res) {
+    let current_store = await store.findOne({where : {address: req.body.address}})
+    if (!current_store){
+        return res.status(400).json({state: 'F',error: 'Store adress doesnt exist'});
+    }
     try{
         const udestroy = await store.destroy({ 
             where: {
-                id: req.params.id,
+                address: req.body.address,
             }
         });
-        res.json({
+        res.status(200).json({
             state: 'OK'
         });
     } catch (error){
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
@@ -59,7 +67,7 @@ async function  sdelete(req, res) {
 async function update(req, res){
     let current_store = await store.findOne({where : {address: req.body.address}})
     if (!current_store){
-        return res.json({state: 'F',error: 'Store adress doesnt exist'});
+        return res.status(400).json({state: 'F',error: 'Store adress doesnt exist'});
     }
     try{
         await store.update({
@@ -68,11 +76,11 @@ async function update(req, res){
         },{where : {address: req.body.address}
         });
 
-        res.json({state: 'OK'});
+        res.status(200).json({state: 'OK'});
 
     } catch (error){
         
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
