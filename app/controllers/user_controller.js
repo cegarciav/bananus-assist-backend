@@ -22,17 +22,16 @@ async function  ucreate(req, res) {
 //READ ALL
 async function  ushow_all(req, res) {
     const users = await user.findAll();
-    res.json(users);
+    res.status(200).json(users);
 };
 
 //READ ONE
 async function  ushow(req, res) {
-    const current_user = await user.findOne({ 
-        where: {
-            id: req.params.id,
-        }
-    });
-    res.json(current_user);
+    let current_user = await user.findOne({where : {email: req.body.email}})
+    if (!current_user){
+        return res.json({state: 'F',error: 'User email doesnt exist'});
+    }
+    res.status(200).json(current_user);
 };
 //UPDATE
 async function update(req, res) {
@@ -48,7 +47,7 @@ async function update(req, res) {
         },{where: {email: current_user.email}
         });
 
-        res.json({state: 'OK'});
+        res.status(201).json({state: 'OK'});
         
     } catch (error){
         res.json({
@@ -60,17 +59,21 @@ async function update(req, res) {
 };
 //DELETE
 async function  udelete(req, res) {
+    let current_user = await user.findOne({where : {email: req.body.email}})
+    if (!current_user){
+        return res.status(500).json({state: 'F',error: 'User email doesnt exist'});
+    }
     try{
         const udestroy = await user.destroy({ 
             where: {
-                id: req.params.id,
+                email: req.body.email,
             }
         });
-        res.json({
+        res.status(200).json({
             state: 'OK'
         });
     } catch (error){
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
