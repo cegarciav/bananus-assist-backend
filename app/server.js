@@ -5,6 +5,7 @@ const index = require('./routes/index');
 const users = require('./routes/users');
 const sell_points = require('./routes/sale_points');
 const stores = require('./routes/stores');
+const products = require('./routes/products')
 
 
 const db = require( './models' );
@@ -18,6 +19,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/sell-points', sell_points);
 app.use('/stores', stores);
+app.use('/products', products)
 
 
 db.sequelize
