@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   sale_points.init({
-    id_store: DataTypes.INTEGER
+    
   }, {
     sequelize,
     modelName: 'sale_points',
