@@ -20,6 +20,13 @@
 - show tables;
 - describe name_table;
 
+### Test de prueba
+- Correr aplicacion en seegundo plano: docker-compose up -d
+- docker-compose run app npm test
+- Para parar la aplicación: docker ps
+- docker stop YOUR_MYSQL_CONTAINER_ID
+- docker stop YOUR_APP_CONTAINER_ID
+
 ### Consideraciones
 
 - Se encuentra seteada para correr con nodemon.
