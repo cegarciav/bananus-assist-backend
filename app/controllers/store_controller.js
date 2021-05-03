@@ -55,6 +55,7 @@ async function  sdelete(req, res) {
     
 };
 
+ //UPDATE
 async function update(req, res){
     let current_store = await store.findOne({where : {address: req.body.address}})
     if (!current_store){
