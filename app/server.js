@@ -1,5 +1,6 @@
 require("dotenv").config()
-const express = require('express')
+const express = require('express');
+const cors = require('cors');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -11,9 +12,14 @@ const technical_chars = require('./routes/technical_chars');
 const db = require( './models' );
 const app = express();
 const port = process.env.NODEJS_LOCAL_PORT;
+const frontendClient = process.env.FRONTEND_CLIENT_ORIGIN
 
 
 
+app.use(cors({
+  origin: frontendClient,
+  optionsSuccessStatus: 200
+}));
 app.use(express.json()); 
 app.use('/', index);
 app.use('/users', users);
