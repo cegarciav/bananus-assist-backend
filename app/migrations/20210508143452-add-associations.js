@@ -8,7 +8,7 @@
  * @param {string} oneModel model on the 1 side of the association.
  * @return {Promise} promise that resolve when the foreign key is setted.
  */
-function setOneToNAssoc(queryInterface, Sequelize, nModel, oneModel){
+async function setOneToNAssoc(queryInterface, Sequelize, nModel, oneModel){
   return queryInterface.addColumn(
     oneModel,
     nModel + 'Id',
