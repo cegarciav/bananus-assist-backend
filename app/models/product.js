@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.product.hasMany(models.technical_char)
     }
   };
   product.init({

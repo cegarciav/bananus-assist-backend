@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
-const sell_points = require('./routes/sale_points');
+const sell_points = require('./routes/sale_point');
 const stores = require('./routes/stores');
 const products = require('./routes/products');
 const technical_chars = require('./routes/technical_chars');
