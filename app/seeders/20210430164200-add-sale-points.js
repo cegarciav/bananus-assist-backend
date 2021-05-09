@@ -11,14 +11,14 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-     const sale_pointsArray = [];
+     const sale_pointArray = [];
 
-     sale_pointsArray.push({
+     sale_pointArray.push({
       id_store: 1,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    return queryInterface.bulkInsert('sale_points', sale_pointsArray);
+    return queryInterface.bulkInsert('sale_point', sale_pointArray);
   },
 
   down: async (queryInterface, Sequelize) => {

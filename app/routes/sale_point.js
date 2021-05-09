@@ -1,7 +1,7 @@
 "use strict"
 const express = require('express');
 const router = express.Router();
-const handlers = require("../controllers/sale_points_controller");
+const handlers = require("../controllers/sale_point_controller");
 
 //CREATE
 router.post("/", handlers.create);

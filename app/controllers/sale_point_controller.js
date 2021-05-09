@@ -1,4 +1,4 @@
-const sale_point = require('../models').sale_points;
+const sale_point = require('../models').sale_point;
 
 //CREATE
 async function  spcreate(req, res) {
@@ -19,8 +19,8 @@ async function  spcreate(req, res) {
 
 //READ ALL
 async function  spshow_all(req, res) {
-    const sale_points = await sale_point.findAll();
-    res.json(sale_points);
+    const sale_point = await sale_point.findAll();
+    res.json(sale_point);
 };
 
 //READ ONE
