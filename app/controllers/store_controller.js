@@ -5,7 +5,7 @@ async function  screate(req, res) {
     if(!req.body.name || !req.body.address){
         return res.status(400).json({state:"F", error: "Invalid Fields"})
     }
-    let last_store = store.findOne({where:{address: req.body.address}});
+    let last_store = await store.findOne({where:{address: req.body.address}});
 
     if (last_store){
         return res.status(400).json({state:"F", error: "There are other store in the same address"})
