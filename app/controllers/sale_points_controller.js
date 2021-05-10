@@ -2,15 +2,18 @@ const sale_point = require('../models').sale_point;
 
 //CREATE
 async function  spcreate(req, res) {
+    if (!req.body.storeId){
+        return res.status(400).json({state: "F", error: "Invalid fields"})
+    }
     try{
         await sale_point.create({
-            id_store: req.body.id_store,
+            storeId: req.body.storeId
         });
-        res.json({
+        res.status(201).json({
             state: 'OK'
         });
     } catch(error){
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
@@ -20,7 +23,7 @@ async function  spcreate(req, res) {
 //READ ALL
 async function  spshow_all(req, res) {
     const sale_points = await sale_point.findAll();
-    res.json(sale_points);
+    res.status(200).json(sale_points);
 };
 
 //READ ONE
