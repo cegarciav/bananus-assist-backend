@@ -2,8 +2,6 @@
 const {
   Model
 } = require('sequelize');
-
-const sale_point = require('./sale_point');
 module.exports = (sequelize, DataTypes) => {
   class store extends Model {
     /**
@@ -13,9 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.store.belongsTo(models.user)
-      models.store.hasMany(models.product)
-      models.store.hasMany(models.sale_point)
     }
   };
   store.init({
