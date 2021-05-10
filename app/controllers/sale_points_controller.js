@@ -1,4 +1,4 @@
-const sale_point = require('../models').sale_points;
+const sale_point = require('../models').sale_point;
 
 //CREATE
 async function  spcreate(req, res) {
