@@ -40,11 +40,13 @@ async function  show(req, res) {
     if (!req.body.sku){
         return res.status(400).json({state:"F", error: "Invalid fields"})
     }
+
     const current_product = await product.findOne({ 
-        where: {
-            sku: req.body.sku
-        }
-    });
+        where: {sku: req.body.sku}});
+        
+    if (!current_product){
+        res.status(400).json({state:"F", error: "Product doesn't exists"})
+    }
     res.status(200).json(current_product);
 };
 //UPDATE

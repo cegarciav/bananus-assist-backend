@@ -28,27 +28,38 @@ async function  spshow_all(req, res) {
 
 //READ ONE
 async function  spshow(req, res) {
-    const sale_point_id = await sale_point.findOne({ 
-        where: {
-            id: req.params.id,
-        }
-    });
-    res.json(sale_point_id);
+    if (!req.body.id){
+        return res.status(400).json({state:"F", error: "Invalid fields"})
+    }
+    let sale_point_id = await sale_point.findOne({ 
+        where: {id: req.body.id,}});
+
+    if(!sale_point_id){
+        return res.status(400).json({state:"F", error: "Sale point doesn't exist "})
+    }
+    res.status(200).json(sale_point_id);
 };
 
 //DELETE
 async function  spdelete(req, res) {
+    if(!req.body.id){
+        return res.status(400).json({state:"F", error: "Invalid fields"})
+    }
+    let curr_sale_point = await sale_point.findOne({where: { id:req.body.id}})
+    if (!curr_sale_point){
+        return res.status(400).json({state:"F", error: "Sale's id doesn't exist"})
+    }
     try{
         const udestroy = await sale_point.destroy({ 
             where: {
-                id: req.params.id,
+                id: req.body.id,
             }
         });
-        res.json({
+        res.status(200).json({
             state: 'OK'
         });
     } catch (error){
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
