@@ -39,7 +39,7 @@ async function  ushow(req, res) {
     }
     let current_user = await user.findOne({where : {email: req.body.email}})
     if (!current_user){
-        return res.json({state: 'F',error: 'User email doesnt exist'});
+        return res.status(400).json({state: 'F',error: 'User email doesnt exist'});
     }
     res.status(200).json(current_user);
 };
