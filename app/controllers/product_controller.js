@@ -86,15 +86,15 @@ async function pdelete(req, res) {
     if (!req.body.sku){
         return res.status(400).json({state: "F", error: "Invalid fields"})
     }
-    let curr_product = await product.findOne({where:{sku: res.body.sku}})
-    if (curr_product){
-        return res.status(400).json({state:"F", error:"Product's sku doesnt exists"})
+    let curr_product = await product.findOne({where:{sku: req.body.sku}})
+    if (!curr_product){
+        return res.status(400).json({state:"F", error:"Product's sku doesn't exist"})
     }
 
     try{
         const destroy = await product.destroy({ 
             where: {
-                id: req.params.id,
+                sku: req.body.sku,
             }
         });
         res.status(200).json({
