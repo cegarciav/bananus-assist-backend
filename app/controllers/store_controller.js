@@ -2,7 +2,14 @@ const store = require('../models').store;
 
 //CREATE
 async function  screate(req, res) {
-    console.log("EMTREEEE")
+    if(!req.body.name || !req.body.address){
+        return res.status(400).json({state:"F", error: "Invalid Fields"})
+    }
+    let last_store = store.findOne({where:{address: req.body.address}});
+
+    if (last_store){
+        return res.status(400).json({state:"F", error: "There are other store in the same address"})
+    }
     try{
         await store.create({
             name: req.body.name,
@@ -27,21 +34,24 @@ async function  sshow_all(req, res) {
 
 //READ ONE
 async function  sshow(req, res) {
+    if(!req.body.address){
+        return res.status(400).json({state:"F", error:"Invalid fields"})
+    }
     let current_store = await store.findOne({where : {address: req.body.address}})
     if (!current_store){
-        return res.status(400).json({state: 'F',error: 'Store adress doesnt exist'});
+        return res.status(400).json({state: 'F',error: 'Store address doesnt exist'});
     }
-    const store_id = await store.findOne({ 
-        where: {
-            address: req.body.address,
-        }
-    });
-    res.status(200).json(store_id);
+    res.status(200).json(current_store);
 };
 
 //DELETE
 async function  sdelete(req, res) {
+    if(!req.body.address){
+        return res.status(400).json({state:"F", error:"Invalid fields"})
+    }
+
     let current_store = await store.findOne({where : {address: req.body.address}})
+    
     if (!current_store){
         return res.status(400).json({state: 'F',error: 'Store adress doesnt exist'});
     }
@@ -65,10 +75,24 @@ async function  sdelete(req, res) {
 
  //UPDATE
 async function update(req, res){
-    let current_store = await store.findOne({where : {address: req.body.address}})
-    if (!current_store){
-        return res.status(400).json({state: 'F',error: 'Store adress doesnt exist'});
+    if(!req.body.address){
+        return res.status(400).json({state:"F", error:"Invalid fields"})
     }
+
+    let current_store = await store.findOne({where : {address: req.body.address}})
+    
+    if (!current_store){
+        return res.status(400).json({state: 'F',error: 'Store address doesnt exist'});
+    }
+
+    let last_store = await store.findOne({where: {address: req.body.new_address}});
+    
+    if (req.body.new_address){
+        if (last_store){
+            return res.status(400).json({state:"F", error: "This address already exist"})
+        }
+    }
+
     try{
         await store.update({
             name: ((req.body.name)? req.body.name: current_store.name),
