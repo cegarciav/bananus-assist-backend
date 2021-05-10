@@ -24,7 +24,7 @@ async function create(req, res) {
 //READ ALL
 async function show_all(req, res) {
     const technical_chars = await technical_char.findAll();
-    res.json(technical_chars);
+    res.status(200).json(technical_chars);
 };
 
 //READ ONE
@@ -37,7 +37,7 @@ async function  show(req, res) {
     if(!technical_char_id){
         return res.status(400).json({state:"F", error:"Tech char doesn't exist"})
     }
-    res.json(technical_char_id);
+    res.status(200).json(technical_char_id);
 };
 //UPDATE
 async function update(req, res){
@@ -46,7 +46,7 @@ async function update(req, res){
     }
     let current_char = await technical_char.findOne({where : {id:req.body.id}})
     if (!current_char){
-        return res.json({state: 'F',error: 'Technical characteristic doesnt exist'});
+        return res.status(400).json({state: 'F',error: 'Technical characteristic doesnt exist'});
     }
     try{
         await technical_char.update({
@@ -55,11 +55,11 @@ async function update(req, res){
         },{where : {id: req.body.id}
         });
 
-        res.json({state: 'OK'});
+        res.status(200).json({state: 'OK'});
 
     } catch (error){
         
-        res.json({
+        res.status(500).json({
             state: 'F',
             error: error,
         });
@@ -67,6 +67,14 @@ async function update(req, res){
 }
 //DELETE
 async function  cdelete(req, res) {
+    if (!req.body.id){
+        return res.status(400),json({state:"F", error:"Invalid fields"})
+    }
+    let current_char = await technical_char.findOne({where : {id:req.body.id}})
+    if (!current_char){
+        return res.status(400).json({state: 'F',error: 'Technical characteristic doesnt exist'});
+    }
+
     try{
         const udestroy = await technical_char.destroy({ 
             where: {
