@@ -8,7 +8,7 @@ router.post("/", handlers.create);
 //READ ALL
 router.get("/", handlers.show_all);
 //READ ONE
-router.get("/", handlers.show_one);
+router.post("/show", handlers.show_one);
 //UPDATE
 router.patch("/", handlers.update);
 //DELETE

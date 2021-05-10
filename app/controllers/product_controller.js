@@ -2,16 +2,19 @@ const product = require('../models').product;
 
 //CREATE
 async function create(req, res) {
-    if (!req.body.name || !req.body.sku || !req.body.price || !req.body.image){
-        return res.status(400).json({state: "F", error:"Invalid fields"})
-    }
-    
-    const last_product = await product.findOne({where: {sku: req.body.sku}})
-    
-    if(last_product){
-        return res.status(400).json({state: "F", error: "That sku already exists"})
-    }
-    try{
+    try {
+        if (!req.body.name || !req.body.sku || !req.body.price || !req.body.image){
+            res.status(400).json({state: "F", error:"Invalid fields"});
+            return;
+        }
+
+        const last_product = await product.findOne({where: {sku: req.body.sku}})
+
+        if(last_product){
+            res.status(400).json({state: "F", error: "That sku already exists"});
+            return;
+        }
+
         await product.create({
             name: req.body.name,
             sku: req.body.sku,
@@ -21,48 +24,80 @@ async function create(req, res) {
         res.status(201).json({
             state: 'OK'
         });
-    } catch(error){
+        return;
+    }
+    catch (error) {
         res.status(500).json({
             state: 'F',
             error: error,
         });
+        return;
     }
 };
 
 //READ ALL
-async function  show_all(req, res) {
-    const products = await product.findAll();
-    res.status(200).json(products);
+async function show_all(req, res) {
+    try {
+        const products = await product.findAll();
+        res.status(200).json(products);
+        return;
+    }
+    catch (error) {
+        res.status(500).json({
+            state: 'F',
+            error: error,
+        });
+        return;
+    }
 };
 
 //READ ONE
-async function  show(req, res) {
-    if (!req.body.sku){
-        return res.status(400).json({state:"F", error: "Invalid fields"})
-    }
-    const current_product = await product.findOne({ 
-        where: {
-            sku: req.body.sku
+async function show(req, res) {
+    try {
+        if (!req.body.sku){
+            res.status(400).json({state:"F", error: "Invalid fields"});
+            return;
         }
-    });
-    res.status(200).json(current_product);
+    
+        const current_product = await product.findOne({ 
+            where: {sku: req.body.sku}});
+        
+        if (!current_product){
+            res.status(400).json({state:"F", error: "Product doesn't exist"});
+            return;
+        }
+        res.status(200).json(current_product);
+        return;
+    }
+    catch (error) {
+        res.status(500).json({
+            state: 'F',
+            error: error,
+        });
+        return;
+    }
 };
+
 //UPDATE
 async function update(req, res) {
-    if (!req.body.sku){
-        return res.status(400).json({state:"F", error: "Invalid fields"})
-    }
-    if (req.body.new_sku){
-        let other_product = await product.findOne({where: {sku: req.body.new_sku}})
-        if (other_product){
-            return res.status(400).json({state: "F", error: "This sku already exists"})
+    try {
+        if (!req.body.sku){
+            res.status(400).json({state:"F", error: "Invalid fields"});
+            return;
         }
-    }
-    let current_product = await product.findOne({where: {sku: req.body.sku}})
-    if (!current_product){
-        return res.status(400).json({state: 'F',error: "Product's sku doesnt exist"});
-    }
-    try{
+        if (req.body.new_sku){
+            let other_product = await product.findOne({where: {sku: req.body.new_sku}})
+            if (other_product){
+                res.status(400).json({state: "F", error: "This sku already exists"});
+                return;
+            }
+        }
+        let current_product = await product.findOne({where: {sku: req.body.sku}})
+        if (!current_product){
+            res.status(400).json({state: 'F',error: "Product's sku doesnt exist"});
+            return;
+        }
+
         await product.update({
             name: ((req.body.name)? req.body.name: current_product.name),
             sku: ((req.body.new_sku)? req.body.new_sku:current_product.sku),
@@ -72,27 +107,31 @@ async function update(req, res) {
         });
 
         res.status(200).json({state: 'OK'});
+        return;
         
-    } catch (error){
+    } catch (error) {
         res.status(500).json({
             state: 'F',
             error: error,
         });
+        return;
     }
 
 };
 //DELETE
 async function pdelete(req, res) {
-    if (!req.body.sku){
-        return res.status(400).json({state: "F", error: "Invalid fields"})
-    }
-    let curr_product = await product.findOne({where:{sku: req.body.sku}})
-    if (!curr_product){
-        return res.status(400).json({state:"F", error:"Product's sku doesn't exist"})
-    }
+    try {
+        if (!req.body.sku){
+            res.status(400).json({state: "F", error: "Invalid fields"});
+            return;
+        }
+        let curr_product = await product.findOne({where:{sku: req.body.sku}});
+        if (!curr_product){
+            res.status(400).json({state:"F", error:"Product's sku doesn't exist"});
+            return;
+        }
 
-    try{
-        const destroy = await product.destroy({ 
+        const destroy = await product.destroy({
             where: {
                 sku: req.body.sku,
             }
@@ -100,13 +139,15 @@ async function pdelete(req, res) {
         res.status(200).json({
             state: 'OK'
         });
-    } catch (error){
+        return;
+    }
+    catch (error) {
         res.status(500).json({
             state: 'F',
             error: error,
         });
+        return;
     }
-    
 };
 
 module.exports = {
