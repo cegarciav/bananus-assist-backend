@@ -1,5 +1,9 @@
 'use strict';
 
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     /**
@@ -11,14 +15,17 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-     const sale_pointsArray = [];
+     const sale_pointsData = [];
 
-     sale_pointsArray.push({
-      id_store: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    return queryInterface.bulkInsert('sale_points', sale_pointsArray);
+     for (let i = 0; i < 45; i += 1) {
+      sale_pointsData.push({
+        id_store: getRandomArbitrary(1, 10),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+
+   return queryInterface.bulkInsert('sale_points', sale_pointsData);
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -28,5 +35,7 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+
+     await queryInterface.bulkDelete('sale_points', null, {});
   }
 };
