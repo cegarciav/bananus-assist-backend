@@ -14,7 +14,6 @@ module.exports = {
      const sale_pointsArray = [];
 
      sale_pointsArray.push({
-      id_store: 1,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
