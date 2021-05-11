@@ -17,6 +17,7 @@ module.exports = {
       name: 'Matias',
       email: 'micea@uc.cl',
       password: '123',
+      rol: 'admin',
       createdAt: new Date(),
       updatedAt: new Date(),
     });
