@@ -19,7 +19,7 @@ module.exports = {
 
      for (let i = 0; i < 45; i += 1) {
       sale_pointsData.push({
-        id_store: getRandomArbitrary(1, 10),
+        //id_store: getRandomArbitrary(1, 10),
         createdAt: new Date(),
         updatedAt: new Date(),
       });

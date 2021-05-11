@@ -19,9 +19,9 @@ module.exports = {
     for (let i = 0; i < 40; i += 1) {
       productsData.push({
         name: faker.commerce.productName(),
-        sku: faker.random.number(),
-        price: fake.commerce.price(),
-        image: fake.image.fashion(),
+        sku: faker.datatype.number(),
+        price: faker.commerce.price(),
+        image: faker.image.fashion(),
         createdAt: new Date(),
         updatedAt: new Date(),
       });

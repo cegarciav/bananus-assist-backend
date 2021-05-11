@@ -18,14 +18,14 @@ module.exports = {
 
     for (let i = 0; i < 80; i += 1) {
       technicalCharData.push({
-        key: fake.commerce.productAdjective(),
-        value: fake.commerce.productDescription(),
+        key: faker.commerce.productAdjective(),
+        value: faker.commerce.productDescription(),
         createdAt: new Date(),
         updatedAt: new Date(),
       });
     }
 
-   return queryInterface.bulkInsert('technical_char', technicalCharData);
+   return queryInterface.bulkInsert('technical_chars', technicalCharData);
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -35,6 +35,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    await queryInterface.bulkDelete('technical_char', null, {});
+    await queryInterface.bulkDelete('technical_chars', null, {});
   }
 };
