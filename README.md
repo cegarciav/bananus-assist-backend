@@ -7,6 +7,7 @@
 - docker-compose build
 - docker-compose run app yarn sequelize db:create
 - docker-compose run app yarn sequelize db:migrate:undo:all
+- docker-compose run app yarn sequelize db:seed:all
 - docker-compose up
 
 
