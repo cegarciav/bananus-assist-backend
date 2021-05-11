@@ -5,7 +5,7 @@ async function setOneToNAssoc(queryInterface, Sequelize, nModel, oneModel){
     oneModel,
     nModel.slice(0,-1) + 'Id',
     {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       references: {
         model: nModel,
         key: 'id'
