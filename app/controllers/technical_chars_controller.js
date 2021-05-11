@@ -1,4 +1,5 @@
 const technical_char = require('../models').technical_char;
+const { uuid } = require('uuidv4');
 
 //CREATE
 async function create(req, res) {
@@ -8,6 +9,7 @@ async function create(req, res) {
             return;
         }
         await technical_char.create({
+            id: uuid(),
             key: req.body.key,
             value: req.body.value,
             productId: req.body.productId

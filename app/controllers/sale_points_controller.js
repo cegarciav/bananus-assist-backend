@@ -1,4 +1,5 @@
 const sale_point = require('../models').sale_point;
+const { uuid } = require('uuidv4');
 
 //CREATE
 async function  spcreate(req, res) {
@@ -8,6 +9,7 @@ async function  spcreate(req, res) {
             return;
         }
         await sale_point.create({
+            id: uuid(),
             storeId: req.body.storeId
         });
         res.status(201).json({

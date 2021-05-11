@@ -1,4 +1,5 @@
 const store = require('../models').store;
+const { uuid } = require('uuidv4');
 
 //CREATE
 async function screate(req, res) {
@@ -14,6 +15,7 @@ async function screate(req, res) {
             return;
         }
         await store.create({
+            id: uuid(),
             name: req.body.name,
             address: req.body.address,
         });
