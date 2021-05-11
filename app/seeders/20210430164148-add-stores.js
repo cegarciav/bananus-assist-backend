@@ -1,4 +1,7 @@
 'use strict';
+const faker = require('faker');
+faker.locale = "es";
+faker.seed(123);
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -11,15 +14,19 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-     const storesArray = [];
+     const storesData = [];
 
-     storesArray.push({
-      name: 'Plaza Egaña',
-      address: 'Vespucio Sur 4032',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    return queryInterface.bulkInsert('stores', storesArray);
+     for (let i = 0; i < 10; i += 1) {
+      storesData.push({
+        name: faker.company.companyName(),
+        address: faker.address.streetAddress(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+
+   return queryInterface.bulkInsert('stores', storesData);
+
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -29,5 +36,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+     await queryInterface.bulkDelete('stores', null, {});
   }
 };
