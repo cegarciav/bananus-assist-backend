@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker-compose build
+    - name: Crear base de datos test
+      run: docker-compose -f docker-compose.test.yaml run app yarn sequelize db:create
+    - name: Correr migraciones en base de datos test
+      run: docker-compose -f docker-compose.test.yaml run app yarn sequelize db:migrate
+    - name:  Correr tests
+      run: docker-compose -f docker-compose.test.yaml run app npm test
+      
+      
