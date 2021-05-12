@@ -1,4 +1,5 @@
 'use strict';
+const { uuid } = require('uuidv4');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -14,6 +15,7 @@ module.exports = {
      const storesArray = [];
 
      storesArray.push({
+      id: uuid(),
       name: 'Plaza Egaña',
       address: 'Vespucio Sur 4032',
       createdAt: new Date(),
