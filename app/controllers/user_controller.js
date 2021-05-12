@@ -1,4 +1,6 @@
 const user = require('../models').user;
+const { uuid } = require('uuidv4');
+
 
 //CREATE
 async function  ucreate(req, res) {
@@ -11,6 +13,7 @@ async function  ucreate(req, res) {
     }
     try{
         await user.create({
+            id: uuid(),
             name: req.body.name,
             password: req.body.password,
             email: req.body.email,

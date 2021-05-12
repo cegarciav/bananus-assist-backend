@@ -1,4 +1,5 @@
 const product = require('../models').product;
+const { uuid } = require('uuidv4');
 
 //CREATE
 async function create(req, res) {
@@ -16,6 +17,7 @@ async function create(req, res) {
         }
 
         await product.create({
+            id: uuid(),
             name: req.body.name,
             sku: req.body.sku,
             price: req.body.price,
