@@ -16,8 +16,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build the Docker image
       env: 
-        MYSQL_ROOT_PASSWORD= ${{root}}
-        MYSQL_DATABASE= ${{example_db}}
+        MYSQL_ROOT_PASSWORD= ${{ root }}
+        MYSQL_DATABASE= ${{ example_db }}
         MYSQL_TEST_DATABASE= ${{test_db}}
         MYSQL_LOCAL_PORT= ${{3307}}
         MYSQL_DOCKER_PORT= ${{3307}}
