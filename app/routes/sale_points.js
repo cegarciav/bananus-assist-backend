@@ -8,8 +8,8 @@ router.post("/", handlers.create);
 //READ ALL
 router.get("/", handlers.show_all);
 //READ ONE
-router.get("/:id", handlers.show_one);
+router.post("/show", handlers.show_one);
 //DELETE
-router.delete("/:id", handlers.delete);
+router.delete("/", handlers.delete);
 
 module.exports = router;

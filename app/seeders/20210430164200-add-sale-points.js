@@ -1,4 +1,5 @@
 'use strict';
+const { uuid } = require('uuidv4');
 
 function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
@@ -19,13 +20,12 @@ module.exports = {
 
      for (let i = 0; i < 45; i += 1) {
       sale_pointsData.push({
+        id: uuid(),
         //id_store: getRandomArbitrary(1, 10),
         createdAt: new Date(),
         updatedAt: new Date(),
       });
     }
-
-   return queryInterface.bulkInsert('sale_points', sale_pointsData);
   },
 
   down: async (queryInterface, Sequelize) => {

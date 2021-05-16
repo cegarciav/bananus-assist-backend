@@ -2,6 +2,7 @@
 const faker = require('faker');
 faker.locale = "es";
 faker.seed(123);
+const { uuid } = require('uuidv4');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -18,6 +19,7 @@ module.exports = {
 
      for (let i = 0; i < 10; i += 1) {
       storesData.push({
+        id: uuid(),
         name: faker.company.companyName(),
         address: faker.address.streetAddress(),
         createdAt: new Date(),
@@ -26,7 +28,6 @@ module.exports = {
     }
 
    return queryInterface.bulkInsert('stores', storesData);
-
   },
 
   down: async (queryInterface, Sequelize) => {

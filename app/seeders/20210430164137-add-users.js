@@ -4,6 +4,8 @@ const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT);
 const faker = require('faker');
 faker.locale = "es";
 faker.seed(123);
+const { uuid } = require('uuidv4');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -17,13 +19,15 @@ module.exports = {
      * }], {});
     */
 
-     const usersData= [];
+     const rolUser = ['administrator', 'supervisor','supervisor']
+     const usersData = [];
 
     for (let i = 0; i < 15; i += 1) {
       usersData.push({
         name: faker.name.findName(),
         email: faker.internet.email(),
         password: bcrypt.hashSync(faker.internet.password(), PASSWORD_SALT),
+        rol: ((rolUser[i]) ? rolUser[i] : 'assistant'), 
         createdAt: new Date(),
         updatedAt: new Date(),
       });

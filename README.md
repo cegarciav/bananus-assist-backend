@@ -7,6 +7,7 @@
 - docker-compose build
 - docker-compose run app yarn sequelize db:create
 - docker-compose run app yarn sequelize db:migrate:undo:all
+- docker-compose run app yarn sequelize db:seed:all
 - docker-compose up
 
 
@@ -71,3 +72,17 @@ Cada commit debería incluir un tipo y mensaje lo suficientemente claro con la e
     2. Descriptión: Una pequeña síntesis de lo que se esperaría poder realizar gracias al contenido del pull request (scope de la branch). Puede incluir un listado de características que deberían cumplirse
     3. Resultados de los tests unitarios: la persona que hace el pull request debería poder mostrar que la suite de tests unitarios funcionó correctamente. Al ejecutar `npm test`, todos los tests unitarios deberían ser ejecutados y, al final de este proceso, un resumen de la ejecución será retornado
 3. Un pull request debe ser aprobado y mezclado (merge) por una persona diferente a quien crea el pull request. Como caso excepcional, el merge de develop a main deberá ser aprobado por al menos dos personas
+
+## Consideraciones para usar ESLint
+Para verificar por consola los problemas de estilo identificados, correr el comando **docker-compose run app npm run lint**. Esto ejecutará ESLint y entregará un output como el siguiente:
+![Screenshot from 2021-05-09 19-36-42](https://user-images.githubusercontent.com/30679639/117590516-e6c7cb80-b0fd-11eb-90f8-2aaba06206ce.png)
+
+### Uso de ESLint en VSCode
+1. Instalar la extensión ESLint mostrada a continuación:![Screenshot from 2021-05-09 19-38-16](https://user-images.githubusercontent.com/30679639/117590568-20003b80-b0fe-11eb-8961-0c046ecdbb13.png)
+
+2. ESLint debería funcionar inmediatamente una vez instalado. En caso de no funcionar:
+    1. Reiniciar VSCode y verificar si los cambios surtieron
+    2. Si lo anterior no funciona, reiniciar el computador para que los cambios hagan efecto
+    3. Si aún así no funciona, instalar la extensión Remote development mostrada a continuación: ![Screenshot from 2021-05-09 19-41-37](https://user-images.githubusercontent.com/30679639/117590675-a1f06480-b0fe-11eb-83ff-b49159cd0c45.png)
+    4. Una vez instalada, seguir los pasos descritos en el siguiente vídeo para poder desarrollar como si estuvieran dentro del container de Docker: https://youtu.be/mi8kpAgHYFo. En este caso, se debe crear los archivos de configuración en base al archivo docker-compose.yaml y no en base al Dockerfile
+
