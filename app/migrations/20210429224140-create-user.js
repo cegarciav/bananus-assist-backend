@@ -20,9 +20,10 @@ module.exports = {
       rol: {
         type: Sequelize.STRING,
         validate: {
-          customValidator(value) {
+          rolValidator(value) {
             if (value !== 'administrator' && value !== 'supervisor' && value !== 'assistant') {
               throw new Error('Invalid User Rol. Rol must be administrator, supervisor or assistant.');
+            }
           }
         }
       },
