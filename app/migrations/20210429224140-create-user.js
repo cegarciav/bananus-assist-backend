@@ -12,13 +12,23 @@ module.exports = {
         type: Sequelize.STRING
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        validate: {
+          isEmail: true
+        }
       },
       password: {
         type: Sequelize.STRING
       },
       rol: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        validate: {
+          rolValidator(value) {
+            if (value !== 'administrator' && value !== 'supervisor' && value !== 'assistant') {
+              throw new Error('Invalid User Rol. Rol must be administrator, supervisor or assistant.');
+            }
+          }
+        }
       },
       token: {
         type: Sequelize.STRING
