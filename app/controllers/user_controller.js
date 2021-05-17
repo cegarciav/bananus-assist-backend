@@ -1,7 +1,5 @@
 const user = require('../models').user;
 const { uuid } = require('uuidv4');
-const bcrypt = require('bcrypt');
-const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT, 10);
 
 //CREATE
 async function  ucreate(req, res) {
@@ -16,7 +14,7 @@ async function  ucreate(req, res) {
         await user.create({
             id: uuid(),
             name: req.body.name,
-            password: bcrypt.hashSync(req.body.password, PASSWORD_SALT),
+            password: req.body.password,
             email: req.body.email,
         });
         res.status(201).json({
@@ -68,7 +66,7 @@ async function update(req, res) {
     try{
         const user_update = await user.update({
             name: ((req.body.name)? req.body.name: current_user.name),
-            password: ((req.body.password)? bcrypt.hashSync(req.body.password, PASSWORD_SALT):current_user.password),
+            password: ((req.body.password)? req.body.password:current_user.password),
             email: ((req.body.new_email)? req.body.new_email:current_user.email)
         },{where: {email: current_user.email}
         });
