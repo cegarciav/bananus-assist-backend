@@ -1,7 +1,7 @@
-'use strict';
 const {
-  Model
+  Model,
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class technical_char extends Model {
     /**
@@ -10,13 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.product)
+      this.belongsTo(models.product);
       // define association here
     }
-  };
+  }
   technical_char.init({
     key: DataTypes.STRING,
-    value: DataTypes.STRING
+    value: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'technical_char',
