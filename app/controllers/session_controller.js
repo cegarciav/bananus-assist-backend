@@ -2,6 +2,8 @@ const jwt = require( 'jsonwebtoken' );
 const user = require('../models').user;
 require( 'dotenv' ).config();
 const { uuid } = require('uuidv4');
+const bcrypt = require('bcrypt');
+const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT, 10);
 
 
 async function set_middleware(req, res, next){
@@ -28,10 +30,10 @@ async function log_in(req, res){
         return res.status(400).json({state:"F", error:"Invalid fields"})
     }
     let curr_user = await user.findOne({where: {
-        email: req.body.email,
-        password: req.body.password
+        email: req.body.email
     }})
-    if(curr_user){
+    const match =((curr_user)? await curr_user.checkPassword(req.body.password):false);
+    if(curr_user && match){
         let token = jwt.sign(req.body.email, process.env.JWT_SECRET);
         await user.update( {
             token: token}, 
