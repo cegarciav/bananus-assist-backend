@@ -1,36 +1,33 @@
-'use strict';
-
-async function setOneToNAssoc(queryInterface, Sequelize, nModel, oneModel){
+async function setOneToNAssoc(queryInterface, Sequelize, nModel, oneModel) {
   return queryInterface.addColumn(
     oneModel,
-    nModel.slice(0,-1) + 'Id',
+    `${nModel.slice(0, -1)}Id`,
     {
       type: Sequelize.UUID,
       references: {
         model: nModel,
-        key: 'id'
+        key: 'id',
       },
       onUpdate: 'CASCADE',
-      onDelete: 'SET NULL'
-    }
-  )
+      onDelete: 'SET NULL',
+    },
+  );
 }
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    
-    /**
+  up: async (queryInterface, Sequelize) =>
+
+  /**
      * Add altering commands here.
      *
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    
-    return(Promise.all([setOneToNAssoc(queryInterface, Sequelize, 'users', 'stores'),
-    setOneToNAssoc(queryInterface, Sequelize, 'stores', 'products'),
-    setOneToNAssoc(queryInterface, Sequelize, 'stores', 'sale_points'),
-    setOneToNAssoc(queryInterface, Sequelize, 'products', 'technical_chars')]))
-  },
+
+    (Promise.all([setOneToNAssoc(queryInterface, Sequelize, 'users', 'stores'),
+      setOneToNAssoc(queryInterface, Sequelize, 'stores', 'products'),
+      setOneToNAssoc(queryInterface, Sequelize, 'stores', 'sale_points'),
+      setOneToNAssoc(queryInterface, Sequelize, 'products', 'technical_chars')])),
 
   down: async (queryInterface, Sequelize) => {
     /**
@@ -39,5 +36,5 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-  }
+  },
 };

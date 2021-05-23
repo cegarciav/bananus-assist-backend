@@ -1,4 +1,3 @@
-'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('users', {
@@ -9,16 +8,16 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       email: {
         type: Sequelize.STRING,
         validate: {
-          isEmail: true
-        }
+          isEmail: true,
+        },
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       rol: {
         type: Sequelize.STRING,
@@ -27,23 +26,23 @@ module.exports = {
             if (value !== 'administrator' && value !== 'supervisor' && value !== 'assistant') {
               throw new Error('Invalid User Rol. Rol must be administrator, supervisor or assistant.');
             }
-          }
-        }
+          },
+        },
       },
       token: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.dropTable('users');
-  }
+  },
 };

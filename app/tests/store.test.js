@@ -1,60 +1,59 @@
-const request = require('supertest')
-const app = require('../server')
+const request = require('supertest');
+const app = require('../server');
 
 describe('Store CRUD Testing', () => {
-
-  //CREATE
+  // CREATE
   it('should create a new store', async () => {
     const res = await request(app)
       .post('/stores')
       .send({
-        name: "test_store",
-        address: "test_street 123"
+        name: 'test_store',
+        address: 'test_street 123',
       });
     expect(res.statusCode).toEqual(201);
-    expect(res.body.state).toEqual("OK");
+    expect(res.body.state).toEqual('OK');
   }),
 
   it('should fail creating a new store because address is not provided', async () => {
     const res = await request(app)
       .post('/stores')
       .send({
-        name: "test_store 2"
-    });
+        name: 'test_store 2',
+      });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
-    expect(res.body.error).toEqual("Invalid fields");
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   }),
 
   it('should fail creating a new store because a store already exists for an address', async () => {
     const res = await request(app)
       .post('/stores')
       .send({
-        name: "test_store 2",
-        address: "test_street 123"
-    });
+        name: 'test_store 2',
+        address: 'test_street 123',
+      });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
+    expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("There's another store in the same address");
   }),
 
-  //READ ALL
+  // READ ALL
   it('should read all stores', async () => {
     const res = await request(app)
-      .get('/stores')
-    expect(res.statusCode).toEqual(200)
+      .get('/stores');
+    expect(res.statusCode).toEqual(200);
   }),
 
-  //READ ONE
+  // READ ONE
   it('should read one store', async () => {
     const res = await request(app)
       .post('/stores/show')
       .send({
-        address: "test_street 123",
-    });
+        address: 'test_street 123',
+      });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.address).toEqual("test_street 123");
-    expect(res.body.name).toEqual("test_store");
+    expect(res.body.address).toEqual('test_street 123');
+    expect(res.body.name).toEqual('test_store');
   }),
 
   it('should fail reading one store because address is not sent', async () => {
@@ -62,42 +61,42 @@ describe('Store CRUD Testing', () => {
       .post('/stores/show')
       .send({});
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
-    expect(res.body.error).toEqual("Invalid fields");
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   }),
 
   it('should fail reading one store because address doesn\'t exist', async () => {
     const res = await request(app)
       .post('/stores/show')
       .send({
-        address: "A fake address that has never been created"
+        address: 'A fake address that has never been created',
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
+    expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Store address doesn't exist");
   }),
 
-  //UPDATE
+  // UPDATE
   it('should fail updating name because address is not sent', async () => {
     const res = await request(app)
       .patch('/stores')
       .send({
-        name: "New test store name"
-    });
+        name: 'New test store name',
+      });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
-    expect(res.body.error).toEqual("Invalid fields");
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   }),
 
   it('should fail updating name because address doesn\'t exist', async () => {
     const res = await request(app)
       .patch('/stores')
       .send({
-        name: "New test store name",
-        address: "A fake address that has never been created"
-    });
+        name: 'New test store name',
+        address: 'A fake address that has never been created',
+      });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
+    expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Store address doesn't exist");
   }),
 
@@ -105,54 +104,54 @@ describe('Store CRUD Testing', () => {
     const res = await request(app)
       .patch('/stores')
       .send({
-        new_address: "test_street 123",
-        address: "test_street 123"
-    });
+        new_address: 'test_street 123',
+        address: 'test_street 123',
+      });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
-    expect(res.body.error).toEqual("This address already exist");
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('This address already exist');
   }),
 
   it('should update the address of one store', async () => {
     const res = await request(app)
       .patch('/stores')
       .send({
-        new_address: "new store address 456",
-        address: "test_street 123",
-    });
+        new_address: 'new store address 456',
+        address: 'test_street 123',
+      });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual("OK");
+    expect(res.body.state).toEqual('OK');
   }),
 
   it('should update the name of one store', async () => {
     const res = await request(app)
       .patch('/stores')
       .send({
-        name: "new_test store name",
-        address: "new store address 456",
-      })
+        name: 'new_test store name',
+        address: 'new store address 456',
+      });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual("OK");
+    expect(res.body.state).toEqual('OK');
   }),
 
-  //DELETE
+  // DELETE
   it('should fail deleting one store because address is not sent', async () => {
     const res = await request(app)
       .delete('/stores')
       .send({});
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
-    expect(res.body.error).toEqual("Invalid fields");
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   }),
 
   it('should fail deleting one store because address doesn\'t exist', async () => {
     const res = await request(app)
       .delete('/stores')
       .send({
-        address: "test_street 123",
-      })
+        address: 'test_street 123',
+      });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.state).toEqual("F");
+    expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Store address doesn't exist");
   }),
 
@@ -160,9 +159,9 @@ describe('Store CRUD Testing', () => {
     const res = await request(app)
       .delete('/stores')
       .send({
-        address: "new store address 456",
-      })
+        address: 'new store address 456',
+      });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual("OK");
-  })
-})
+    expect(res.body.state).toEqual('OK');
+  });
+});
