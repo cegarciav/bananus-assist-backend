@@ -15,6 +15,7 @@ const sessions = require('./routes/session');
 
 const db = require('./models');
 const { access } = require('fs');
+const { Stream } = require('stream');
 
 const app = express();
 const port = process.env.NODEJS_LOCAL_PORT;
@@ -49,11 +50,16 @@ io.on("connection", socket =>{
   })
   socket.on("join_sala_asistente", (sale_points_id) => {
     socket.join(sale_points_id)
-    console.log(sale_points_id)
   })
-  socket.on("accept_videocall", (client_socket_id) => {
-    console.log("aceptando")
-    socket.to(client_socket_id).emit("accept_call", "aaa")
+  socket.on("accept_videocall", (client_socket_id, sale_points_id) => {
+    socket.to(client_socket_id).emit("accept_call", "Dirijase a tablet central donde un asistente lo atendera")
+    io.sockets.to(sale_points_id).emit("delete_peticion", client_socket_id)
+  })
+  socket.on("join_to_videocall_room", (sale_point_id) => {
+    socket.join(sale_point_id.concat("home"))
+  })
+  socket.on("video_stream_upload", (sale_point_id, stream_video) => {
+    io.sockets.to(sale_point_id.concat("home")).emit("video_stream_download", stream_video)
   })
 })
 
