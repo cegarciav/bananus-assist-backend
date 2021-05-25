@@ -14,8 +14,6 @@ const sessions = require('./routes/session');
 
 
 const db = require('./models');
-const { access } = require('fs');
-const { Stream } = require('stream');
 
 const app = express();
 const port = process.env.NODEJS_LOCAL_PORT;
@@ -39,7 +37,7 @@ app.use('/chars', technical_chars);
 app.use('/sessions', sessions);
 
 
-const server = http.createServer(express());
+const server = http.createServer(app);
 const io = socketio(server, {
   cors: true
 })
