@@ -70,11 +70,15 @@ io.on("connection", socket =>{
   })
 
   socket.on("callUser", (data) => {
-    io.to(data.userToCall).emit("callUser", {signal: data.signalData, from: data.from, name: data.name})
+    socket.to(data.sale_point_id.concat("home")).emit("callUser", {signal: data.signalData, from: data.from, name: data.name})
   })
 
   socket.on("answerCall", (data) => {
-    io.to(data.to).emit("callAccepted", data.signal)
+    io.to(data.to).emit("callAccepted", {signal: data.signal, from: data.from})
+  })
+
+  socket.on("ended", (data) => {
+    io.to(data.to).emit("finished");
   })
 })
 
