@@ -80,6 +80,8 @@ io.on("connection", socket =>{
   socket.on("ended", (data) => {
     io.to(data.to).emit("finished");
   })
+  
+  
 })
 
 db.sequelize
