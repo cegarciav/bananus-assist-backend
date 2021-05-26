@@ -37,6 +37,7 @@ app.use('/chars', technical_chars);
 app.use('/sessions', sessions);
 
 
+
 const server = http.createServer(app);
 const io = socketio(server, {
   cors: true
@@ -58,6 +59,22 @@ io.on("connection", socket =>{
   })
   socket.on("video_stream_upload", (sale_point_id, stream_video) => {
     io.sockets.to(sale_point_id.concat("home")).emit("video_stream_download", stream_video)
+  })
+
+  socket.on("me_ida", (nada) => {
+    io.sockets.to(socket.id).emit("me", socket.id)
+  })
+
+  socket.on("disconnect", () => {
+    socket.broadcast.emit("callEnded")
+  })
+
+  socket.on("callUser", (data) => {
+    io.to(data.userToCall).emit("callUser", {signal: data.signalData, from: data.from, name: data.name})
+  })
+
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal)
   })
 })
 
