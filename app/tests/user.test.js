@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 const request = require('supertest');
 const app = require('../server');
 
@@ -11,13 +12,13 @@ describe('User CRUD Testing', () => {
         password: '1233',
       });
     expect(res.statusCode).toEqual(201);
-  }),
+  });
   it('should read all users', async () => {
     const res = await request(app)
       .get('/users');
 
     expect(res.statusCode).toEqual(200);
-  }),
+  });
   it('should read one user', async () => {
     const res = await request(app)
       .get('/users')
@@ -25,7 +26,7 @@ describe('User CRUD Testing', () => {
         email: 'test01@test.cl',
       });
     expect(res.statusCode).toEqual(200);
-  }),
+  });
   it('should update the email of one user', async () => {
     const res = await request(app)
       .patch('/users')
@@ -34,7 +35,7 @@ describe('User CRUD Testing', () => {
         email: 'test01@test.cl',
       });
     expect(res.statusCode).toEqual(200);
-  }),
+  });
   it('should fail delete one user', async () => {
     const res = await request(app)
       .delete('/users')
@@ -42,7 +43,7 @@ describe('User CRUD Testing', () => {
         email: 'test01@test.cl',
       });
     expect(res.statusCode).toEqual(400);
-  }),
+  });
   it('should update the name of one user', async () => {
     const res = await request(app)
       .patch('/users')
@@ -51,7 +52,7 @@ describe('User CRUD Testing', () => {
         email: 'testupdate@test.cl',
       });
     expect(res.statusCode).toEqual(200);
-  }),
+  });
   it('should update the password of one user', async () => {
     const res = await request(app)
       .patch('/users')
@@ -60,7 +61,7 @@ describe('User CRUD Testing', () => {
         password: 'update',
       });
     expect(res.statusCode).toEqual(200);
-  }),
+  });
   it('should delete one user', async () => {
     const res = await request(app)
       .delete('/users')

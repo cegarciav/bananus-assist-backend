@@ -122,7 +122,7 @@ async function pdelete(req, res) {
       return;
     }
 
-    const destroy = await product.destroy({
+    await product.destroy({
       where: {
         sku: req.body.sku,
       },

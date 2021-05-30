@@ -109,15 +109,17 @@ async function update(req, res) {
 async function sdelete(req, res) {
   try {
     if (!req.body.address) {
-      return res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      return;
     }
 
     const current_store = await store.findOne({ where: { address: req.body.address } });
 
     if (!current_store) {
-      return res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+      res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+      return;
     }
-    const udestroy = await store.destroy({
+    await store.destroy({
       where: {
         address: req.body.address,
       },

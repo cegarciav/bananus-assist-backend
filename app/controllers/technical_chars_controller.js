@@ -102,7 +102,7 @@ async function cdelete(req, res) {
       return;
     }
 
-    const udestroy = await technical_char.destroy({
+    await technical_char.destroy({
       where: {
         id: req.body.id,
       },
