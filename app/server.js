@@ -81,7 +81,13 @@ io.on("connection", socket =>{
     io.to(data.to).emit("finished");
   })
   
+  socket.on("face-detected", (sale_point_id) => {
+    socket.to(sale_point_id).emit("face-detected_assistant", socket.id)
+   })
   
+   socket.on("assistant_alert", (client_id, msge) => {
+     socket.to(client_id).emit("user_alert", msge)
+       })
 })
 
 db.sequelize
