@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 const request = require('supertest');
 const app = require('../server');
 
@@ -17,7 +18,7 @@ describe('Sale Point CRUD Testing', () => {
     const stores = await request(app)
       .get('/stores');
 
-    store = stores.body[0];
+    [store] = stores.body;
 
     // Create a sale point to use its ID in the tests
     await request(app)
@@ -27,8 +28,8 @@ describe('Sale Point CRUD Testing', () => {
       });
     const salePoints = await request(app)
       .get('/sale-points');
-    salePoint = salePoints.body[0];
-  }),
+    [salePoint] = salePoints.body;
+  });
 
   // CREATE
   it('should create a new sale point', async () => {
@@ -39,7 +40,7 @@ describe('Sale Point CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
-  }),
+  });
 
   it('should fail creating a sale point because storeId is not provided', async () => {
     const res = await request(app)
@@ -48,14 +49,14 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
-  }),
+  });
 
   // READ ALL
   it('should read all sale points', async () => {
     const res = await request(app)
       .get('/sale-points');
     expect(res.statusCode).toEqual(200);
-  }),
+  });
 
   // READ ONE
   it('should read one sale point', async () => {
@@ -67,7 +68,7 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body.id).toEqual(salePoint.id);
     expect(res.body.storeId).toEqual(store.id);
-  }),
+  });
 
   it('should fail reading one sale point because id is not sent', async () => {
     const res = await request(app)
@@ -76,7 +77,7 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
-  }),
+  });
 
   it('should fail reading one sale point because id doesn\'t exist', async () => {
     const res = await request(app)
@@ -87,7 +88,7 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Sale point doesn't exist");
-  }),
+  });
 
   // DELETE
   it('should fail deleting one sale point because id is not sent', async () => {
@@ -97,7 +98,7 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
-  }),
+  });
 
   it('should fail deleting one sale point because id doesn\'t exist', async () => {
     const res = await request(app)
@@ -108,7 +109,7 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Sale's id doesn't exist");
-  }),
+  });
 
   it('should delete one sale point', async () => {
     const res = await request(app)
@@ -118,18 +119,18 @@ describe('Sale Point CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
-  }),
+  });
 
   afterAll(async () => {
     // Delete all sale points created
     const salePoints = await request(app)
       .get('/sale-points');
 
-    salePoints.body.forEach(async (salePoint) => {
+    salePoints.body.forEach(async (sp) => {
       await request(app)
         .delete('/sale-points')
         .send({
-          id: salePoint.id,
+          id: sp.id,
         });
     });
 

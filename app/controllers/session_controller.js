@@ -1,7 +1,6 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const { user } = require('../models');
-require('dotenv').config();
-const { uuid } = require('uuidv4');
 
 async function set_middleware(req, res, next) {
   req.logged = false;

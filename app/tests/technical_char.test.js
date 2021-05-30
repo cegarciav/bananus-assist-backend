@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 const request = require('supertest');
 const app = require('../server');
 
@@ -19,7 +20,7 @@ describe('Technical Characteristic CRUD Testing', () => {
     const products = await request(app)
       .get('/products');
 
-    product = products.body[0];
+    [product] = products.body;
 
     // Create a technical char to use its ID in the tests
     await request(app)
@@ -31,8 +32,8 @@ describe('Technical Characteristic CRUD Testing', () => {
       });
     const technicalChars = await request(app)
       .get('/chars');
-    technicalChar = technicalChars.body[0];
-  }),
+    [technicalChar] = technicalChars.body;
+  });
 
   // CREATE
   it('should create a new technical char for a product', async () => {
@@ -45,7 +46,7 @@ describe('Technical Characteristic CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
-  }),
+  });
 
   it('should fail creating a new technical char because productId is not provided', async () => {
     const res = await request(app)
@@ -57,7 +58,7 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
-  }),
+  });
 
   it('should fail creating a new technical char because key is not provided', async () => {
     const res = await request(app)
@@ -69,14 +70,14 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
-  }),
+  });
 
   // READ ALL
   it('should read all technical chars', async () => {
     const res = await request(app)
       .get('/chars');
     expect(res.statusCode).toEqual(200);
-  }),
+  });
 
   // READ ONE
   it('should read one technical char', async () => {
@@ -89,7 +90,7 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.body.id).toEqual(technicalChar.id);
     expect(res.body.productId).toEqual(product.id);
     expect(res.body.key).toEqual('some random key');
-  }),
+  });
 
   it('should fail reading one technical char because id is not sent', async () => {
     const res = await request(app)
@@ -98,7 +99,7 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
-  }),
+  });
 
   it('should fail reading one technical char because id doesn\'t exist', async () => {
     const res = await request(app)
@@ -109,7 +110,7 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Technical characteristic doesn't exist");
-  }),
+  });
 
   // UPDATE
   it('should fail updating the value because id is not sent', async () => {
@@ -121,7 +122,7 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
-  }),
+  });
 
   it('should fail updating the value because id doesn\'t exist', async () => {
     const res = await request(app)
@@ -132,8 +133,8 @@ describe('Technical Characteristic CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Technical characteristic doesn\'t exist");
-  }),
+    expect(res.body.error).toEqual("Technical characteristic doesn't exist");
+  });
 
   it('should update the value of a technical characteristic', async () => {
     const res = await request(app)
@@ -144,7 +145,7 @@ describe('Technical Characteristic CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
-  }),
+  });
 
   // DELETE
   it('should fail deleting a technical characteristic because id is not sent', async () => {
@@ -154,7 +155,7 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
-  }),
+  });
 
   it('should fail deleting a technical characteristic because id doesn\'t exist', async () => {
     const res = await request(app)
@@ -164,8 +165,8 @@ describe('Technical Characteristic CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Technical characteristic doesn\'t exist");
-  }),
+    expect(res.body.error).toEqual("Technical characteristic doesn't exist");
+  });
 
   it('should delete a technical characteristic', async () => {
     const res = await request(app)
@@ -175,18 +176,18 @@ describe('Technical Characteristic CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
-  }),
+  });
 
   afterAll(async () => {
     // Delete all technical characteristics created
     const technicalChars = await request(app)
       .get('/chars');
 
-    technicalChars.body.forEach(async (technicalChar) => {
+    technicalChars.body.forEach(async (tChar) => {
       await request(app)
         .delete('/chars')
         .send({
-          id: technicalChar.id,
+          id: tChar.id,
         });
     });
 
