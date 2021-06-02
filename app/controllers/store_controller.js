@@ -1,5 +1,5 @@
 const { uuid } = require('uuidv4');
-const { store } = require('../models');
+const { store, user } = require('../models');
 
 // CREATE
 async function screate(req, res) {
@@ -34,7 +34,18 @@ async function screate(req, res) {
 // READ ALL
 async function sshow_all(req, res) {
   try {
-    const stores = await store.findAll();
+    const stores = await store.findAll({
+      include: [
+        {
+          model: user,
+          as: 'assistants',
+        },
+        {
+          model: user,
+          as: 'supervisors',
+        },
+      ],
+    });
     res.status(200).json(stores);
     return;
   } catch (error) {
@@ -52,7 +63,19 @@ async function sshow(req, res) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
-    const current_store = await store.findOne({ where: { address: req.body.address } });
+    const current_store = await store.findOne({
+      where: { address: req.body.address },
+      include: [
+        {
+          model: user,
+          as: 'assistants',
+        },
+        {
+          model: user,
+          as: 'supervisors',
+        },
+      ],
+    });
     if (!current_store) {
       res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
       return;
