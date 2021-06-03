@@ -1,5 +1,5 @@
 const { uuid } = require('uuidv4');
-const { user } = require('../models');
+const { user, store } = require('../models');
 
 // CREATE
 async function ucreate(req, res) {
@@ -32,7 +32,7 @@ async function ucreate(req, res) {
 
 // READ ALL
 async function ushow_all(req, res) {
-  const users = await user.findAll();
+  const users = await user.findAll({ include: store });
   res.status(200).json(users);
 }
 
@@ -42,7 +42,14 @@ async function ushow(req, res) {
     res.status(400).json({ state: 'F', error: 'Invalid fields' });
     return;
   }
-  const current_user = await user.findOne({ where: { email: req.body.email } });
+  const current_user = await user.findOne({
+    where: { email: req.body.email },
+    include: [
+      {
+        model: store,
+      },
+    ],
+  });
   if (!current_user) {
     res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
     return;
