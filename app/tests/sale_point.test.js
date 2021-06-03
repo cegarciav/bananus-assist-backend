@@ -104,6 +104,28 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.body.error).toEqual("Sale point doesn't exist");
   });
 
+  //UPDATE
+  it('should fail updating department because id is not sent', async () => {
+    const res = await request(app)
+      .patch('/sale-points')
+      .send({
+        department: 'New department value',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should update the department of one sale point', async () => {
+    const res = await request(app)
+      .patch('/sale-points')
+      .send({
+        id:salePoint.id,
+        department: 'New department value',
+      });
+    expect(res.statusCode).toEqual(200);
+  });
+
   // DELETE
   it('should fail deleting one sale point because id is not sent', async () => {
     const res = await request(app)
