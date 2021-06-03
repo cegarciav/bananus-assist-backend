@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+//* eslint-disable no-unused-expressions */
 const request = require('supertest');
 const app = require('../server');
 
@@ -25,6 +25,7 @@ describe('Sale Point CRUD Testing', () => {
       .post('/sale-points')
       .send({
         storeId: store.id,
+        department: 'Some Department',
       });
     const salePoints = await request(app)
       .get('/sale-points');
@@ -37,6 +38,7 @@ describe('Sale Point CRUD Testing', () => {
       .post('/sale-points')
       .send({
         storeId: store.id,
+        department: 'Another Department',
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
@@ -46,6 +48,17 @@ describe('Sale Point CRUD Testing', () => {
     const res = await request(app)
       .post('/sale-points')
       .send({});
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating a sale point because department is not provided', async () => {
+    const res = await request(app)
+      .post('/sale-points')
+      .send({
+        storeId: store.id,
+      });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
@@ -68,6 +81,7 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body.id).toEqual(salePoint.id);
     expect(res.body.storeId).toEqual(store.id);
+    expect(res.body.department).toEqual('Some Department');
   });
 
   it('should fail reading one sale point because id is not sent', async () => {

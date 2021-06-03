@@ -4,13 +4,14 @@ const { sale_point } = require('../models');
 // CREATE
 async function spcreate(req, res) {
   try {
-    if (!req.body.storeId) {
+    if (!req.body.storeId || !req.body.department) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
     await sale_point.create({
       id: uuid(),
       storeId: req.body.storeId,
+      department: req.body.department,
     });
     res.status(201).json({
       state: 'OK',
