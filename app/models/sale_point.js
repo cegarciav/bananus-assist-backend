@@ -2,7 +2,7 @@ const {
   Model,
 } = require('sequelize');
 
-module.exports = (sequelize) => {
+module.exports = (sequelize, DataTypes) => {
   class sale_point extends Model {
     /**
      * Helper method for defining associations.
@@ -15,6 +15,7 @@ module.exports = (sequelize) => {
     }
   }
   sale_point.init({
+    department: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'sale_point',

@@ -4,13 +4,14 @@ const { sale_point } = require('../models');
 // CREATE
 async function spcreate(req, res) {
   try {
-    if (!req.body.storeId) {
+    if (!req.body.storeId || !req.body.department) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
     await sale_point.create({
       id: uuid(),
       storeId: req.body.storeId,
+      department: req.body.department,
     });
     res.status(201).json({
       state: 'OK',
@@ -61,6 +62,34 @@ async function spshow(req, res) {
   }
 }
 
+// UPDATE
+async function spupdate(req, res) {
+  try {
+    if (!req.body.id) {
+      res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      return;
+    }
+    const sale_point_id = await sale_point.findOne({ where: { id: req.body.id } });
+    if (!sale_point_id) {
+      res.status(400).json({ state: 'F', error: "Sale point doesnt exist" });
+      return;
+    }
+
+    await sale_point.update({
+      storeId: ((req.body.storeId) ? req.body.storeId : sale_point_id.storeId),
+      department: ((req.body.department) ? req.body.department : sale_point_id.department),
+    }, { where: { id: sale_point_id.id } });
+
+    res.status(200).json({ state: 'OK' });
+    return;
+  } catch (error) {
+    res.status(500).json({
+      state: 'F',
+      error,
+    });
+  }
+}
+
 // DELETE
 async function spdelete(req, res) {
   try {
@@ -93,6 +122,7 @@ async function spdelete(req, res) {
 module.exports = {
   show_all: spshow_all,
   show_one: spshow,
+  update : spupdate,
   create: spcreate,
   delete: spdelete,
 };
