@@ -24,6 +24,7 @@ module.exports = {
       salePointsData.push({
         id: faker.datatype.uuid(),
         storeID: storeIdData[Math.floor(Math.random() * storeIdData.length)],
+        department: faker.commerce.department(),
         createdAt: new Date(),
         updatedAt: new Date(),
       });
