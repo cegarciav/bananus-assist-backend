@@ -12,12 +12,23 @@ async function ucreate(req, res) {
     res.status(400).json({ state: 'F', error: 'Email already in use' });
     return;
   }
+  const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
+  if(!current_store){
+    res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
+    return;
+  }
+  if(req.body.address && req.body.rol!== 'supervisor'){
+    res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
+    return;
+  }
   try {
     await user.create({
       id: uuid(),
       name: req.body.name,
       password: req.body.password,
       email: req.body.email,
+      storeId: ((current_store)? current_store.id : null),
+      rol: req.body.rol,
     });
     res.status(201).json({
       state: 'OK',
@@ -77,11 +88,32 @@ async function update(req, res) {
       return;
     }
   }
+
+  const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
+  
+  if(!current_store){
+    res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
+    return;
+  }
+
+  const rol = ((req.body.rol) ? req.body.rol: current_user.rol);
+  const new_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): current_user.storeId);
+
+  console.log('rol :', rol);
+  console.log('email: ', current_user.email);
+  console.log('store: ', new_store);
+  if(rol !== 'supervisor' && new_store){
+    res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
+    return;
+  }
+
   try {
     await user.update({
       name: ((req.body.name) ? req.body.name : current_user.name),
       password: ((req.body.password) ? req.body.password : current_user.password),
       email: ((req.body.new_email) ? req.body.new_email : current_user.email),
+      storeId: ((req.body.address) ? current_store.id: current_user.storeId),
+      rol: ((req.body.rol) ? req.body.rol: current_user.rol),
     }, { where: { email: current_user.email } });
 
     res.status(200).json({ state: 'OK' });
