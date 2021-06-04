@@ -12,6 +12,7 @@ const stores = require('./routes/stores');
 const products = require('./routes/products');
 const technical_chars = require('./routes/technical_chars');
 const sessions = require('./routes/session');
+const assistants = require('./routes/assistants');
 
 const db = require('./models');
 
@@ -34,6 +35,7 @@ app.use('/stores', stores);
 app.use('/products', products);
 app.use('/chars', technical_chars);
 app.use('/sessions', sessions);
+app.use('/assistants', assistants);
 
 const server = http.createServer(app);
 const io = socketio(server, {
