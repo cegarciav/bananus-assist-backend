@@ -47,6 +47,7 @@ module.exports = {
             }
           },
         },
+        onDelete: 'SET NULL',
       },
       createdAt: {
         allowNull: false,
