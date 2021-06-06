@@ -1,3 +1,7 @@
+async function destroyStoreAssistant(instance) {
+  await models.assistant.destroy({ where: { storeId: instance.id } });
+}
+
 const {
   Model,
 } = require('sequelize');
@@ -24,5 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'store',
   });
+
+  store.beforeDestroy(destroyStoreAssistant);
+  
   return store;
 };

@@ -9,6 +9,10 @@ async function buildPasswordHash(instance) {
   }
 }
 
+async function destroyStoreAssistant(instance) {
+  await models.assistant.destroy({ where: { userId: instance.id } });
+}
+
 const {
   Model,
 } = require('sequelize');
@@ -39,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
 
   user.beforeUpdate(buildPasswordHash);
   user.beforeCreate(buildPasswordHash);
+  user.beforeDestroy(destroyStoreAssistant);
 
   user.prototype.checkPassword = function checkPassword(password) {
     return bcrypt.compare(password, this.password);
