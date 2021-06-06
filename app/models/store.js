@@ -1,5 +1,7 @@
+const assistant = require('../models');
+
 async function destroyStoreAssistant(instance) {
-  await models.assistant.destroy({ where: { storeId: instance.id } });
+  await assistant.destroy({ where: { storeId: instance.id } });
 }
 
 const {

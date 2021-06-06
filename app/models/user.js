@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const assistant = require('../models');
 
 const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT, 10);
 
@@ -10,7 +11,7 @@ async function buildPasswordHash(instance) {
 }
 
 async function destroyStoreAssistant(instance) {
-  await models.assistant.destroy({ where: { userId: instance.id } });
+  await assistant.destroy({ where: { userId: instance.id } });
 }
 
 const {
