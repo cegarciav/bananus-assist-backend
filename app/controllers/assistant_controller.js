@@ -11,7 +11,11 @@ async function ascreate(req, res) {
 
     const current_user = await user.findOne({ where: { email: req.body.email } });
     const current_store = await store.findOne({ where: { address: req.body.address } });
-    const current_assistant = await assistant.findOne({ where: { userId: current_user.id, storeId: current_store.id } });
+    let current_assistant = null;
+
+    if(current_user && current_store){
+      current_assistant = await assistant.findOne({ where: { userId: current_user.id, storeId: current_store.id } });
+    }
     
     if (!current_user) {
       res.status(400).json({ state: 'F', error: "User's email doesnt exist" });
@@ -20,18 +24,16 @@ async function ascreate(req, res) {
     else if(current_user.rol !== 'assistant'){
         res.status(400).json({ state: 'F', error: 'User must be an assistant' });
         return;
-    }  
+    }    
     else if(!current_store){
         res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
         return;
-    }
+    }     
     else if(current_assistant){
-        res.status(400).json({ state: 'F', error: 'User is already a store assistant' });
+        res.status(400).json({ state: 'F', error: 'User is already assistant in the store' });
         return;
     }
-
     await assistant.create({
-      id: uuid(),
       storeId: current_store.id,
       userId: current_user.id,
     });
@@ -47,17 +49,20 @@ async function ascreate(req, res) {
   }
 }
 
-
 // DELETE
 async function asdelete(req, res) {
-  if (!req.body.address || !req.body.email) {
-      res.status(400).json({ state: 'F', error: 'Invalid fields' });
-      return;
+  try {
+    if (!req.body.address || !req.body.email) {
+        res.status(400).json({ state: 'F', error: 'Invalid fields' });
+        return;
     }
-
     const current_user = await user.findOne({ where: { email: req.body.email } });
     const current_store = await store.findOne({ where: { address: req.body.address } });
-    const current_assistant = await assistant.findOne({ where: { userId: current_user.id, storeId: current_store.id } });
+    let current_assistant = null;
+
+    if(current_user && current_store){
+      current_assistant = await assistant.findOne({ where: { userId: current_user.id, storeId: current_store.id } });
+    }
 
     if (!current_user) {
       res.status(400).json({ state: 'F', error: "User's email doesnt exist" });
@@ -76,7 +81,6 @@ async function asdelete(req, res) {
         res.status(400).json({ state: 'F', error: 'User is not a store assistant' });
         return;
     }
-  try {
     await assistant.destroy({
       where: {
         userId: current_user.id,
