@@ -19,13 +19,7 @@ describe('User Supervisor Testing', () => {
         rol: 'administrator'
       });
 
-    const admins = await request(app)
-      .get('/users')
-      .send({
-        email: 'admin@test.cl',
-      });
-
-    [administrator] = admins.body;
+      administrator = 'admin@test.cl';
 
     // Create a new user supervisor to use in the tests
     await request(app)
@@ -37,13 +31,7 @@ describe('User Supervisor Testing', () => {
         rol: 'supervisor'
       });
 
-    const supervisors = await request(app)
-      .get('/users')
-      .send({
-        email: 'super@test.cl',
-      });
-
-    [supervisor] = supervisors.body;
+    supervisor = 'super@test.cl';
 
     // Create a new user assistant to use in the tests
     await request(app)
@@ -55,13 +43,7 @@ describe('User Supervisor Testing', () => {
         rol: 'assistant',
       });
 
-    const assists = await request(app)
-      .get('/users')
-      .send({
-        email: 'assist@test.cl',
-      });
-
-    [assistant] = assists.body;
+    assistant = 'assist@test.cl'; 
 
     // Create a new store to use its ID in the tests
     await request(app)
@@ -71,10 +53,7 @@ describe('User Supervisor Testing', () => {
         address: 'Fake Street 123',
       });
 
-    const stores = await request(app)
-      .get('/stores');
-
-    [store] = stores.body;
+    store = 'Fake Street 123';
   });
 
   //CREATE USER WITH STORE
@@ -87,7 +66,7 @@ describe('User Supervisor Testing', () => {
         email: 'new_admin@test.cl',
         password: 'test',
         rol: 'administrator',
-        address: store.address,
+        address: store,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -102,7 +81,7 @@ describe('User Supervisor Testing', () => {
         email: 'new_assistant@test.cl',
         password: 'test',
         rol: 'assistant',
-        address: store.address,
+        address: store,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -117,7 +96,7 @@ describe('User Supervisor Testing', () => {
         email: 'new_supervisor@test.cl',
         password: 'test',
         rol: 'supervisor',
-        address: store.address,
+        address: store,
       });
     expect(res.statusCode).toEqual(201);
   });
@@ -128,8 +107,8 @@ describe('User Supervisor Testing', () => {
     const res = await request(app)
       .patch('/users')
       .send({
-        email: administrator.email,
-        address: store.address,
+        email: administrator,
+        address: store,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -140,8 +119,8 @@ describe('User Supervisor Testing', () => {
     const res = await request(app)
       .patch('/users')
       .send({
-        email: assistant.email,
-        address: store.address,
+        email: assistant,
+        address: store,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -152,7 +131,7 @@ describe('User Supervisor Testing', () => {
     const res = await request(app)
       .patch('/users')
       .send({
-        email: supervisor.email,
+        email: supervisor,
         address: 'Not an address',
       });
     expect(res.statusCode).toEqual(400);
@@ -164,8 +143,8 @@ describe('User Supervisor Testing', () => {
     const res = await request(app)
       .patch('/users')
       .send({
-        email: supervisor.email,
-        address: store.address,
+        email: supervisor,
+        address: store,
       });
     expect(res.statusCode).toEqual(200);
   });
@@ -174,8 +153,8 @@ describe('User Supervisor Testing', () => {
     const res = await request(app)
       .patch('/users')
       .send({
-        email: administrator.email,
-        address: store.address,
+        email: administrator,
+        address: store,
         rol: 'supervisor',
       });
     expect(res.statusCode).toEqual(200);
@@ -199,7 +178,7 @@ describe('User Supervisor Testing', () => {
     await request(app)
       .delete('/stores')
       .send({
-        address: store.address,
+        address: store,
       });
 
   });
