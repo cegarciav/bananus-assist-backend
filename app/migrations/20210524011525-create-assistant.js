@@ -3,9 +3,9 @@ module.exports = {
     await queryInterface.createTable('assistants', {
       id: {
         allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.INTEGER,
       },
       userId: {
         type: Sequelize.UUID,
@@ -15,6 +15,7 @@ module.exports = {
           },
           key: 'id',
         },
+        onDelete: 'NO ACTION',
       },
       storeId: {
         type: Sequelize.UUID,
@@ -24,6 +25,7 @@ module.exports = {
           },
           key: 'id',
         },
+        onDelete: 'NO ACTION',
       },
       createdAt: {
         allowNull: false,
