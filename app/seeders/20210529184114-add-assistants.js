@@ -1,8 +1,3 @@
-const faker = require('faker');
-
-faker.locale = 'es';
-faker.seed(123);
-
 module.exports = {
   up: async (queryInterface) => {
     /**
@@ -31,7 +26,6 @@ module.exports = {
 
     for (let i = 0; i < 12; i += 1) {
       assistantData.push({
-        id: faker.datatype.uuid(),
         userId: assistantIdData[i],
         storeId: storeIdData[Math.floor(Math.random() * storeIdData.length)],
         createdAt: new Date(),
