@@ -1,27 +1,27 @@
 const { uuid } = require('uuidv4');
-const { user, store } = require('../models');
+const { user, store, assistant } = require('../models');
 
 // CREATE
 async function ucreate(req, res) {
-  if (!req.body.name || !req.body.password || !req.body.email) {
-    res.status(400).json({ state: 'F', error: 'Invalid fields' });
-    return;
-  }
-  const current_user = await user.findOne({ where: { email: req.body.email } });
-  if (current_user) {
-    res.status(400).json({ state: 'F', error: 'Email already in use' });
-    return;
-  }
-  const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
-  if(!current_store){
-    res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
-    return;
-  }
-  if(req.body.address && req.body.rol!== 'supervisor'){
-    res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
-    return;
-  }
   try {
+    if (!req.body.name || !req.body.password || !req.body.email) {
+      res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      return;
+    }
+    const current_user = await user.findOne({ where: { email: req.body.email } });
+    const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
+    if (current_user) {
+      res.status(400).json({ state: 'F', error: 'Email already in use' });
+      return;
+    }
+    else if(!current_store){
+      res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
+      return;
+    }
+    else if(req.body.address && req.body.rol !== 'supervisor'){
+      res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
+      return;
+    }
     await user.create({
       id: uuid(),
       name: req.body.name,
@@ -90,21 +90,20 @@ async function update(req, res) {
   }
 
   const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
+  const rol = ((req.body.rol) ? req.body.rol: current_user.rol);
+  const new_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): current_user.storeId);
   
   if(!current_store){
     res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
     return;
   }
-
-  const rol = ((req.body.rol) ? req.body.rol: current_user.rol);
-  const new_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): current_user.storeId);
-
-  console.log('rol :', rol);
-  console.log('email: ', current_user.email);
-  console.log('store: ', new_store);
-  if(rol !== 'supervisor' && new_store){
+  else if(rol !== 'supervisor' && new_store){
     res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
     return;
+  }
+
+  if(rol !== current_user.rol && current_user.rol === 'supervisor'){
+    current_user.storeId = null;
   }
 
   try {
@@ -141,6 +140,7 @@ async function udelete(req, res) {
         email: req.body.email,
       },
     });
+
     res.status(200).json({
       state: 'OK',
     });
