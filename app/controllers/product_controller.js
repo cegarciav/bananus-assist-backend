@@ -27,10 +27,10 @@ async function create(req, res) {
       state: 'OK',
     });
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -41,10 +41,10 @@ async function show_all(req, res) {
     const products = await product.findAll();
     res.status(200).json(products);
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -65,10 +65,10 @@ async function show(req, res) {
     }
     res.status(200).json(current_product);
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -102,10 +102,10 @@ async function update(req, res) {
 
     res.status(200).json({ state: 'OK' });
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -131,10 +131,10 @@ async function pdelete(req, res) {
       state: 'OK',
     });
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }

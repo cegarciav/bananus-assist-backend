@@ -17,10 +17,10 @@ async function spcreate(req, res) {
       state: 'OK',
     });
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -31,10 +31,10 @@ async function spshow_all(req, res) {
     const sale_points = await sale_point.findAll();
     res.status(200).json(sale_points);
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -54,10 +54,10 @@ async function spshow(req, res) {
     }
     res.status(200).json(sale_point_id);
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -82,10 +82,10 @@ async function spupdate(req, res) {
 
     res.status(200).json({ state: 'OK' });
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -111,10 +111,10 @@ async function spdelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }

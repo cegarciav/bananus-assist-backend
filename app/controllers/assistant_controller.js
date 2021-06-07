@@ -41,10 +41,10 @@ async function ascreate(req, res) {
       state: 'OK',
     });
     return;
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -90,10 +90,10 @@ async function asdelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
