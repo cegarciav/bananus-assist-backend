@@ -13,6 +13,7 @@ const products = require('./routes/products');
 const technical_chars = require('./routes/technical_chars');
 const sessions = require('./routes/session');
 const assistants = require('./routes/assistants');
+const massive_charge = require('./routes/massive_charge');
 
 const db = require('./models');
 
@@ -36,6 +37,7 @@ app.use('/products', products);
 app.use('/chars', technical_chars);
 app.use('/sessions', sessions);
 app.use('/assistants', assistants);
+app.use('/massive_charge', massive_charge);
 
 const server = http.createServer(app);
 const io = socketio(server, {
