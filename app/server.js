@@ -4,6 +4,7 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const socketio = require('socket.io');
+var fileupload = require("express-fileupload");
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -25,6 +26,7 @@ app.use(cors({
   origin: frontendClient,
   optionsSuccessStatus: 200,
 }));
+app.use(fileupload());
 
 app.use(express.json());
 app.use(require('./controllers/session_controller').check_session);

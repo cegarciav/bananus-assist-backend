@@ -5,20 +5,22 @@ const { uuid } = require('uuidv4');
 
 
 async function create (req, res) {
-  var form = new formidable.IncomingForm();
-  form.parse(req, function(err, fields, files) {
-    var f = files[Object.keys(files)[0]];
-    var workbook = XLSX.readFile(f.path);
+  if(!req.files){
+    res.status(400).json({ state: 'F', error: 'No file uploaded' });
+    return;
+  }
+    var workbook = XLSX.read(req.files.excel.data, {type:'buffer'});
     const workbookSheets = workbook.SheetNames;
     const sheet = workbookSheets[0];
     const dataExcel = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
     const firstRow = dataExcel[0];
-    console.log(firstRow.name);
-    
+    if (!firstRow.name || !firstRow.sku || !firstRow.price || !firstRow.image) {
+      res.status(400).json({ state: 'F', error: 'Column are wrong' });
+      return;
+    }
     dataExcel.forEach( async (row) => {
       try {        
         const last_product = await product.findOne({ where: { sku: row.sku } });
-    
         if (last_product) {
           //res.status(400).json({ state: 'F', error: 'That sku already exists' });
           await product.update({
@@ -42,8 +44,9 @@ async function create (req, res) {
         console.log('error');
       }
     })  
-  });
-  res.send('listo');
+  
+  
+  res.send('ready');
 }
 
 module.exports = {
