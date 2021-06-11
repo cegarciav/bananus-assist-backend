@@ -1,32 +1,33 @@
 const { uuid } = require('uuidv4');
-const { store, user } = require('../models');
+const { device } = require('../models');
 
 // CREATE
 async function screate(req, res) {
   try {
-    if (!req.body.name || !req.body.address) {
+    if (!req.body.centralTabletId ||!req.body.serialNumber ) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
-    const last_store = await store.findOne({ where: { address: req.body.address } });
-
-    if (last_store) {
-      res.status(400).json({ state: 'F', error: "There's another store in the same address" });
+    const last_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
+    if (last_device) {
+      res.status(400).json({ state: 'F', error: "There's another device with the same serial number" });
       return;
     }
-    await store.create({
+
+    await device.create({
       id: uuid(),
-      name: req.body.name,
-      address: req.body.address,
+      serialNumber: req.body.serialNumber,
+      central_tabletId: req.body.centralTabletId,
     });
     res.status(201).json({
       state: 'OK',
     });
     return;
-  } catch{
+  } catch(error){
     res.status(500).json({
       state: 'F',
       error: "Internal server error",
+      message: error
     });
   }
 }
@@ -34,24 +35,14 @@ async function screate(req, res) {
 // READ ALL
 async function sshow_all(req, res) {
   try {
-    const stores = await store.findAll({
-      include: [
-        {
-          model: user,
-          as: 'assistants',
-        },
-        {
-          model: user,
-          as: 'supervisors',
-        },
-      ],
-    });
-    res.status(200).json(stores);
+    const devices = await device.findAll();
+    res.status(200).json(devices);
     return;
-  } catch{
+  } catch(error){
     res.status(500).json({
       state: 'F',
       error: "Internal server error",
+      message: error
     });
   }
 }
@@ -59,28 +50,18 @@ async function sshow_all(req, res) {
 // READ ONE
 async function sshow(req, res) {
   try {
-    if (!req.body.address) {
+    if (!req.body.serialNumber) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
-    const current_store = await store.findOne({
-      where: { address: req.body.address },
-      include: [
-        {
-          model: user,
-          as: 'assistants',
-        },
-        {
-          model: user,
-          as: 'supervisors',
-        },
-      ],
+    const current_device = await device.findOne({
+      where: { serialNumber: req.body.serialNumber }
     });
-    if (!current_store) {
-      res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+    if (!current_device) {
+      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
       return;
     }
-    res.status(200).json(current_store);
+    res.status(200).json(current_device);
     return;
   } catch{
     res.status(500).json({
@@ -93,30 +74,30 @@ async function sshow(req, res) {
 // UPDATE
 async function update(req, res) {
   try {
-    if (!req.body.address) {
+    if (!req.body.serialNumber) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
 
-    const current_store = await store.findOne({ where: { address: req.body.address } });
+    const current_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
 
-    if (!current_store) {
-      res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+    if (!current_device) {
+      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
       return;
     }
 
-    if (req.body.new_address) {
-      const last_store = await store.findOne({ where: { address: req.body.new_address } });
-      if (last_store) {
-        res.status(400).json({ state: 'F', error: 'This address already exist' });
+    if (req.body.new_serialNumber) {
+      const last_device = await device.findOne({ where: { serialNumber: req.body.new_serialNumber } });
+      if (last_device) {
+        res.status(400).json({ state: 'F', error: 'This serial number already exist' });
         return;
       }
     }
 
-    await store.update({
-      name: ((req.body.name) ? req.body.name : current_store.name),
-      address: ((req.body.new_address) ? req.body.new_address : current_store.address),
-    }, { where: { address: req.body.address } });
+    await device.update({
+      serialNumber: ((req.body.new_serialNumber) ? req.body.new_serialNumber : current_device.serialNumber),
+      central_tabletId: ((req.body.centralTabletId) ? req.body.centralTabletId : current_device.central_tabletId),
+    }, { where: { serialNumber: req.body.serialNumber } });
 
     res.status(200).json({ state: 'OK' });
     return;
@@ -131,20 +112,20 @@ async function update(req, res) {
 // DELETE
 async function sdelete(req, res) {
   try {
-    if (!req.body.address) {
+    if (!req.body.serialNumber) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
 
-    const current_store = await store.findOne({ where: { address: req.body.address } });
+    const current_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
 
-    if (!current_store) {
-      res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+    if (!current_device) {
+      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
       return;
     }
-    await store.destroy({
+    await device.destroy({
       where: {
-        address: req.body.address,
+        serialNumber: req.body.serialNumber,
       },
     });
     res.status(200).json({
