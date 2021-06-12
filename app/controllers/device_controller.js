@@ -58,7 +58,7 @@ async function sshow(req, res) {
       where: { serialNumber: req.body.serialNumber }
     });
     if (!current_device) {
-      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
+      res.status(400).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
       return;
     }
     res.status(200).json(current_device);
@@ -82,7 +82,7 @@ async function update(req, res) {
     const current_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
 
     if (!current_device) {
-      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
+      res.status(400).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
       return;
     }
 
@@ -120,7 +120,7 @@ async function sdelete(req, res) {
     const current_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
 
     if (!current_device) {
-      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
+      res.status(400).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
       return;
     }
     await device.destroy({
