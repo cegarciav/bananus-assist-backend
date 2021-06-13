@@ -33,18 +33,27 @@ async function ucreate(req, res) {
     res.status(201).json({
       state: 'OK',
     });
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
+    return;
   }
 }
 
 // READ ALL
 async function ushow_all(req, res) {
-  const users = await user.findAll({ include: store });
-  res.status(200).json(users);
+  try{
+    const users = await user.findAll({ include: store });
+    res.status(200).json(users);
+  } catch{
+    res.status(500).json({
+      state: "F",
+      error: "Internal server error"
+    })
+    return;
+  }
 }
 
 // READ ONE
@@ -53,14 +62,22 @@ async function ushow(req, res) {
     res.status(400).json({ state: 'F', error: 'Invalid fields' });
     return;
   }
-  const current_user = await user.findOne({
-    where: { email: req.body.email },
-    include: [
-      {
-        model: store,
-      },
-    ],
-  });
+  try{
+    const current_user = await user.findOne({
+      where: { email: req.body.email },
+      include: [
+        {
+          model: store,
+        },
+      ],
+    });
+  } catch{
+    res.status(500).json({
+      state:"F",
+      error:"Internal server error"
+    })
+    return;
+  }
   if (!current_user) {
     res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
     return;
@@ -70,43 +87,43 @@ async function ushow(req, res) {
 
 // UPDATE
 async function update(req, res) {
-  if (!req.body.email) {
-    res.status(400).json({ state: 'F', error: 'Invalid fields' });
-    return;
-  }
-
-  const current_user = await user.findOne({ where: { email: req.body.email } });
-
-  if (!current_user) {
-    res.status(400).json({ state: 'F', error: "User's email doesnt exist" });
-    return;
-  }
-  if (req.body.new_email) {
-    const last_user = await user.findOne({ where: { email: req.body.new_email } });
-    if (last_user) {
-      res.status(400).json({ state: 'F', error: 'New email already in use' });
+  try{
+    if (!req.body.email) {
+      res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
-  }
+    
+    const current_user = await user.findOne({ where: { email: req.body.email } });
+    
+    if (!current_user) {
+      res.status(400).json({ state: 'F', error: "User's email doesnt exist" });
+      return;
+    }
+    if (req.body.new_email) {
+      const last_user = await user.findOne({ where: { email: req.body.new_email } });
+      if (last_user) {
+        res.status(400).json({ state: 'F', error: 'New email already in use' });
+        return;
+      }
+    }
 
-  const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
-  const rol = ((req.body.rol) ? req.body.rol: current_user.rol);
-  const new_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): current_user.storeId);
-  
-  if(!current_store){
-    res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
-    return;
-  }
-  else if(rol !== 'supervisor' && new_store){
-    res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
-    return;
-  }
+    const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
+    const rol = ((req.body.rol) ? req.body.rol: current_user.rol);
+    const new_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): current_user.storeId);
+    
+    if(!current_store){
+      res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
+      return;
+    }
+    else if(rol !== 'supervisor' && new_store){
+      res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
+      return;
+    }
 
-  if(rol !== current_user.rol && current_user.rol === 'supervisor'){
-    current_user.storeId = null;
-  }
+    if(rol !== current_user.rol && current_user.rol === 'supervisor'){
+      current_user.storeId = null;
+    }
 
-  try {
     await user.update({
       name: ((req.body.name) ? req.body.name : current_user.name),
       password: ((req.body.password) ? req.body.password : current_user.password),
@@ -116,10 +133,10 @@ async function update(req, res) {
     }, { where: { email: current_user.email } });
 
     res.status(200).json({ state: 'OK' });
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }
@@ -129,12 +146,12 @@ async function udelete(req, res) {
     res.status(400).json({ state: 'F', error: 'Invalid fields' });
     return;
   }
+  try {
   const current_user = await user.findOne({ where: { email: req.body.email } });
   if (!current_user) {
     res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
     return;
   }
-  try {
     await user.destroy({
       where: {
         email: req.body.email,
@@ -144,10 +161,10 @@ async function udelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch (error) {
+  } catch{
     res.status(500).json({
       state: 'F',
-      error,
+      error: "Internal server error",
     });
   }
 }

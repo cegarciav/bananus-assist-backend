@@ -16,6 +16,9 @@ const sessions = require('./routes/session');
 const assistants = require('./routes/assistants');
 const massive_charge = require('./routes/massive_charge');
 
+const central_tablets = require('./routes/central_tablets');
+const devices = require('./routes/devices');
+
 const db = require('./models');
 
 const app = express();
@@ -40,6 +43,8 @@ app.use('/chars', technical_chars);
 app.use('/sessions', sessions);
 app.use('/assistants', assistants);
 app.use('/massive_charge', massive_charge);
+app.use('/central-tablets', central_tablets);
+app.use('/devices', devices);
 
 const server = http.createServer(app);
 const io = socketio(server, {
