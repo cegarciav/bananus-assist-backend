@@ -1,4 +1,14 @@
-'use strict';
+const bcrypt = require('bcrypt');
+
+const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT, 10);
+
+async function buildPasswordHash(instance) {
+  if (instance.changed('password')) {
+    const hash = await bcrypt.hash(instance.password, PASSWORD_SALT);
+    instance.set('password', hash);
+  }
+}
+
 const {
   Model
 } = require('sequelize');
@@ -17,9 +27,17 @@ module.exports = (sequelize, DataTypes) => {
   };
   central_tablet.init({
     serialNumber: DataTypes.STRING,
+    password: DataTypes.STRING,
+    token: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'central_tablet',
   });
+  central_tablet.beforeUpdate(buildPasswordHash);
+  central_tablet.beforeCreate(buildPasswordHash);
+
+  central_tablet.prototype.checkPassword = function checkPassword(password) {
+    return bcrypt.compare(password, this.password);
+  };
   return central_tablet;
 };

@@ -39,6 +39,7 @@ describe('Central Tablet CRUD Testing', () => {
       .send({
         salePointId: salePoint.id,
         serialNumber: '100102312-2139123',
+        password: "12345"
       });
     const centralTablets = await request(app)
       .get('/central-tablets');
@@ -52,6 +53,7 @@ describe('Central Tablet CRUD Testing', () => {
       .send({
         salePointId: salePoint.id,
         serialNumber: '100102312-2139124',
+        password: "12345"
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
@@ -73,6 +75,18 @@ describe('Central Tablet CRUD Testing', () => {
       .post('/central-tablets')
       .send({
         salePointId: salePoint.id,
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating a central tablet because password is not provided', async () => {
+    const res = await request(app)
+      .post('/central-tablets')
+      .send({
+        serialNumber: '100102312-2139124',
+        salePointId: salePoint.id
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');

@@ -40,6 +40,7 @@ describe('device CRUD Testing', () => {
       .send({
         salePointId: salePoint.id,
         serialNumber: '100102312-2139123',
+        password: "12345"
       });
     const centralTablets = await request(app)
       .get('/central-tablets');
@@ -51,6 +52,7 @@ describe('device CRUD Testing', () => {
   .send({
     centralTabletId: centralTablet.id,
     serialNumber: '100102312-2139321',
+    password: "12345"
   });
     const devices = await request(app)
     .get('/devices');
@@ -66,6 +68,7 @@ describe('device CRUD Testing', () => {
       .send({
         centralTabletId: centralTablet.id,
         serialNumber: '100102312-2139324',
+        password: "12345"
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
@@ -87,6 +90,18 @@ describe('device CRUD Testing', () => {
       .post('/devices')
       .send({
         centralTabletId: centralTablet.id,
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating a device because password is not provided', async () => {
+    const res = await request(app)
+      .post('/devices')
+      .send({
+        serialNumber: '100102312-2139324',
+        centralTabletId: centralTablet.id
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
