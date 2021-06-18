@@ -4,6 +4,7 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const socketio = require('socket.io');
+var fileupload = require("express-fileupload");
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -13,6 +14,10 @@ const products = require('./routes/products');
 const technical_chars = require('./routes/technical_chars');
 const sessions = require('./routes/session');
 const assistants = require('./routes/assistants');
+const massive_charge = require('./routes/massive_charge');
+
+const central_tablets = require('./routes/central_tablets');
+const devices = require('./routes/devices');
 
 const db = require('./models');
 
@@ -24,6 +29,7 @@ app.use(cors({
   origin: frontendClient,
   optionsSuccessStatus: 200,
 }));
+app.use(fileupload());
 
 app.use(express.json());
 app.use(require('./controllers/session_controller').check_session);
@@ -36,6 +42,9 @@ app.use('/products', products);
 app.use('/chars', technical_chars);
 app.use('/sessions', sessions);
 app.use('/assistants', assistants);
+app.use('/massive_charge', massive_charge);
+app.use('/central-tablets', central_tablets);
+app.use('/devices', devices);
 
 const server = http.createServer(app);
 const io = socketio(server, {
