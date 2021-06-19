@@ -9,7 +9,6 @@ describe('User CRUD Testing', () => {
       .send({
         name: 'test',
         email: 'test01@test.cl',
-        password: '1233',
       });
     expect(res.statusCode).toEqual(201);
   });

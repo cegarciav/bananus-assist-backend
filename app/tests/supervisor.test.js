@@ -15,7 +15,6 @@ describe('User Supervisor Testing', () => {
       .send({
         name: 'Super Admin',
         email: 'admin@test.cl',
-        password: 'test',
         rol: 'administrator'
       });
 
@@ -27,7 +26,6 @@ describe('User Supervisor Testing', () => {
       .send({
         name: 'Supervisor',
         email: 'super@test.cl',
-        password: 'test',
         rol: 'supervisor'
       });
 
@@ -39,7 +37,6 @@ describe('User Supervisor Testing', () => {
       .send({
         name: 'Assistant',
         email: 'assist@test.cl',
-        password: 'test',
         rol: 'assistant',
       });
 
@@ -64,7 +61,6 @@ describe('User Supervisor Testing', () => {
       .send({
         name: 'Nuevo Administrador',
         email: 'new_admin@test.cl',
-        password: 'test',
         rol: 'administrator',
         address: store,
       });
@@ -79,7 +75,6 @@ describe('User Supervisor Testing', () => {
       .send({
         name: 'Nuevo Asistente',
         email: 'new_assistant@test.cl',
-        password: 'test',
         rol: 'assistant',
         address: store,
       });
@@ -94,7 +89,6 @@ describe('User Supervisor Testing', () => {
       .send({
         name: 'Nuevo Supervisor',
         email: 'new_supervisor@test.cl',
-        password: 'test',
         rol: 'supervisor',
         address: store,
       });
