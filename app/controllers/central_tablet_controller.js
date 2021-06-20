@@ -1,10 +1,11 @@
 const { uuid } = require('uuidv4');
 const { central_tablet } = require('../models');
 
+
 // CREATE
 async function screate(req, res) {
   try {
-    if (!req.body.salePointId ||!req.body.serialNumber ) {
+    if (!req.body.salePointId ||!req.body.serialNumber || !req.body.password) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
@@ -18,6 +19,7 @@ async function screate(req, res) {
       id: uuid(),
       serialNumber: req.body.serialNumber,
       sale_pointId: req.body.salePointId,
+      password: req.body.password
     });
     res.status(201).json({
       state: 'OK',
@@ -97,6 +99,7 @@ async function update(req, res) {
     await central_tablet.update({
       serialNumber: ((req.body.new_serialNumber) ? req.body.new_serialNumber : current_central_tablet.serialNumber),
       sale_pointId: ((req.body.salePointId) ? req.body.salePointId : current_central_tablet.sale_pointId),
+      password: ((req.body.password) ? req.body.password : current_central_tablet.password)
     }, { where: { serialNumber: req.body.serialNumber } });
 
     res.status(200).json({ state: 'OK' });
