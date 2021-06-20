@@ -10,13 +10,13 @@ describe('Session endpoints testing', () => {
       .send({
         name: 'test',
         email: 'test01@test.cl',
-      });
-
-    await request(app)
-      .patch('/users')
-      .send({
-        email: 'test01@test.cl',
-        password: '1233',
+      }).then(()=>{
+        request(app)
+        .patch('/users')
+        .send({
+          email: 'test01@test.cl',
+          password: '1233',
+        });
       });
   });
 
