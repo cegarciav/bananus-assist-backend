@@ -116,7 +116,6 @@ async function update(req, res) {
         return;
       }
     }
-
     const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
     const rol = ((req.body.rol) ? req.body.rol: current_user.rol);
     const new_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): current_user.storeId);
@@ -140,8 +139,7 @@ async function update(req, res) {
       email: ((req.body.new_email) ? req.body.new_email : current_user.email),
       storeId: ((req.body.address) ? current_store.id: current_user.storeId),
       rol: ((req.body.rol) ? req.body.rol: current_user.rol),
-    }, { where: { email: current_user.email } });
-
+    }, { where: { email: current_user.email }, individualHooks:true, });
     res.status(200).json({ state: 'OK' });
   } catch{
     res.status(500).json({

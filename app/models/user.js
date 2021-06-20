@@ -41,8 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'user',
   });
-
-  user.beforeBulkUpdate(buildPasswordHash);
+  
   user.beforeUpdate(buildPasswordHash);
   user.beforeCreate(buildPasswordHash);
   user.beforeDestroy(destroyStoreAssistant);
