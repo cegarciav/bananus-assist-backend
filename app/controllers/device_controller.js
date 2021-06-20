@@ -4,7 +4,7 @@ const { device } = require('../models');
 // CREATE
 async function screate(req, res) {
   try {
-    if (!req.body.centralTabletId ||!req.body.serialNumber ) {
+    if (!req.body.centralTabletId ||!req.body.serialNumber || !req.body.password) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
@@ -18,6 +18,7 @@ async function screate(req, res) {
       id: uuid(),
       serialNumber: req.body.serialNumber,
       central_tabletId: req.body.centralTabletId,
+      password: req.body.password
     });
     res.status(201).json({
       state: 'OK',
@@ -97,6 +98,7 @@ async function update(req, res) {
     await device.update({
       serialNumber: ((req.body.new_serialNumber) ? req.body.new_serialNumber : current_device.serialNumber),
       central_tabletId: ((req.body.centralTabletId) ? req.body.centralTabletId : current_device.central_tabletId),
+      password: ((req.body.password) ? req.body.password : current_device.password)
     }, { where: { serialNumber: req.body.serialNumber } });
 
     res.status(200).json({ state: 'OK' });
