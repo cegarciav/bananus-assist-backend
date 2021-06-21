@@ -21,7 +21,7 @@ describe('Session endpoints testing', () => {
     const stores = await request(app)
       .get('/stores');
 
-    store = stores.body[0];
+    [store] = stores.body;
 
     // Create a central tablet to use its ID in the tests
     await request(app)
@@ -34,7 +34,7 @@ describe('Session endpoints testing', () => {
     const salePoints = await request(app)
       .get('/sale-points');
 
-    sale_point = salePoints.body[0]
+    [sale_point] = salePoints.body;
 
     // Create a central tablet to use its ID in the tests
     await request(app)
@@ -42,25 +42,25 @@ describe('Session endpoints testing', () => {
       .send({
         salePointId: sale_point.id,
         serialNumber: '100102312-2139123',
-        password: "12345"
+        password: '12345',
       });
 
     const centralTablets = await request(app)
       .get('/central-tablets');
-    
-    central_tablet = centralTablets.body[0]
+
+    [central_tablet] = centralTablets.body;
 
     await request(app)
-    .post('/devices')
-    .send({
+      .post('/devices')
+      .send({
         centralTabletId: central_tablet.id,
         serialNumber: '100102312-2139321',
-        password: "12345"
-    });
-        const devices = await request(app)
-        .get('/devices');
+        password: '12345',
+      });
+    const devices = await request(app)
+      .get('/devices');
 
-        device = devices.body[0]
+    [device] = devices.body;
   });
 
   // FAIL CREATE
@@ -95,7 +95,7 @@ describe('Session endpoints testing', () => {
       .post('/sessions/devices')
       .send({
         serialNumber: device.serialNumber,
-        password: "12345",
+        password: '12345',
       });
     expect(res4.statusCode).toEqual(200);
     expect(res4.body.token).toBeTruthy();
@@ -106,7 +106,7 @@ describe('Session endpoints testing', () => {
       .post('/sessions/devices')
       .send({
         serialNumber: central_tablet.serialNumber,
-        password: "12345",
+        password: '12345',
       });
     expect(tablet_session.statusCode).toEqual(200);
     expect(tablet_session.body.token).toBeTruthy();
@@ -128,7 +128,7 @@ describe('Session endpoints testing', () => {
     expect(res5.statusCode).toEqual(400);
   });
   // DELETE
-  it('should delete session', async () => {
+  it('should delete session for a device', async () => {
     const res5 = await request(app)
       .delete('/sessions/devices')
       .send()
@@ -136,7 +136,7 @@ describe('Session endpoints testing', () => {
     expect(res5.statusCode).toEqual(200);
   });
 
-  it('should delete session', async () => {
+  it('should delete session for a central tablet', async () => {
     const res5 = await request(app)
       .delete('/sessions/devices')
       .send()
@@ -145,11 +145,11 @@ describe('Session endpoints testing', () => {
   });
 
   afterAll(async () => {
-    //Delete all devices created 
-    let devices_test = await request(app)
+    // Delete all devices created
+    const devices_test = await request(app)
       .get('/devices');
 
-      devices_test.body.forEach( async (dv) => {
+    devices_test.body.forEach(async (dv) => {
       await request(app)
         .delete('/devices')
         .send({
@@ -157,38 +157,37 @@ describe('Session endpoints testing', () => {
         });
     });
 
-    let central_tablets_test = await request(app)
-    .get('/central-tablets');
+    const central_tablets_test = await request(app)
+      .get('/central-tablets');
 
-    central_tablets_test.forEach( async (ct) => {
-        await request(app)
+    central_tablets_test.forEach(async (ct) => {
+      await request(app)
         .delete('/central-tablets')
         .send({
-            serialNumber: ct.serialNumber
-        })
-    })
+          serialNumber: ct.serialNumber,
+        });
+    });
 
-    let sale_points_test = await request(app)
-    .get('/sale-points');
+    const sale_points_test = await request(app)
+      .get('/sale-points');
 
-    sale_points_test.forEach( async (sp) => {
-        await request(app)
+    sale_points_test.forEach(async (sp) => {
+      await request(app)
         .delete('/sale-points')
         .send({
-            id: sp.id
-        })
-    })
+          id: sp.id,
+        });
+    });
 
-    let stores_test = await request(app)
-    .get('/stores')
+    const stores_test = await request(app)
+      .get('/stores');
 
-    stores_test.forEach( async (st) => {
-        await request(app)
+    stores_test.forEach(async (st) => {
+      await request(app)
         .delete('/stores')
         .send({
-            id: st.id
-        })
-    })
-
+          id: st.id,
+        });
+    });
   });
 });

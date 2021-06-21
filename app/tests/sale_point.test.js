@@ -104,7 +104,7 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.body.error).toEqual("Sale point doesn't exist");
   });
 
-  //UPDATE
+  // UPDATE
   it('should fail updating department because id is not sent', async () => {
     const res = await request(app)
       .patch('/sale-points')
@@ -120,7 +120,7 @@ describe('Sale Point CRUD Testing', () => {
     const res = await request(app)
       .patch('/sale-points')
       .send({
-        id:salePoint.id,
+        id: salePoint.id,
         department: 'New department value',
       });
     expect(res.statusCode).toEqual(200);

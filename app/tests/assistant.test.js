@@ -15,7 +15,7 @@ describe('Assistant Testing', () => {
       .send({
         name: 'Super Admin',
         email: 'admin@test.cl',
-        rol: 'administrator'
+        rol: 'administrator',
       });
 
     administrator = 'admin@test.cl';
@@ -26,7 +26,7 @@ describe('Assistant Testing', () => {
       .send({
         name: 'Supervisor',
         email: 'super@test.cl',
-        rol: 'supervisor'
+        rol: 'supervisor',
       });
 
     supervisor = 'super@test.cl';
@@ -154,14 +154,14 @@ describe('Assistant Testing', () => {
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User is already assistant in the store');
   });
-  
+
   it('should fail unassign store and user not provided', async () => {
     const res = await request(app)
       .delete('/assistants')
       .send({
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual('Invalid fields' );
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail unassign user not provided', async () => {
@@ -171,7 +171,7 @@ describe('Assistant Testing', () => {
         address: store,
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual('Invalid fields' );
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail unassign store not provided', async () => {
@@ -181,7 +181,7 @@ describe('Assistant Testing', () => {
         email: assistant,
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual('Invalid fields' );
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail unassign user not exists', async () => {
@@ -192,7 +192,7 @@ describe('Assistant Testing', () => {
         address: store,
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual("User's email doesnt exist" );
+    expect(res.body.error).toEqual("User's email doesnt exist");
   });
 
   it('should fail unassign store not exists', async () => {
@@ -224,9 +224,9 @@ describe('Assistant Testing', () => {
         address: store,
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual('User is not a store assistant' );
+    expect(res.body.error).toEqual('User is not a store assistant');
   });
-  
+
   afterAll(async () => {
     // Delete all users created
     const users = await request(app)
@@ -247,5 +247,4 @@ describe('Assistant Testing', () => {
         address: 'Fake Street 123',
       });
   });
-
 });

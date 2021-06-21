@@ -9,8 +9,7 @@ let device = null;
 
 describe('device CRUD Testing', () => {
   beforeAll(async () => {
-    
-    // Create a store point to use its ID in the tests
+  // Create a store point to use its ID in the tests
     await request(app)
       .post('/stores')
       .send({
@@ -40,26 +39,24 @@ describe('device CRUD Testing', () => {
       .send({
         salePointId: salePoint.id,
         serialNumber: '100102312-2139123',
-        password: "12345"
+        password: '12345',
       });
     const centralTablets = await request(app)
       .get('/central-tablets');
     [centralTablet] = centralTablets.body;
 
     // Create a device  to use its ID in the tests
-  await request(app)
-  .post('/devices')
-  .send({
-    centralTabletId: centralTablet.id,
-    serialNumber: '100102312-2139321',
-    password: "12345"
-  });
+    await request(app)
+      .post('/devices')
+      .send({
+        centralTabletId: centralTablet.id,
+        serialNumber: '100102312-2139321',
+        password: '12345',
+      });
     const devices = await request(app)
-    .get('/devices');
+      .get('/devices');
     [device] = devices.body;
   });
-
-  
 
   // CREATE
   it('should create a new device', async () => {
@@ -68,7 +65,7 @@ describe('device CRUD Testing', () => {
       .send({
         centralTabletId: centralTablet.id,
         serialNumber: '100102312-2139324',
-        password: "12345"
+        password: '12345',
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
@@ -101,7 +98,7 @@ describe('device CRUD Testing', () => {
       .post('/devices')
       .send({
         serialNumber: '100102312-2139324',
-        centralTabletId: centralTablet.id
+        centralTabletId: centralTablet.id,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -144,10 +141,10 @@ describe('device CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Device serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Device serial number doesn't exist");
   });
 
-  //UPDATE
+  // UPDATE
   it('should fail updating  because serialNumber is not sent', async () => {
     const res = await request(app)
       .patch('/devices')
@@ -186,14 +183,14 @@ describe('device CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Device serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Device serial number doesn't exist");
   });
 
   it('should delete one device', async () => {
     const res = await request(app)
       .delete('/devices')
       .send({
-        serialNumber: '100102312-21391320'
+        serialNumber: '100102312-21391320',
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -204,7 +201,7 @@ describe('device CRUD Testing', () => {
     const devices = await request(app)
       .get('/devices');
 
-      devices.body.forEach(async (sp) => {
+    devices.body.forEach(async (sp) => {
       await request(app)
         .delete('/devices')
         .send({
@@ -219,18 +216,18 @@ describe('device CRUD Testing', () => {
         address: store.address,
       });
 
-      //Delete sale_point created
+    // Delete sale_point created
     await request(app)
-    .delete('/sale-points')
-    .send({
-      id: salePoint.id,
-    });
+      .delete('/sale-points')
+      .send({
+        id: salePoint.id,
+      });
 
-    //Delete central tablet created
+    // Delete central tablet created
     await request(app)
-    .delete('/central-tablets')
-    .send({
-      serialNumber: centralTablet.serialNumber,
-    });
+      .delete('/central-tablets')
+      .send({
+        serialNumber: centralTablet.serialNumber,
+      });
   });
 });

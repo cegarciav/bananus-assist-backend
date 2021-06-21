@@ -6,5 +6,4 @@ const handlers = require('../controllers/massive_charge_controller');
 // CREATE
 router.post('/', handlers.create);
 
-
 module.exports = router;

@@ -1,5 +1,4 @@
 const { assistant, user, store } = require('../models');
-const { uuid } = require('uuidv4');
 
 // CREATE
 async function ascreate(req, res) {
@@ -13,25 +12,30 @@ async function ascreate(req, res) {
     const current_store = await store.findOne({ where: { address: req.body.address } });
     let current_assistant = null;
 
-    if(current_user && current_store){
-      current_assistant = await assistant.findOne({ where: { userId: current_user.id, storeId: current_store.id } });
+    if (current_user && current_store) {
+      current_assistant = await assistant.findOne({
+        where: {
+          userId: current_user.id,
+          storeId: current_store.id,
+        },
+      });
     }
-    
+
     if (!current_user) {
       res.status(400).json({ state: 'F', error: "User's email doesnt exist" });
       return;
     }
-    else if(current_user.rol !== 'assistant'){
-        res.status(400).json({ state: 'F', error: 'User must be an assistant' });
-        return;
-    }    
-    else if(!current_store){
-        res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
-        return;
-    }     
-    else if(current_assistant){
-        res.status(400).json({ state: 'F', error: 'User is already assistant in the store' });
-        return;
+    if (current_user.rol !== 'assistant') {
+      res.status(400).json({ state: 'F', error: 'User must be an assistant' });
+      return;
+    }
+    if (!current_store) {
+      res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
+      return;
+    }
+    if (current_assistant) {
+      res.status(400).json({ state: 'F', error: 'User is already assistant in the store' });
+      return;
     }
     await assistant.create({
       storeId: current_store.id,
@@ -41,10 +45,10 @@ async function ascreate(req, res) {
       state: 'OK',
     });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -53,33 +57,37 @@ async function ascreate(req, res) {
 async function asdelete(req, res) {
   try {
     if (!req.body.address || !req.body.email) {
-        res.status(400).json({ state: 'F', error: 'Invalid fields' });
-        return;
+      res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      return;
     }
     const current_user = await user.findOne({ where: { email: req.body.email } });
     const current_store = await store.findOne({ where: { address: req.body.address } });
     let current_assistant = null;
 
-    if(current_user && current_store){
-      current_assistant = await assistant.findOne({ where: { userId: current_user.id, storeId: current_store.id } });
+    if (current_user && current_store) {
+      current_assistant = await assistant.findOne({
+        where: {
+          userId: current_user.id,
+          storeId: current_store.id,
+        },
+      });
     }
 
     if (!current_user) {
       res.status(400).json({ state: 'F', error: "User's email doesnt exist" });
       return;
     }
-    else if(current_user.rol !== 'assistant'){
-        res.status(400).json({ state: 'F', error: 'User must be an assistant' });
-        return;
-    } 
-    else if(!current_store){
-        res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
-        return;
+    if (current_user.rol !== 'assistant') {
+      res.status(400).json({ state: 'F', error: 'User must be an assistant' });
+      return;
     }
-
-    else if(!current_assistant){
-        res.status(400).json({ state: 'F', error: 'User is not a store assistant' });
-        return;
+    if (!current_store) {
+      res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
+      return;
+    }
+    if (!current_assistant) {
+      res.status(400).json({ state: 'F', error: 'User is not a store assistant' });
+      return;
     }
     await assistant.destroy({
       where: {
@@ -90,17 +98,15 @@ async function asdelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
-
 
 module.exports = {
   create: ascreate,
   delete: asdelete,
 };
-

@@ -23,10 +23,10 @@ async function screate(req, res) {
       state: 'OK',
     });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -48,10 +48,10 @@ async function sshow_all(req, res) {
     });
     res.status(200).json(stores);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -82,10 +82,10 @@ async function sshow(req, res) {
     }
     res.status(200).json(current_store);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -120,10 +120,10 @@ async function update(req, res) {
 
     res.status(200).json({ state: 'OK' });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -150,10 +150,10 @@ async function sdelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }

@@ -17,10 +17,10 @@ async function spcreate(req, res) {
       state: 'OK',
     });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -31,10 +31,10 @@ async function spshow_all(req, res) {
     const sale_points = await sale_point.findAll();
     res.status(200).json(sale_points);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -54,10 +54,10 @@ async function spshow(req, res) {
     }
     res.status(200).json(sale_point_id);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -71,7 +71,7 @@ async function spupdate(req, res) {
     }
     const sale_point_id = await sale_point.findOne({ where: { id: req.body.id } });
     if (!sale_point_id) {
-      res.status(400).json({ state: 'F', error: "Sale point doesnt exist" });
+      res.status(400).json({ state: 'F', error: 'Sale point doesnt exist' });
       return;
     }
 
@@ -82,10 +82,10 @@ async function spupdate(req, res) {
 
     res.status(200).json({ state: 'OK' });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -111,10 +111,10 @@ async function spdelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -122,7 +122,7 @@ async function spdelete(req, res) {
 module.exports = {
   show_all: spshow_all,
   show_one: spshow,
-  update : spupdate,
+  update: spupdate,
   create: spcreate,
   delete: spdelete,
 };

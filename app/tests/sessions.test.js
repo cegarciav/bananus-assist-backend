@@ -5,18 +5,17 @@ const app = require('../server');
 describe('Session endpoints testing', () => {
   let token;
   beforeAll(async () => {
-
     await request(app)
       .post('/users')
       .send({
         name: 'test',
         email: 'test01@test.cl',
-      }); 
+      });
     await request(app)
-        .patch('/users')
-        .send({
-          email: 'test01@test.cl',
-          password: '1233',
+      .patch('/users')
+      .send({
+        email: 'test01@test.cl',
+        password: '1233',
       });
   });
 
