@@ -3,7 +3,43 @@ const faker = require('faker');
 const { user, store } = require('../models');
 const { sendMail } = require('../config/mail.js');
 
-// CREATE
+/**
+ * @swagger
+ * /users:
+ *  post:
+ *    tags:
+ *      - Users
+ *    summary: new user
+ *    description: Allows to create a new user
+ *    operationId: users.create
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - name
+ *              - email
+ *            properties:
+ *              name:
+ *                type: string
+ *              email:
+ *                type: string
+ *                format: email
+ *              address:
+ *                type: string
+ *                description: address of an existing store
+ *              rol:
+ *                type: string
+ *    responses:
+ *      '201':
+ *        description: User created successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '500':
+ *        description: Internal server error
+ */
 async function ucreate(req, res) {
   try {
     if (!req.body.name || !req.body.email) {
@@ -56,7 +92,23 @@ async function ucreate(req, res) {
   }
 }
 
-// READ ALL
+/**
+ * @swagger
+ * /users:
+ *  get:
+ *    tags:
+ *      - Users
+ *    summary: list of users
+ *    description: Allows to retrieve a list of users
+ *    operationId: users.list
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: List of users retrieved successfully
+ *      '500':
+ *        description: Internal server error
+ */
 async function ushow_all(req, res) {
   try {
     const users = await user.findAll({ include: store });
@@ -69,7 +121,35 @@ async function ushow_all(req, res) {
   }
 }
 
-// READ ONE
+/**
+ * @swagger
+ * /users/show:
+ *  post:
+ *    tags:
+ *      - Users
+ *    summary: one user
+ *    description: Allows to retrieve one user
+ *    operationId: users.show
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *    responses:
+ *      '200':
+ *        description: Information of the user retrieved successfully
+ *      '400':
+ *        description: Email not sent or user does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function ushow(req, res) {
   if (!req.body.email) {
     res.status(400).json({ state: 'F', error: 'Invalid fields' });
@@ -97,7 +177,45 @@ async function ushow(req, res) {
   }
 }
 
-// UPDATE
+/**
+ * @swagger
+ * /users:
+ *  patch:
+ *    tags:
+ *      - Users
+ *    summary: edit one user
+ *    description: Allows to modify one user
+ *    operationId: users.modify
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *              new_email:
+ *                type: string
+ *                format: email
+ *              address:
+ *                type: string
+ *                description: address of an existing store
+ *              rol:
+ *                type: string
+ *              password:
+ *                type: string
+ *    responses:
+ *      '200':
+ *        description: User updated successfully
+ *      '400':
+ *        description: Email not sent, user does not exist, or some of the fields sent are not valid
+ *      '500':
+ *        description: Internal server error
+ */
 async function update(req, res) {
   try {
     if (!req.body.email) {
@@ -161,7 +279,36 @@ async function update(req, res) {
     });
   }
 }
-// DELETE
+
+/**
+ * @swagger
+ * /users:
+ *  delete:
+ *    tags:
+ *      - Users
+ *    summary: delete one user
+ *    description: Allows to delete one user
+ *    operationId: users.destroy
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *    responses:
+ *      '200':
+ *        description: User deleted successfully
+ *      '400':
+ *        description: Email not sent or user does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function udelete(req, res) {
   if (!req.body.email) {
     res.status(400).json({ state: 'F', error: 'Invalid fields' });
