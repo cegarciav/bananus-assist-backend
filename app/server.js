@@ -5,6 +5,9 @@ const http = require('http');
 const cors = require('cors');
 const socketio = require('socket.io');
 const fileupload = require('express-fileupload');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const swaggerInfo = require('./swagger.json');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -50,6 +53,17 @@ const server = http.createServer(app);
 const io = socketio(server, {
   cors: true,
 });
+
+const swaggerOptions = {
+  swaggerDefinition: swaggerInfo,
+  apis: [
+    './controllers/*controller.js',
+    './models/*.js',
+  ],
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 io.on('connection', (socket) => {
   socket.on('peticion_asistentes', (sale_point_id) => {
