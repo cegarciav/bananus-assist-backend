@@ -1,10 +1,12 @@
 const { uuid } = require('uuidv4');
 const { user, store, assistant } = require('../models');
+const { sendMail } = require('../config/mail.js');
+const faker = require('faker');
 
 // CREATE
 async function ucreate(req, res) {
   try {
-    if (!req.body.name || !req.body.password || !req.body.email) {
+    if (!req.body.name || !req.body.email) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
@@ -22,13 +24,21 @@ async function ucreate(req, res) {
       res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
       return;
     }
+    
+    const password = faker.internet.password();
+
     await user.create({
       id: uuid(),
       name: req.body.name,
-      password: req.body.password,
+      password: password,
       email: req.body.email,
       storeId: ((current_store)? current_store.id : null),
       rol: req.body.rol,
+    });
+    sendMail(req.body.email,req.body.name, password, function(err,data){
+      if(err){
+        console.log(data);
+      }
     });
     res.status(201).json({
       state: 'OK',
@@ -106,7 +116,6 @@ async function update(req, res) {
         return;
       }
     }
-
     const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
     const rol = ((req.body.rol) ? req.body.rol: current_user.rol);
     const new_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): current_user.storeId);
@@ -130,8 +139,7 @@ async function update(req, res) {
       email: ((req.body.new_email) ? req.body.new_email : current_user.email),
       storeId: ((req.body.address) ? current_store.id: current_user.storeId),
       rol: ((req.body.rol) ? req.body.rol: current_user.rol),
-    }, { where: { email: current_user.email } });
-
+    }, { where: { email: current_user.email }, individualHooks:true, });
     res.status(200).json({ state: 'OK' });
   } catch{
     res.status(500).json({

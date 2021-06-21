@@ -15,7 +15,6 @@ describe('Assistant Testing', () => {
       .send({
         name: 'Super Admin',
         email: 'admin@test.cl',
-        password: 'test',
         rol: 'administrator'
       });
 
@@ -27,7 +26,6 @@ describe('Assistant Testing', () => {
       .send({
         name: 'Supervisor',
         email: 'super@test.cl',
-        password: 'test',
         rol: 'supervisor'
       });
 
@@ -39,7 +37,6 @@ describe('Assistant Testing', () => {
       .send({
         name: 'Assistant',
         email: 'assist@test.cl',
-        password: 'test',
         rol: 'assistant',
       });
 
