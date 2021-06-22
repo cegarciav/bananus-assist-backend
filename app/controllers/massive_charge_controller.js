@@ -5,24 +5,22 @@ const { uuid } = require('uuidv4');
 
 
 async function create (req, res) {
+  console.log(req.files)
   if(!req.files){
     res.status(400).json({ state: 'F', error: 'No file uploaded' });
     return;
   }
 
+
   var workbook = XLSX.read(req.files.excel.data, {type:'buffer'});
   const workbookSheets = workbook.SheetNames;
   const sheet = workbookSheets[0];
   const dataExcel = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
-  const firstRow = dataExcel[0];
-  console.log(firstRow)
   
   var succes = 0;
   var failed = 0;
   var object_failed = [];
 
-  console.log("1")
-  console.log(dataExcel)
   for (const row of dataExcel){
     console.log("2")
     try {        

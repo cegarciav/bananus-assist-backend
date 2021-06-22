@@ -1,6 +1,6 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const { user, device, central_tablet} = require('../models');
+const { user, device, central_tablet, store, sale_point} = require('../models');
 
 async function set_middleware(req, res, next) {
   req.logged = false;
@@ -95,7 +95,13 @@ async function log_in_devices(req, res) {
          {where: {serialNumber: req.body.serialNumber}}) : 
          await central_tablet.update({token : token}, 
           {where: {serialNumber: req.body.serialNumber}}));
-      return res.status(200).json({ state: 'OK', token: token, type: type_device });
+      let tablet_associate = curr_device
+      if (type_device === "device"){
+        tablet_associate = await central_tablet.findOne({where: {id: curr_device.central_tabletId}}) 
+      }
+      let sale_point_associate = await sale_point.findOne({where: {id: tablet_associate.sale_pointId}})
+
+      return res.status(200).json({ state: 'OK', token: token, type: type_device, sale_pointId: sale_point_associate.id, storeId: sale_point_associate.storeId});
     }
     return res.status(400).json({ state: 'F', error: 'Invalid Serial Number or password' });
   } catch{
