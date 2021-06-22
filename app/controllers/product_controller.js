@@ -1,5 +1,5 @@
 const { uuid } = require('uuidv4');
-const { product } = require('../models');
+const { product, technical_char } = require('../models');
 
 // CREATE
 async function create(req, res) {
@@ -39,6 +39,15 @@ async function create(req, res) {
 async function show_all(req, res) {
   try {
     const products = await product.findAll();
+    for (let row of products){
+      let technical_chars = await technical_char.findAll(
+        {
+          attributes:["id", "key", "value", "productId"],
+        where: {
+          productId: row.dataValues.id
+        }})
+      row.dataValues.technical_chars = technical_chars;
+    }
     res.status(200).json(products);
     return;
   } catch{
