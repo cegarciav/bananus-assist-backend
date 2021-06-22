@@ -37,6 +37,7 @@ async function ucreate(req, res) {
     });
     sendMail(req.body.email,req.body.name, password, function(err,data){
       if(err){
+        console.log("Error sending mail...")
         console.log(data);
       }
     });

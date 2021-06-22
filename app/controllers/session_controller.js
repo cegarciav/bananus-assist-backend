@@ -58,7 +58,7 @@ async function log_in_user(req, res) {
       const token = jwt.sign(req.body.email, process.env.JWT_SECRET);
       await user.update({ token: token },
         { where: { email: req.body.email } });
-      return res.status(200).json({ state: 'OK', token });
+      return res.status(200).json({ state: 'OK', token: token, rol: curr_user.rol });
     }
     return res.status(400).json({ state: 'F', error: 'Invalid email or password' });
   } catch{
