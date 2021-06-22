@@ -40,13 +40,7 @@ async function show_all(req, res) {
   try {
     const products = await product.findAll();
     for (let row of products){
-      let technical_chars = await technical_char.findAll(
-        {
-          attributes:["id", "key", "value", "productId"],
-        where: {
-          productId: row.dataValues.id
-        }})
-      row.dataValues.technical_chars = technical_chars;
+      row.dataValues.technical_chars = await search_tech_chars(row.dataValues.id);
     }
     res.status(200).json(products);
     return;
@@ -66,12 +60,13 @@ async function show(req, res) {
       return;
     }
 
-    const current_product = await product.findOne({ where: { sku: req.body.sku } });
+    let current_product = await product.findOne({ where: { sku: req.body.sku } });
 
     if (!current_product) {
       res.status(400).json({ state: 'F', error: "Product doesn't exist" });
       return;
     }
+    current_product.dataValues.technical_chars = await search_tech_chars(current_product.id);
     res.status(200).json(current_product);
     return;
   } catch{
@@ -146,6 +141,15 @@ async function pdelete(req, res) {
       error: "Internal server error",
     });
   }
+}
+async function search_tech_chars(product_id){
+  let technical_chars = await technical_char.findAll(
+    {
+      attributes:["id", "key", "value", "productId"],
+    where: {
+      productId: product_id
+    }})
+  return technical_chars
 }
 
 module.exports = {
