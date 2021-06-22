@@ -1,17 +1,18 @@
 const { uuid } = require('uuidv4');
-const { central_tablet } = require('../models');
+const { central_tablet, device } = require('../models');
 
 
 // CREATE
 async function screate(req, res) {
   try {
-    if (!req.body.salePointId ||!req.body.serialNumber || !req.body.password) {
+    if (!req.body.salePointId || !req.body.serialNumber || !req.body.password) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
     const last_central_tablet = await central_tablet.findOne({ where: { serialNumber: req.body.serialNumber } });
-    if (last_central_tablet) {
-      res.status(400).json({ state: 'F', error: "There's another central tablet with the same serial number" });
+    let last_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
+    if (last_central_tablet || last_device) {
+      res.status(400).json({ state: 'F', error: "There's another central tablet or device with the same serial number" });
       return;
     }
 
