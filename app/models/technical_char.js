@@ -5,9 +5,23 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class technical_char extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     technical char:
+     *       type: object
+     *       required:
+     *         - id
+     *         - key
+     *         - value
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         key:
+     *           type: string
+     *         value:
+     *           type: string
      */
     static associate(models) {
       this.belongsTo(models.product);

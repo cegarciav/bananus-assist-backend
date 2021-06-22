@@ -5,9 +5,20 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class sale_point extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     sale point:
+     *       type: object
+     *       required:
+     *         - id
+     *         - department
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         department:
+     *           type: string
      */
     static associate(models) {
       this.belongsTo(models.store);

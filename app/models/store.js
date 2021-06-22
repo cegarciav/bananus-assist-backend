@@ -8,9 +8,21 @@ async function destroyStoreAssistant(instance) {
 module.exports = (sequelize, DataTypes) => {
   class store extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     store:
+     *       type: object
+     *       required:
+     *         - id
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         name:
+     *           type: string
+     *         address:
+     *           type: string
      */
     static associate(models) {
       this.belongsToMany(models.user, { through: models.assistant, as: 'assistants' });

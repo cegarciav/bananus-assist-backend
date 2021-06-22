@@ -16,9 +16,24 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class central_tablet extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     central tablet:
+     *       type: object
+     *       required:
+     *         - id
+     *         - serialNumber
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         serialNumber:
+     *           type: string
+     *         password:
+     *           type: string
+     *         token:
+     *           type: string
      */
     static associate(models) {
       this.belongsTo(models.sale_point, { foreignKey: 'sale_pointId' });
