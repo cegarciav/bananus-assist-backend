@@ -1,6 +1,39 @@
 const { assistant, user, store } = require('../models');
 
-// CREATE
+/**
+ * @swagger
+ * /assistants:
+ *  post:
+ *    tags:
+ *      - Assistants
+ *    summary: new assistant
+ *    description: Allows to assign an assistant to a given store
+ *    operationId: assistants.create
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - address
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *                description: email of an existing user
+ *              address:
+ *                type: string
+ *                description: address of an existing store
+ *    responses:
+ *      '201':
+ *        description: Assistant created successfully
+ *      '400':
+ *        description: Email or address not valid or missing
+ *      '500':
+ *        description: Internal server error
+ */
 async function ascreate(req, res) {
   try {
     if (!req.body.address || !req.body.email) {
@@ -53,7 +86,42 @@ async function ascreate(req, res) {
   }
 }
 
-// DELETE
+/**
+ * @swagger
+ * /assistants:
+ *  delete:
+ *    tags:
+ *      - Assistants
+ *    summary: delete one assistant
+ *    description: Allows to delete one assistant
+ *    operationId: assistants.destroy
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - address
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *                description: email of an existing user
+ *              address:
+ *                type: string
+ *                description: address of an existing store
+ *    responses:
+ *      '200':
+ *        description: Assistant deleted successfully
+ *      '400':
+ *        description: Email or address not valid or missing
+ *      '404':
+ *        description: User is not an assistant of the given store
+ *      '500':
+ *        description: Internal server error
+ */
 async function asdelete(req, res) {
   try {
     if (!req.body.address || !req.body.email) {
@@ -86,7 +154,7 @@ async function asdelete(req, res) {
       return;
     }
     if (!current_assistant) {
-      res.status(400).json({ state: 'F', error: 'User is not a store assistant' });
+      res.status(404).json({ state: 'F', error: 'User is not a store assistant' });
       return;
     }
     await assistant.destroy({

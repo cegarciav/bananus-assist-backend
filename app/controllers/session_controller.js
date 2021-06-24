@@ -43,6 +43,38 @@ async function set_middleware(req, res, next) {
   return next();
 }
 
+/**
+ * @swagger
+ * /sessions:
+ *  post:
+ *    tags:
+ *      - Users
+ *    summary: log in
+ *    description: Allows a user to log in the application
+ *    operationId: users.login
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - email
+ *              - password
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *              password:
+ *                type: string
+ *    responses:
+ *      '200':
+ *        description: User logged-in successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '500':
+ *        description: Internal server error
+ */
 async function log_in_user(req, res) {
   try {
     if (!req.body.email || !req.body.password) {
@@ -68,6 +100,33 @@ async function log_in_user(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /sessions:
+ *  delete:
+ *    tags:
+ *      - Users
+ *    summary: log out
+ *    description: Allows a user to log out the application
+ *    operationId: users.logout
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *    responses:
+ *      '200':
+ *        description: User logged-out successfully
+ *      '500':
+ *        description: Internal server error
+ */
 async function log_out_user(req, res) {
   try {
     await user.update({ token: null }, { where: { email: req.email } });
@@ -78,6 +137,39 @@ async function log_out_user(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /sessions/devices:
+ *  post:
+ *    tags:
+ *      - Devices
+ *      - Central Tablets
+ *    summary: log in
+ *    description: Allows a device or central tablet to log in the application
+ *    operationId: devices.login
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *              - password
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *              password:
+ *                type: string
+ *    responses:
+ *      '200':
+ *        description: Device or Central Tablet logged-in successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '500':
+ *        description: Internal server error
+ */
 async function log_in_devices(req, res) {
   try {
     if (!req.body.serialNumber || !req.body.password) {
@@ -115,6 +207,34 @@ async function log_in_devices(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /sessions/devices:
+ *  delete:
+ *    tags:
+ *      - Devices
+ *      - Central Tablets
+ *    summary: log out
+ *    description: Allows a device or central tablet to log out the application
+ *    operationId: devices.logout
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *    responses:
+ *      '200':
+ *        description: Device or Central Tablet logged-out successfully
+ *      '500':
+ *        description: Internal server error
+ */
 async function log_out_devices(req, res) {
   const curr_device = ((req.device === 'device') ? device : central_tablet);
   try {
