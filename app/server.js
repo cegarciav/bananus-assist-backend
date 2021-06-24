@@ -45,7 +45,7 @@ app.use('/products', products);
 app.use('/chars', technical_chars);
 app.use('/sessions', sessions);
 app.use('/assistants', assistants);
-app.use('/massive_charge', massive_charge);
+app.use('/massive-charge', massive_charge);
 app.use('/central-tablets', central_tablets);
 app.use('/devices', devices);
 
