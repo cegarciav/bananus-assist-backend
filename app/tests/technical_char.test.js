@@ -36,25 +36,11 @@ describe('Technical Characteristic CRUD Testing', () => {
   });
 
   // CREATE
-  it('should create a new technical char for a product', async () => {
-    const res = await request(app)
-      .post('/chars')
-      .send({
-        productId: product.id,
-        key: 'some random new key',
-        value: 'some random new value',
-      });
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.state).toEqual('OK');
-  });
 
-  it('should fail creating a new technical char because productId is not provided', async () => {
+  it('should fail creating a new technical char because fields not provided', async () => {
     const res = await request(app)
       .post('/chars')
-      .send({
-        key: 'some random new key',
-        value: 'some random new value',
-      });
+      .send();
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
@@ -72,6 +58,68 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.body.error).toEqual('Invalid fields');
   });
 
+  it('should fail creating a new technical char because value is not provided', async () => {
+    const res = await request(app)
+      .post('/chars')
+      .send({
+        productId: product.id,
+        key: 'some random new key',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating a new technical char because productId is not provided', async () => {
+    const res = await request(app)
+      .post('/chars')
+      .send({
+        key: 'some random new key',
+        value: 'some random new value',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating a new technical char because productId not exist', async () => {
+    const res = await request(app)
+      .post('/chars')
+      .send({
+        productId: 99999999999,
+        key: 'some random new key',
+        value: 'some random new value',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Product doesn\'t exist');
+  });
+
+  it('should create a new technical char for a product', async () => {
+    const res = await request(app)
+      .post('/chars')
+      .send({
+        productId: product.id,
+        key: 'some random new key',
+        value: 'some random new value',
+      });
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.state).toEqual('OK');
+  });
+
+  it('should fail creating a new technical char because already exists', async () => {
+    const res = await request(app)
+      .post('/chars')
+      .send({
+        productId: product.id,
+        key: 'some random new key',
+        value: 'some random new value',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Technical characteristic of product already exist');
+  });
+
   // READ ALL
   it('should read all technical chars', async () => {
     const res = await request(app)
@@ -80,17 +128,6 @@ describe('Technical Characteristic CRUD Testing', () => {
   });
 
   // READ ONE
-  it('should read one technical char', async () => {
-    const res = await request(app)
-      .post('/chars/show')
-      .send({
-        id: technicalChar.id,
-      });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.id).toEqual(technicalChar.id);
-    expect(res.body.productId).toEqual(product.id);
-    expect(res.body.key).toEqual('some random key');
-  });
 
   it('should fail reading one technical char because id is not sent', async () => {
     const res = await request(app)
@@ -112,7 +149,20 @@ describe('Technical Characteristic CRUD Testing', () => {
     expect(res.body.error).toEqual("Technical characteristic doesn't exist");
   });
 
+  it('should read one technical char', async () => {
+    const res = await request(app)
+      .post('/chars/show')
+      .send({
+        id: technicalChar.id,
+      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.id).toEqual(technicalChar.id);
+    expect(res.body.productId).toEqual(product.id);
+    expect(res.body.key).toEqual('some random key');
+  });
+
   // UPDATE
+
   it('should fail updating the value because id is not sent', async () => {
     const res = await request(app)
       .patch('/chars')
