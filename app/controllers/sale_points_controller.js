@@ -1,5 +1,5 @@
 const { uuid } = require('uuidv4');
-const { sale_point } = require('../models');
+const { sale_point, store } = require('../models');
 
 // CREATE
 async function spcreate(req, res) {
@@ -8,6 +8,17 @@ async function spcreate(req, res) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
+    const current_store = await store.findOne({ where: { id: req.body.storeId } });
+    if(!current_store){
+      res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
+      return;
+    }
+    const current_sale_point = await sale_point.findOne({where:{storeId: req.body.storeId, department: req.body.department}})
+    if(current_sale_point){
+      res.status(400).json({ state: 'F', error: 'Sale point already exist' });
+      return;
+    }
+
     await sale_point.create({
       id: uuid(),
       storeId: req.body.storeId,
@@ -72,6 +83,20 @@ async function spupdate(req, res) {
     const sale_point_id = await sale_point.findOne({ where: { id: req.body.id } });
     if (!sale_point_id) {
       res.status(400).json({ state: 'F', error: "Sale point doesnt exist" });
+      return;
+    }
+    const current_store = ((req.body.storeId) ? await store.findOne({ where: { id: req.body.storeId} }): true);
+    if(!current_store){
+      res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
+      return;
+    }
+
+    const store = ((req.body.storeId) ? req.body.storeId : sale_point_id.storeId);
+    const depart = ((req.body.department) ? req.body.department : sale_point_id.department);
+    const last_sale_point = sale_point.findAll({ where: { storeId:store, department : depart } });
+
+    if(last_sale_point.length > 1){
+      res.status(400).json({ state: 'F', error: 'Sale point already exist' });
       return;
     }
 

@@ -68,11 +68,11 @@ async function ushow_all(req, res) {
 
 // READ ONE
 async function ushow(req, res) {
-  if (!req.body.email) {
+  try {
+    if (!req.body.email) {
     res.status(400).json({ state: 'F', error: 'Invalid fields' });
     return;
-  }
-  try{
+    }
     const current_user = await user.findOne({
       where: { email: req.body.email },
       include: [
@@ -81,19 +81,18 @@ async function ushow(req, res) {
         },
       ],
     });
+    if (!current_user) {
+      res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
+      return;
+    }
+    res.status(200).json(current_user);
+    return;
   } catch{
     res.status(500).json({
-      state:"F",
-      error:"Internal server error"
-    })
-    return;
-  }
-  if (!current_user) {
-    res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
-    return;
-  }
-  res.status(200).json(current_user);
-}
+      state: 'F',
+      error: "Internal server error",
+    });
+  }}
 
 // UPDATE
 async function update(req, res) {
