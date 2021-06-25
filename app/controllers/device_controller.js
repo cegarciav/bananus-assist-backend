@@ -93,7 +93,10 @@ async function update(req, res) {
       const last_device = await device.findOne({
         where: { serialNumber: req.body.new_serialNumber },
       });
-      if (last_device) {
+      const last_central_tablet = await central_tablet.findOne({
+        where: { serialNumber: req.body.new_serialNumber },
+      });
+      if (last_device || last_central_tablet) {
         res.status(400).json({ state: 'F', error: 'This serial number already exist' });
         return;
       }
