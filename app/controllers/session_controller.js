@@ -1,6 +1,11 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const { user, device, central_tablet } = require('../models');
+const {
+  user,
+  device,
+  central_tablet,
+  sale_point,
+} = require('../models');
 
 async function set_middleware(req, res, next) {
   req.logged = false;
@@ -63,7 +68,6 @@ async function log_in_user(req, res) {
       return;
     }
     res.status(400).json({ state: 'F', error: 'Invalid email or password' });
-    return;
   } catch (e) {
     res.status(500).json({ state: 'F', error: 'Internal server error' });
   }
@@ -72,9 +76,10 @@ async function log_in_user(req, res) {
 async function log_out_user(req, res) {
   try {
     await user.update({ token: null }, { where: { email: req.email } });
-    return res.status(200).json({ state: 'OK' });
+    res.status(200).json({ state: 'OK' });
+    return;
   } catch (e) {
-    return res.status(500).json({ state: 'F', error: 'Internal server error' });
+    res.status(500).json({ state: 'F', error: 'Internal server error' });
   }
 }
 
@@ -98,11 +103,29 @@ async function log_in_devices(req, res) {
     if (curr_device && match) {
       const token = jwt.sign(req.body.serialNumber, process.env.JWT_SECRET);
       if (type_device === 'device') {
-        await device.update({ token }, { where: { serialNumber: req.body.serialNumber } });
+        await device.update({ token },
+          { where: { serialNumber: req.body.serialNumber } });
       } else {
-        await central_tablet.update({ token }, { where: { serialNumber: req.body.serialNumber } });
+        await central_tablet.update({ token },
+          { where: { serialNumber: req.body.serialNumber } });
       }
-      res.status(200).json({ state: 'OK', token, type: type_device });
+      let tablet_associate = curr_device;
+      if (type_device === 'device') {
+        tablet_associate = await central_tablet.findOne({
+          where: { id: curr_device.central_tabletId },
+        });
+      }
+      const sale_point_associate = await sale_point.findOne({
+        where: { id: tablet_associate.sale_pointId },
+      });
+
+      res.status(200).json({
+        state: 'OK',
+        token,
+        type: type_device,
+        sale_pointId: sale_point_associate.id,
+        storeId: sale_point_associate.storeId,
+      });
       return;
     }
     res.status(400).json({ state: 'F', error: 'Invalid Serial Number or password' });
