@@ -106,7 +106,10 @@ async function update(req, res) {
       serialNumber: req.body.new_serialNumber || current_device.serialNumber,
       central_tabletId: req.body.centralTabletId || current_device.central_tabletId,
       password: req.body.password || current_device.password,
-    }, { where: { serialNumber: req.body.serialNumber } });
+    }, {
+      where: { serialNumber: req.body.serialNumber },
+      individualHooks: true,
+    });
 
     res.status(200).json({ state: 'OK' });
     return;

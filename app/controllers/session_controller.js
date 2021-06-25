@@ -64,7 +64,7 @@ async function log_in_user(req, res) {
       const token = jwt.sign(req.body.email, process.env.JWT_SECRET);
       await user.update({ token },
         { where: { email: req.body.email } });
-      res.status(200).json({ state: 'OK', token });
+      res.status(200).json({ state: 'OK', token, rol: curr_user.rol });
       return;
     }
     res.status(400).json({ state: 'F', error: 'Invalid email or password' });
@@ -97,7 +97,7 @@ async function log_in_devices(req, res) {
     });
 
     const curr_device = curr_normal_device || curr_central_device;
-    const type_device = ((curr_normal_device) ? 'device' : 'central');
+    const type_device = curr_normal_device ? 'device' : 'central';
 
     const match = ((curr_device) ? await curr_device.checkPassword(req.body.password) : false);
     if (curr_device && match) {
@@ -138,9 +138,9 @@ async function log_out_devices(req, res) {
   const curr_device = ((req.device === 'device') ? device : central_tablet);
   try {
     await curr_device.update({ token: null }, { where: { serialNumber: req.serialNumber } });
-    return res.status(200).json({ state: 'OK' });
+    res.status(200).json({ state: 'OK' });
   } catch (e) {
-    return res.status(500).json({ state: 'F', error: 'Internal server error' });
+    res.status(500).json({ state: 'F', error: 'Internal server error' });
   }
 }
 
@@ -160,16 +160,18 @@ async function only_unlogged(req, res, next) {
 
 async function only_user(req, res, next) {
   if (req.email) {
-    return next();
+    next();
+    return;
   }
-  return res.status(400).json({ state: 'F', error: 'Only users can do this action' });
+  res.status(400).json({ state: 'F', error: 'Only users can do this action' });
 }
 
 async function only_device(req, res, next) {
   if (req.device && req.serialNumber) {
-    return next();
+    next();
+    return;
   }
-  return res.status(400).json({ state: 'F', error: 'Only devices or tablets can do this action' });
+  res.status(400).json({ state: 'F', error: 'Only devices or tablets can do this action' });
 }
 module.exports = {
   check_session: set_middleware,
