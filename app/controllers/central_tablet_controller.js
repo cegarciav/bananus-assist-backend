@@ -1,17 +1,19 @@
 const { uuid } = require('uuidv4');
-const { central_tablet } = require('../models');
-
+const { central_tablet, device } = require('../models');
 
 // CREATE
 async function screate(req, res) {
   try {
-    if (!req.body.salePointId ||!req.body.serialNumber || !req.body.password) {
+    if (!req.body.salePointId || !req.body.serialNumber || !req.body.password) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
-    const last_central_tablet = await central_tablet.findOne({ where: { serialNumber: req.body.serialNumber } });
-    if (last_central_tablet) {
-      res.status(400).json({ state: 'F', error: "There's another central tablet with the same serial number" });
+    const last_central_tablet = await central_tablet.findOne({
+      where: { serialNumber: req.body.serialNumber },
+    });
+    const last_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
+    if (last_central_tablet || last_device) {
+      res.status(400).json({ state: 'F', error: "There's another central tablet or device with the same serial number" });
       return;
     }
 
@@ -19,17 +21,17 @@ async function screate(req, res) {
       id: uuid(),
       serialNumber: req.body.serialNumber,
       sale_pointId: req.body.salePointId,
-      password: req.body.password
+      password: req.body.password,
     });
     res.status(201).json({
       state: 'OK',
     });
     return;
-  } catch(error){
+  } catch (error) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
-      message: error
+      error: 'Internal server error',
+      message: error,
     });
   }
 }
@@ -40,11 +42,11 @@ async function sshow_all(req, res) {
     const central_tablets = await central_tablet.findAll();
     res.status(200).json(central_tablets);
     return;
-  } catch(error){
+  } catch (error) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
-      message: error
+      error: 'Internal server error',
+      message: error,
     });
   }
 }
@@ -57,7 +59,7 @@ async function sshow(req, res) {
       return;
     }
     const current_central_tablet = await central_tablet.findOne({
-      where: { serialNumber: req.body.serialNumber }
+      where: { serialNumber: req.body.serialNumber },
     });
     if (!current_central_tablet) {
       res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
@@ -65,10 +67,10 @@ async function sshow(req, res) {
     }
     res.status(200).json(current_central_tablet);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -81,7 +83,9 @@ async function update(req, res) {
       return;
     }
 
-    const current_central_tablet = await central_tablet.findOne({ where: { serialNumber: req.body.serialNumber } });
+    const current_central_tablet = await central_tablet.findOne({
+      where: { serialNumber: req.body.serialNumber },
+    });
 
     if (!current_central_tablet) {
       res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
@@ -89,25 +93,30 @@ async function update(req, res) {
     }
 
     if (req.body.new_serialNumber) {
-      const last_central_tablet = await central_tablet.findOne({ where: { serialNumber: req.body.new_serialNumber } });
-      if (last_central_tablet) {
+      const last_central_tablet = await central_tablet.findOne({
+        where: { serialNumber: req.body.new_serialNumber },
+      });
+      const last_device = await device.findOne({
+        where: { serialNumber: req.body.new_serialNumber },
+      });
+      if (last_central_tablet || last_device) {
         res.status(400).json({ state: 'F', error: 'This serial number already exist' });
         return;
       }
     }
 
     await central_tablet.update({
-      serialNumber: ((req.body.new_serialNumber) ? req.body.new_serialNumber : current_central_tablet.serialNumber),
-      sale_pointId: ((req.body.salePointId) ? req.body.salePointId : current_central_tablet.sale_pointId),
-      password: ((req.body.password) ? req.body.password : current_central_tablet.password)
+      serialNumber: req.body.new_serialNumber || current_central_tablet.serialNumber,
+      sale_pointId: req.body.salePointId || current_central_tablet.sale_pointId,
+      password: req.body.password || current_central_tablet.password,
     }, { where: { serialNumber: req.body.serialNumber } });
 
     res.status(200).json({ state: 'OK' });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -120,7 +129,9 @@ async function sdelete(req, res) {
       return;
     }
 
-    const current_central_tablet = await central_tablet.findOne({ where: { serialNumber: req.body.serialNumber } });
+    const current_central_tablet = await central_tablet.findOne({
+      where: { serialNumber: req.body.serialNumber },
+    });
 
     if (!current_central_tablet) {
       res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
@@ -134,10 +145,10 @@ async function sdelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }

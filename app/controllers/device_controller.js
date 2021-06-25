@@ -1,34 +1,36 @@
 const { uuid } = require('uuidv4');
-const { device } = require('../models');
+const { device, central_tablet } = require('../models');
 
 // CREATE
 async function screate(req, res) {
   try {
-    if (!req.body.centralTabletId ||!req.body.serialNumber || !req.body.password) {
+    if (!req.body.centralTabletId || !req.body.password) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
     const last_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
-    if (last_device) {
-      res.status(400).json({ state: 'F', error: "There's another device with the same serial number" });
+    const last_central_tablet = await central_tablet.findOne({
+      where: { serialNumber: req.body.serialNumber },
+    });
+    if (last_device || last_central_tablet) {
+      res.status(400).json({ state: 'F', error: "There's another device or central tablet with the same serial number" });
       return;
     }
-
     await device.create({
       id: uuid(),
       serialNumber: req.body.serialNumber,
       central_tabletId: req.body.centralTabletId,
-      password: req.body.password
+      password: req.body.password,
     });
     res.status(201).json({
       state: 'OK',
     });
     return;
-  } catch(error){
+  } catch (error) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
-      message: error
+      error: 'Internal server error',
+      message: error,
     });
   }
 }
@@ -39,11 +41,11 @@ async function sshow_all(req, res) {
     const devices = await device.findAll();
     res.status(200).json(devices);
     return;
-  } catch(error){
+  } catch (error) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
-      message: error
+      error: 'Internal server error',
+      message: error,
     });
   }
 }
@@ -56,7 +58,7 @@ async function sshow(req, res) {
       return;
     }
     const current_device = await device.findOne({
-      where: { serialNumber: req.body.serialNumber }
+      where: { serialNumber: req.body.serialNumber },
     });
     if (!current_device) {
       res.status(400).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
@@ -64,10 +66,10 @@ async function sshow(req, res) {
     }
     res.status(200).json(current_device);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -88,25 +90,30 @@ async function update(req, res) {
     }
 
     if (req.body.new_serialNumber) {
-      const last_device = await device.findOne({ where: { serialNumber: req.body.new_serialNumber } });
-      if (last_device) {
+      const last_device = await device.findOne({
+        where: { serialNumber: req.body.new_serialNumber },
+      });
+      const last_central_tablet = await central_tablet.findOne({
+        where: { serialNumber: req.body.new_serialNumber },
+      });
+      if (last_device || last_central_tablet) {
         res.status(400).json({ state: 'F', error: 'This serial number already exist' });
         return;
       }
     }
 
     await device.update({
-      serialNumber: ((req.body.new_serialNumber) ? req.body.new_serialNumber : current_device.serialNumber),
-      central_tabletId: ((req.body.centralTabletId) ? req.body.centralTabletId : current_device.central_tabletId),
-      password: ((req.body.password) ? req.body.password : current_device.password)
+      serialNumber: req.body.new_serialNumber || current_device.serialNumber,
+      central_tabletId: req.body.centralTabletId || current_device.central_tabletId,
+      password: req.body.password || current_device.password,
     }, { where: { serialNumber: req.body.serialNumber } });
 
     res.status(200).json({ state: 'OK' });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -133,10 +140,10 @@ async function sdelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
