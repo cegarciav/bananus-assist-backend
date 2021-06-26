@@ -91,11 +91,11 @@ async function spupdate(req, res) {
       return;
     }
 
-    const store = ((req.body.storeId) ? req.body.storeId : sale_point_id.storeId);
-    const depart = ((req.body.department) ? req.body.department : sale_point_id.department);
-    const last_sale_point = sale_point.findAll({ where: { storeId:store, department : depart } });
+    const final_store = ((req.body.storeId) ? req.body.storeId : sale_point_id.storeId);
+    const final_department = ((req.body.department) ? req.body.department : sale_point_id.department);
+    const last_sale_point = await sale_point.findAll({ where: { storeId: final_store, department : final_department } });
 
-    if(last_sale_point.length > 1){
+    if(last_sale_point.length > 1 || (last_sale_point.length == 1 && last_sale_point[0].id !== sale_point_id.id)){
       res.status(400).json({ state: 'F', error: 'Sale point already exist' });
       return;
     }
