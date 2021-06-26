@@ -114,7 +114,7 @@ describe('Central Tablet CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("There's another central tablet with the same serial number");
+    expect(res.body.error).toEqual("There's another central tablet or device with the same serial number");
   });
 
   // READ ALL
