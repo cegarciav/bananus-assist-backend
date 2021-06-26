@@ -1,5 +1,5 @@
 const { uuid } = require('uuidv4');
-const { product } = require('../models');
+const { product, technical_char } = require('../models');
 
 // CREATE
 async function create(req, res) {
@@ -27,10 +27,10 @@ async function create(req, res) {
       state: 'OK',
     });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -38,13 +38,18 @@ async function create(req, res) {
 // READ ALL
 async function show_all(req, res) {
   try {
-    const products = await product.findAll();
+    const products = await product.findAll({
+      include: {
+        model: technical_char,
+        attributes: ['id', 'key', 'value', 'productId'],
+      },
+    });
     res.status(200).json(products);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -57,7 +62,13 @@ async function show(req, res) {
       return;
     }
 
-    const current_product = await product.findOne({ where: { sku: req.body.sku } });
+    const current_product = await product.findOne({
+      where: { sku: req.body.sku },
+      include: {
+        model: technical_char,
+        attributes: ['id', 'key', 'value', 'productId'],
+      },
+    });
 
     if (!current_product) {
       res.status(400).json({ state: 'F', error: "Product doesn't exist" });
@@ -65,10 +76,10 @@ async function show(req, res) {
     }
     res.status(200).json(current_product);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -102,10 +113,10 @@ async function update(req, res) {
 
     res.status(200).json({ state: 'OK' });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -131,10 +142,10 @@ async function pdelete(req, res) {
       state: 'OK',
     });
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }

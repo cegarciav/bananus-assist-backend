@@ -1,7 +1,7 @@
 const { uuid } = require('uuidv4');
-const { user, store, assistant } = require('../models');
-const { sendMail } = require('../config/mail.js');
 const faker = require('faker');
+const { user, store } = require('../models');
+const { sendMail } = require('../config/mail.js');
 
 // CREATE
 async function ucreate(req, res) {
@@ -11,58 +11,61 @@ async function ucreate(req, res) {
       return;
     }
     const current_user = await user.findOne({ where: { email: req.body.email } });
-    const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
+    const current_store = (
+      (req.body.address)
+        ? await store.findOne({ where: { address: req.body.address } })
+        : true
+    );
     if (current_user) {
       res.status(400).json({ state: 'F', error: 'Email already in use' });
       return;
     }
-    else if(!current_store){
+    if (!current_store) {
       res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
       return;
     }
-    else if(req.body.address && req.body.rol !== 'supervisor'){
+    if (req.body.address && req.body.rol !== 'supervisor') {
       res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
       return;
     }
-    
+
     const password = faker.internet.password();
 
     await user.create({
       id: uuid(),
       name: req.body.name,
-      password: password,
+      password,
       email: req.body.email,
-      storeId: ((current_store)? current_store.id : null),
+      storeId: ((current_store) ? current_store.id : null),
       rol: req.body.rol,
     });
-    sendMail(req.body.email,req.body.name, password, function(err,data){
-      if(err){
-        console.log(data);
+    sendMail(req.body.email, req.body.name, password, (err, data) => {
+      if (err) {
+        // eslint-disable-next-line no-console
+        console.log('Error sending mail...', data);
       }
     });
     res.status(201).json({
       state: 'OK',
     });
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
-    return;
   }
 }
 
 // READ ALL
 async function ushow_all(req, res) {
-  try{
+  try {
     const users = await user.findAll({ include: store });
     res.status(200).json(users);
-  } catch{
+  } catch (e) {
     res.status(500).json({
-      state: "F",
-      error: "Internal server error"
-    })
-    return;
+      state: 'F',
+      error: 'Internal server error',
+    });
   }
 }
 
@@ -87,23 +90,25 @@ async function ushow(req, res) {
     }
     res.status(200).json(current_user);
     return;
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
-  }}
+  }
+}
+
 
 // UPDATE
 async function update(req, res) {
-  try{
+  try {
     if (!req.body.email) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
-    
+
     const current_user = await user.findOne({ where: { email: req.body.email } });
-    
+
     if (!current_user) {
       res.status(400).json({ state: 'F', error: "User's email doesnt exist" });
       return;
@@ -115,35 +120,43 @@ async function update(req, res) {
         return;
       }
     }
-    const current_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): true);
-    const rol = ((req.body.rol) ? req.body.rol: current_user.rol);
-    const new_store = ((req.body.address) ? await store.findOne({ where: { address: req.body.address } }): current_user.storeId);
-    
-    if(!current_store){
+    const current_store = (
+      (req.body.address)
+        ? await store.findOne({ where: { address: req.body.address } })
+        : true
+    );
+    const rol = req.body.rol || current_user.rol;
+    const new_store = (
+      (req.body.address)
+        ? await store.findOne({ where: { address: req.body.address } })
+        : current_user.storeId
+    );
+
+    if (!current_store) {
       res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
       return;
     }
-    else if(rol !== 'supervisor' && new_store){
+    if (rol !== 'supervisor' && new_store) {
       res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
       return;
     }
 
-    if(rol !== current_user.rol && current_user.rol === 'supervisor'){
+    if (rol !== current_user.rol && current_user.rol === 'supervisor') {
       current_user.storeId = null;
     }
 
     await user.update({
-      name: ((req.body.name) ? req.body.name : current_user.name),
-      password: ((req.body.password) ? req.body.password : current_user.password),
-      email: ((req.body.new_email) ? req.body.new_email : current_user.email),
-      storeId: ((req.body.address) ? current_store.id: current_user.storeId),
-      rol: ((req.body.rol) ? req.body.rol: current_user.rol),
-    }, { where: { email: current_user.email }, individualHooks:true, });
+      name: req.body.name || current_user.name,
+      password: req.body.password || current_user.password,
+      email: req.body.new_email || current_user.email,
+      storeId: ((req.body.address) ? current_store.id : current_user.storeId),
+      rol: req.body.rol || current_user.rol,
+    }, { where: { email: current_user.email }, individualHooks: true });
     res.status(200).json({ state: 'OK' });
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
@@ -154,11 +167,11 @@ async function udelete(req, res) {
     return;
   }
   try {
-  const current_user = await user.findOne({ where: { email: req.body.email } });
-  if (!current_user) {
-    res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
-    return;
-  }
+    const current_user = await user.findOne({ where: { email: req.body.email } });
+    if (!current_user) {
+      res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
+      return;
+    }
     await user.destroy({
       where: {
         email: req.body.email,
@@ -168,10 +181,10 @@ async function udelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch{
+  } catch (e) {
     res.status(500).json({
       state: 'F',
-      error: "Internal server error",
+      error: 'Internal server error',
     });
   }
 }
