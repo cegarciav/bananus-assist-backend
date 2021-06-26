@@ -189,6 +189,26 @@ describe('Session endpoints testing', () => {
     expect(res5.body.error).toEqual('You must be logged to do this');
   });
 
+  it('should fail delete session because device is not an user', async () => {
+    const res5 = await request(app)
+      .delete('/sessions')
+      .send()
+      .set('token', token_device);
+    expect(res5.statusCode).toEqual(400);
+    expect(res5.body.state).toEqual('F');
+    expect(res5.body.error).toEqual('Only users can do this action');
+  });
+
+  it('should fail delete session because central tablet is not an user', async () => {
+    const res5 = await request(app)
+      .delete('/sessions')
+      .send()
+      .set('token', token_central_tablet);
+    expect(res5.statusCode).toEqual(400);
+    expect(res5.body.state).toEqual('F');
+    expect(res5.body.error).toEqual('Only users can do this action');
+  });
+
   it('should delete device session', async () => {
     const res5 = await request(app)
       .delete('/sessions/devices')

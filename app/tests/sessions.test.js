@@ -110,6 +110,16 @@ describe('Session endpoints testing', () => {
     expect(res5.body.error).toEqual('You must be logged to do this');
   });
 
+  it('should fail delete session because user is not a device', async () => {
+    const res5 = await request(app)
+      .delete('/sessions/devices')
+      .send()
+      .set('token', token);
+    expect(res5.statusCode).toEqual(400);
+    expect(res5.body.state).toEqual('F');
+    expect(res5.body.error).toEqual('Only devices or tablets can do this action');
+  });
+
   it('should delete session', async () => {
     const res5 = await request(app)
       .delete('/sessions')
