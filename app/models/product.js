@@ -13,6 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.store);
       this.hasMany(models.technical_char);
+      this.belongsToMany(
+        models.payment_method,
+        {
+          through: models.available_payment_method,
+          foreignKey: 'productId',
+          as: 'payment_methods',
+        },
+      );
     }
   }
   product.init({
