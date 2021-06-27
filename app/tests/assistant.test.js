@@ -15,7 +15,7 @@ describe('Assistant Testing', () => {
       .send({
         name: 'Super Admin',
         email: 'admin@test.cl',
-        rol: 'administrator'
+        rol: 'administrator',
       });
 
     administrator = 'admin@test.cl';
@@ -26,7 +26,7 @@ describe('Assistant Testing', () => {
       .send({
         name: 'Supervisor',
         email: 'super@test.cl',
-        rol: 'supervisor'
+        rol: 'supervisor',
       });
 
     supervisor = 'super@test.cl';
@@ -52,6 +52,8 @@ describe('Assistant Testing', () => {
 
     store = 'Fake Street 123';
   });
+
+  // CREATE
 
   it('should fail assign store and assistant not provided', async () => {
     const res = await request(app)
@@ -154,14 +156,17 @@ describe('Assistant Testing', () => {
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User is already assistant in the store');
   });
-  
+
+  // DELETE
+
   it('should fail unassign store and user not provided', async () => {
     const res = await request(app)
       .delete('/assistants')
       .send({
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual('Invalid fields' );
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail unassign user not provided', async () => {
@@ -171,7 +176,8 @@ describe('Assistant Testing', () => {
         address: store,
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual('Invalid fields' );
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail unassign store not provided', async () => {
@@ -181,7 +187,8 @@ describe('Assistant Testing', () => {
         email: assistant,
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual('Invalid fields' );
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail unassign user not exists', async () => {
@@ -192,7 +199,8 @@ describe('Assistant Testing', () => {
         address: store,
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual("User's email doesnt exist" );
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual("User's email doesnt exist");
   });
 
   it('should fail unassign store not exists', async () => {
@@ -203,7 +211,32 @@ describe('Assistant Testing', () => {
         address: 'Not an address',
       });
     expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Store doesnt exist');
+  });
+
+  it('should fail unassign assign an administrator to a store as assistant', async () => {
+    const res = await request(app)
+      .delete('/assistants')
+      .send({
+        email: administrator,
+        address: store,
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('User must be an assistant');
+  });
+
+  it('should fail unassign assign an supervisor to a store as assistant', async () => {
+    const res = await request(app)
+      .delete('/assistants')
+      .send({
+        email: supervisor,
+        address: store,
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('User must be an assistant');
   });
 
   it('should unassign store  assitant', async () => {
@@ -224,9 +257,10 @@ describe('Assistant Testing', () => {
         address: store,
       });
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toEqual('User is not a store assistant' );
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('User is not a store assistant');
   });
-  
+
   afterAll(async () => {
     // Delete all users created
     const users = await request(app)
@@ -247,5 +281,4 @@ describe('Assistant Testing', () => {
         address: 'Fake Street 123',
       });
   });
-
 });

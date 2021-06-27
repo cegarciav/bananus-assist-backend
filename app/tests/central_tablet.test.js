@@ -1,4 +1,4 @@
-//* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 const request = require('supertest');
 const app = require('../server');
 
@@ -8,7 +8,6 @@ let store = null;
 
 describe('Central Tablet CRUD Testing', () => {
   beforeAll(async () => {
-    
     // Create a store point to use its ID in the tests
     await request(app)
       .post('/stores')
@@ -39,7 +38,7 @@ describe('Central Tablet CRUD Testing', () => {
       .send({
         salePointId: salePoint.id,
         serialNumber: '100102312-2139123',
-        password: "12345"
+        password: '12345',
       });
     const centralTablets = await request(app)
       .get('/central-tablets');
@@ -47,16 +46,14 @@ describe('Central Tablet CRUD Testing', () => {
   });
 
   // CREATE
-  it('should create a new central tablet', async () => {
+  it('should fail creating a central tablet because fields not provided', async () => {
     const res = await request(app)
       .post('/central-tablets')
       .send({
-        salePointId: salePoint.id,
-        serialNumber: '100102312-2139124',
-        password: "12345"
       });
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.state).toEqual('OK');
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail creating a central tablet because salePointId is not provided', async () => {
@@ -64,6 +61,7 @@ describe('Central Tablet CRUD Testing', () => {
       .post('/central-tablets')
       .send({
         serialNumber: '100102312-2139124',
+        password: '12345',
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -75,6 +73,7 @@ describe('Central Tablet CRUD Testing', () => {
       .post('/central-tablets')
       .send({
         salePointId: salePoint.id,
+        password: '12345',
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -86,14 +85,40 @@ describe('Central Tablet CRUD Testing', () => {
       .post('/central-tablets')
       .send({
         serialNumber: '100102312-2139124',
-        salePointId: salePoint.id
+        salePointId: salePoint.id,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
   });
 
+  it('should create a new central tablet', async () => {
+    const res = await request(app)
+      .post('/central-tablets')
+      .send({
+        salePointId: salePoint.id,
+        serialNumber: '100102312-2139124',
+        password: '12345',
+      });
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.state).toEqual('OK');
+  });
+
+  it('should fail create a new central tablet because serial number already in use', async () => {
+    const res = await request(app)
+      .post('/central-tablets')
+      .send({
+        salePointId: salePoint.id,
+        serialNumber: '100102312-2139124',
+        password: '12345',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual("There's another central tablet or device with the same serial number");
+  });
+
   // READ ALL
+
   it('should read all central tablets', async () => {
     const res = await request(app)
       .get('/central-tablets');
@@ -101,16 +126,6 @@ describe('Central Tablet CRUD Testing', () => {
   });
 
   // READ ONE
-  it('should read one central tablet', async () => {
-    const res = await request(app)
-      .post('/central-tablets/show')
-      .send({
-        serialNumber: centralTablet.serialNumber,
-      });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.serialNumber).toEqual(centralTablet.serialNumber);
-    expect(res.body.sale_pointId).toEqual(centralTablet.sale_pointId);
-  });
 
   it('should fail reading one central tablet because serial Number is not sent', async () => {
     const res = await request(app)
@@ -129,10 +144,22 @@ describe('Central Tablet CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Central tablet serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Central tablet serial number doesn't exist");
   });
 
-  //UPDATE
+  it('should read one central tablet', async () => {
+    const res = await request(app)
+      .post('/central-tablets/show')
+      .send({
+        serialNumber: centralTablet.serialNumber,
+      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.serialNumber).toEqual(centralTablet.serialNumber);
+    expect(res.body.sale_pointId).toEqual(centralTablet.sale_pointId);
+  });
+
+  // UPDATE
+
   it('should fail updating  because serialNumber is not sent', async () => {
     const res = await request(app)
       .patch('/central-tablets')
@@ -143,6 +170,29 @@ describe('Central Tablet CRUD Testing', () => {
     expect(res.body.error).toEqual('Invalid fields');
   });
 
+  it('should fail updating  because serialNumber not exist', async () => {
+    const res = await request(app)
+      .patch('/central-tablets')
+      .send({
+        serialNumber: '99999999999',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Central tablet serial number doesn\'t exist');
+  });
+
+  it('should fail updating  because serialNumber already in use', async () => {
+    const res = await request(app)
+      .patch('/central-tablets')
+      .send({
+        serialNumber: centralTablet.serialNumber,
+        new_serialNumber: centralTablet.serialNumber,
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('This serial number already exist');
+  });
+
   it('should update the serialNumber of one central tablet', async () => {
     const res = await request(app)
       .patch('/central-tablets')
@@ -151,9 +201,11 @@ describe('Central Tablet CRUD Testing', () => {
         new_serialNumber: '100102312-2139120',
       });
     expect(res.statusCode).toEqual(200);
+    expect(res.body.state).toEqual('OK');
   });
 
   // DELETE
+
   it('should fail deleting one central tablet because id is not sent', async () => {
     const res = await request(app)
       .delete('/central-tablets')
@@ -171,14 +223,14 @@ describe('Central Tablet CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Central tablet serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Central tablet serial number doesn't exist");
   });
 
   it('should delete one central tablet', async () => {
     const res = await request(app)
       .delete('/central-tablets')
       .send({
-        serialNumber: '100102312-2139124'
+        serialNumber: '100102312-2139124',
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -189,7 +241,7 @@ describe('Central Tablet CRUD Testing', () => {
     const centralTablets = await request(app)
       .get('/central-tablets');
 
-      centralTablets.body.forEach(async (sp) => {
+    centralTablets.body.forEach(async (sp) => {
       await request(app)
         .delete('/central-tablets')
         .send({
@@ -204,12 +256,12 @@ describe('Central Tablet CRUD Testing', () => {
         address: store.address,
       });
 
-      //Delete sale_point created
-      // Delete store created
+    // Delete sale_point created
+    // Delete store created
     await request(app)
-    .delete('/sale-points')
-    .send({
-      id: salePoint.id,
-    });
+      .delete('/sale-points')
+      .send({
+        id: salePoint.id,
+      });
   });
 });

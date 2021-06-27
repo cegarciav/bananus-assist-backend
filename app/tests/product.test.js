@@ -4,17 +4,28 @@ const app = require('../server');
 
 describe('Product CRUD Testing', () => {
   // CREATE
-  it('should create a new product', async () => {
+
+  it('should fail creating fields not provided', async () => {
     const res = await request(app)
       .post('/products')
       .send({
-        name: 'test_product',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating name is not provided', async () => {
+    const res = await request(app)
+      .post('/products')
+      .send({
         sku: 12345678,
         price: 10000,
         image: 'https://www.lapolar.cl/dw/image/v2/BCPP_PRD/on/demandware.static/-/Sites-master-catalog/default/dw1c04210e/images/large/23019272.jpg?sw=1200&sh=1200&sm=fit',
       });
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.state).toEqual('OK');
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail creating sku is not provided', async () => {
@@ -28,6 +39,45 @@ describe('Product CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating price is not provided', async () => {
+    const res = await request(app)
+      .post('/products')
+      .send({
+        name: 'test_product',
+        sku: 12345678,
+        image: 'https://www.lapolar.cl/dw/image/v2/BCPP_PRD/on/demandware.static/-/Sites-master-catalog/default/dw1c04210e/images/large/23019272.jpg?sw=1200&sh=1200&sm=fit',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating image is not provided', async () => {
+    const res = await request(app)
+      .post('/products')
+      .send({
+        name: 'test_product',
+        sku: 12345678,
+        price: 10000,
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should create a new product', async () => {
+    const res = await request(app)
+      .post('/products')
+      .send({
+        name: 'test_product',
+        sku: 12345678,
+        price: 10000,
+        image: 'https://www.lapolar.cl/dw/image/v2/BCPP_PRD/on/demandware.static/-/Sites-master-catalog/default/dw1c04210e/images/large/23019272.jpg?sw=1200&sh=1200&sm=fit',
+      });
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.state).toEqual('OK');
   });
 
   it('should fail creating a new product because sku already exists', async () => {
@@ -45,6 +95,7 @@ describe('Product CRUD Testing', () => {
   });
 
   // READ ALL
+
   it('should read all products', async () => {
     const res = await request(app)
       .get('/products');
@@ -52,16 +103,6 @@ describe('Product CRUD Testing', () => {
   });
 
   // READ ONE
-  it('should read one product', async () => {
-    const res = await request(app)
-      .post('/products/show')
-      .send({
-        sku: 12345678,
-      });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.sku).toEqual(12345678);
-    expect(res.body.name).toEqual('test_product');
-  });
 
   it('should fail reading one product because sku is not sent', async () => {
     const res = await request(app)
@@ -81,6 +122,17 @@ describe('Product CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Product doesn't exist");
+  });
+
+  it('should read one product', async () => {
+    const res = await request(app)
+      .post('/products/show')
+      .send({
+        sku: 12345678,
+      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.sku).toEqual(12345678);
+    expect(res.body.name).toEqual('test_product');
   });
 
   // UPDATE
@@ -161,4 +213,6 @@ describe('Product CRUD Testing', () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
   });
+
+  afterAll(async () => { });
 });

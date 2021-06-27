@@ -15,10 +15,10 @@ describe('User Supervisor Testing', () => {
       .send({
         name: 'Super Admin',
         email: 'admin@test.cl',
-        rol: 'administrator'
+        rol: 'administrator',
       });
 
-      administrator = 'admin@test.cl';
+    administrator = 'admin@test.cl';
 
     // Create a new user supervisor to use in the tests
     await request(app)
@@ -26,7 +26,7 @@ describe('User Supervisor Testing', () => {
       .send({
         name: 'Supervisor',
         email: 'super@test.cl',
-        rol: 'supervisor'
+        rol: 'supervisor',
       });
 
     supervisor = 'super@test.cl';
@@ -40,7 +40,7 @@ describe('User Supervisor Testing', () => {
         rol: 'assistant',
       });
 
-    assistant = 'assist@test.cl'; 
+    assistant = 'assist@test.cl';
 
     // Create a new store to use its ID in the tests
     await request(app)
@@ -53,7 +53,7 @@ describe('User Supervisor Testing', () => {
     store = 'Fake Street 123';
   });
 
-  //CREATE USER WITH STORE
+  // CREATE USER WITH STORE
 
   it('should fail create administrator with store', async () => {
     const res = await request(app)
@@ -66,7 +66,7 @@ describe('User Supervisor Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store' );
+    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });
 
   it('should fail create assistant with store', async () => {
@@ -80,7 +80,21 @@ describe('User Supervisor Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store' );
+    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
+  });
+
+  it('should fail create supervisor because store not exist', async () => {
+    const res = await request(app)
+      .post('/users')
+      .send({
+        name: 'Nuevo Supervisor',
+        email: 'new_supervisor@test.cl',
+        rol: 'supervisor',
+        address: 'Not an address',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Store doesnt exist');
   });
 
   it('should create supervisor with store', async () => {
@@ -93,9 +107,10 @@ describe('User Supervisor Testing', () => {
         address: store,
       });
     expect(res.statusCode).toEqual(201);
+    expect(res.body.state).toEqual('OK');
   });
 
-  //UPDATE USER WITH STORE
+  // UPDATE USER WITH STORE
 
   it('should fail update the store of the administrator', async () => {
     const res = await request(app)
@@ -106,7 +121,7 @@ describe('User Supervisor Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store' );
+    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });
 
   it('should fail update the store of the assistant', async () => {
@@ -118,7 +133,7 @@ describe('User Supervisor Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store' );
+    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });
 
   it('should fail update the store of the supervisor because address doesn\'t exist', async () => {
@@ -141,6 +156,20 @@ describe('User Supervisor Testing', () => {
         address: store,
       });
     expect(res.statusCode).toEqual(200);
+    expect(res.body.state).toEqual('OK');
+  });
+
+  it('should update the store of the administrator if we change the rol to assistant', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send({
+        email: administrator,
+        address: store,
+        rol: 'assistant',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });
 
   it('should update the store of the administrator if we change the rol to supervisor', async () => {
@@ -152,8 +181,8 @@ describe('User Supervisor Testing', () => {
         rol: 'supervisor',
       });
     expect(res.statusCode).toEqual(200);
+    expect(res.body.state).toEqual('OK');
   });
-
 
   afterAll(async () => {
     // Delete all users created
@@ -174,6 +203,5 @@ describe('User Supervisor Testing', () => {
       .send({
         address: store,
       });
-
   });
 });
