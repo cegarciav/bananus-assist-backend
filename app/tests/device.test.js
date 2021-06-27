@@ -158,7 +158,7 @@ describe('device CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Device serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Device serial number doesn't exist");
   });
 
   it('should read one device', async () => {
@@ -192,7 +192,7 @@ describe('device CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Device serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Device serial number doesn't exist");
   });
 
   it('should fail updating  because serialNumber already in use', async () => {
@@ -236,7 +236,7 @@ describe('device CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Device serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Device serial number doesn't exist");
   });
 
   it('should delete one device', async () => {

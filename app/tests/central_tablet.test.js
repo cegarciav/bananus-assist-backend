@@ -144,7 +144,7 @@ describe('Central Tablet CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Central tablet serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Central tablet serial number doesn't exist");
   });
 
   it('should read one central tablet', async () => {
@@ -223,7 +223,7 @@ describe('Central Tablet CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
-    expect(res.body.error).toEqual("Central tablet serial number doesn\'t exist");
+    expect(res.body.error).toEqual("Central tablet serial number doesn't exist");
   });
 
   it('should delete one central tablet', async () => {
