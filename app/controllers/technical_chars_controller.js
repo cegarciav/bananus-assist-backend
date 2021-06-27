@@ -1,5 +1,5 @@
 const { uuid } = require('uuidv4');
-const { technical_char } = require('../models');
+const { technical_char, product } = require('../models');
 
 // CREATE
 async function create(req, res) {
@@ -8,6 +8,24 @@ async function create(req, res) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
+
+    const last_product = await product.findOne({ where: { id: req.body.productId } });
+    if (!last_product) {
+      res.status(400).json({ state: 'F', error: "Product doesn\'t exist" });
+      return;
+    }
+
+    const last_tech_char = await technical_char.findOne({ where: {
+      key: req.body.key,
+      value: req.body.value,
+      productId: req.body.productId
+    }});
+
+    if(last_tech_char){
+      res.status(400).json({ state: 'F', error: 'Technical characteristic of product already exist' });
+      return;
+    }
+
     await technical_char.create({
       id: uuid(),
       key: req.body.key,

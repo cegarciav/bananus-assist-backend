@@ -4,7 +4,7 @@ const { device, central_tablet } = require('../models');
 // CREATE
 async function screate(req, res) {
   try {
-    if (!req.body.centralTabletId || !req.body.password) {
+    if (!req.body.centralTabletId || !req.body.password || !req.body.serialNumber ) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }

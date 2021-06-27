@@ -33,21 +33,22 @@ describe('Sale Point CRUD Testing', () => {
   });
 
   // CREATE
-  it('should create a new sale point', async () => {
+
+  it('should fail creating a sale point because fields not provided', async () => {
     const res = await request(app)
       .post('/sale-points')
-      .send({
-        storeId: store.id,
-        department: 'Another Department',
-      });
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.state).toEqual('OK');
+      .send({});
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid fields');
   });
 
   it('should fail creating a sale point because storeId is not provided', async () => {
     const res = await request(app)
       .post('/sale-points')
-      .send({});
+      .send({
+        department: 'Another Department',
+      });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
@@ -64,6 +65,41 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.body.error).toEqual('Invalid fields');
   });
 
+  it('should fail creating a sale point because store not exists', async () => {
+    const res = await request(app)
+      .post('/sale-points')
+      .send({
+        storeId: 9999999999,
+        department: 'Another Department',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Store doesnt exist');
+  });
+
+  it('should create a new sale point', async () => {
+    const res = await request(app)
+      .post('/sale-points')
+      .send({
+        storeId: store.id,
+        department: 'Another Department',
+      });
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.state).toEqual('OK');
+  });
+
+  it('should fail create a sale point because sale point already exists', async () => {
+    const res = await request(app)
+      .post('/sale-points')
+      .send({
+        storeId: store.id,
+        department: 'Another Department',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Sale point already exist');
+  });
+
   // READ ALL
   it('should read all sale points', async () => {
     const res = await request(app)
@@ -72,18 +108,6 @@ describe('Sale Point CRUD Testing', () => {
   });
 
   // READ ONE
-  it('should read one sale point', async () => {
-    const res = await request(app)
-      .post('/sale-points/show')
-      .send({
-        id: salePoint.id,
-      });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.id).toEqual(salePoint.id);
-    expect(res.body.storeId).toEqual(store.id);
-    expect(res.body.department).toEqual('Some Department');
-  });
-
   it('should fail reading one sale point because id is not sent', async () => {
     const res = await request(app)
       .post('/sale-points/show')
@@ -104,7 +128,20 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.body.error).toEqual("Sale point doesn't exist");
   });
 
-  //UPDATE
+  it('should read one sale point', async () => {
+    const res = await request(app)
+      .post('/sale-points/show')
+      .send({
+        id: salePoint.id,
+      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.id).toEqual(salePoint.id);
+    expect(res.body.storeId).toEqual(store.id);
+    expect(res.body.department).toEqual('Some Department');
+  });
+
+  // UPDATE
+
   it('should fail updating department because id is not sent', async () => {
     const res = await request(app)
       .patch('/sale-points')
@@ -116,11 +153,48 @@ describe('Sale Point CRUD Testing', () => {
     expect(res.body.error).toEqual('Invalid fields');
   });
 
+  it('should fail updating department because id not exists', async () => {
+    const res = await request(app)
+      .patch('/sale-points')
+      .send({
+        id: 99999999999,
+        department: 'New department value',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Sale point doesnt exist');
+  });
+
+  it('should fail updating department because store not exists', async () => {
+    const res = await request(app)
+      .patch('/sale-points')
+      .send({
+        id: salePoint.id,
+        storeId: 99999999999,
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Store doesnt exist');
+  });
+
+  it('should fail updating department because sale point already exists', async () => {
+    const res = await request(app)
+      .patch('/sale-points')
+      .send({
+        id: salePoint.id,
+        storeId: store.id,
+        department: 'Another Department',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Sale point already exist');
+  });
+
   it('should update the department of one sale point', async () => {
     const res = await request(app)
       .patch('/sale-points')
       .send({
-        id:salePoint.id,
+        id: salePoint.id,
         department: 'New department value',
       });
     expect(res.statusCode).toEqual(200);

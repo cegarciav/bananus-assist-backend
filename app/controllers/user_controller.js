@@ -71,11 +71,11 @@ async function ushow_all(req, res) {
 
 // READ ONE
 async function ushow(req, res) {
-  if (!req.body.email) {
+  try {
+    if (!req.body.email) {
     res.status(400).json({ state: 'F', error: 'Invalid fields' });
     return;
-  }
-  try {
+    }
     const current_user = await user.findOne({
       where: { email: req.body.email },
       include: [
@@ -89,6 +89,7 @@ async function ushow(req, res) {
       return;
     }
     res.status(200).json(current_user);
+    return;
   } catch (e) {
     res.status(500).json({
       state: 'F',
@@ -96,6 +97,7 @@ async function ushow(req, res) {
     });
   }
 }
+
 
 // UPDATE
 async function update(req, res) {
