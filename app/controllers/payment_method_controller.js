@@ -199,7 +199,7 @@ async function pdelete(req, res) {
         name: req.body.name,
       },
     });
-    res.status(204);
+    res.status(204).json({});
     return;
   } catch (e) {
     res.status(500).json({
