@@ -105,4 +105,12 @@ describe('payment method CRUD Testing', () => {
       expect(res.statusCode).toEqual(204);
     });
   });
+
+  afterAll(async () => {
+    await request(app)
+      .delete('/payment-methods')
+      .send({
+        name: 'Credit card',
+      });
+  });
 });
