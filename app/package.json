@@ -30,6 +30,7 @@
     "uuid": "^8.2.0",
     "uuidv4": "^6.2.8",
     "xlsx": "^0.17.0"
+
   },
   "devDependencies": {
     "eslint": "^7.26.0",

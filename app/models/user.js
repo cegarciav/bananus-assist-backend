@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsToMany(models.store, { through: models.assistant });
       this.belongsTo(models.store);
+      this.hasMany(models.call, {foreignKey: 'userId'});
     }
   }
   user.init({
