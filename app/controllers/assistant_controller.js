@@ -54,15 +54,6 @@ async function ascreate(req, res) {
 //ACCEPT VIDEOCALL
 async function accept(req, res){
   try{
-    if (!req.body.assistantId){
-      res.status(400).json({ state: 'F', error: 'Invalid fields' });
-      return;
-    }
-    let current_assistant = await user.findOne({where: {id: req.body.assistantId}})
-
-    if(!current_assistant){
-      return res.status(400).json({ state: 'F', error: 'Invalid assistandId' });
-    }
 
     let [today, first_day] = await Interval();
 
@@ -70,7 +61,7 @@ async function accept(req, res){
       date: {
         [Op.between]: [first_day, today]
       },
-      userId: req.body.assistantId
+      userId: req.assistantId
     }})
 
     if(!last_record){
@@ -79,18 +70,16 @@ async function accept(req, res){
         date: today,
         year: today.getFullYear(),
         month: today.getMonth(),
-        userId: req.body.assistantId
+        userId: req.assistantId
       })
-      res.status(200).json({state:"OK"})
-      return
+      return res.status(200).json({state:"OK"})
     }
     await call.update({
       calls: last_record.calls + 1
     }, {where: {
       id: last_record.id
     }})
-    res.status(200).json({state:"OK"})
-    return
+    return res.status(200).json({state:"OK"})
   } catch {
     res.status(500).json({
       state: 'F',

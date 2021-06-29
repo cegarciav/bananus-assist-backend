@@ -19,8 +19,12 @@ describe('Session endpoints testing', () => {
         rol: 'assistant',
       });
 
-    const assistants = await request(app)
-      .get('/users');
+    await request(app)
+        .patch('/users')
+        .send({
+        email: 'assist@test.cl',
+        password: '1233',
+    });
 
     await request(app)
       .post('/users')
@@ -30,38 +34,60 @@ describe('Session endpoints testing', () => {
         rol: 'assistant',
       });
 
+    await request(app)
+        .patch('/users')
+        .send({
+        email: 'assist@test2.cl',
+        password: '1233',
+    });
+
+    await request(app)
+        .post('/sessions')
+        .send({
+        email: 'assist@test.cl',
+        password: '1233',
+    });
+
+
+
+    await request(app)
+        .post('/sessions')
+        .send({
+        email: 'assist@test2.cl',
+        password: '1233',
+    }); 
+
+
+    
+
     const assistants2 = await request(app)
       .get('/users');
     [current_assistant, current_assistant_2] = assistants2.body;
   });
 
   // CREATE
-  it('should fail in accept a new call because fields not sent', async () => {
+  it('should fail in accept a new call because token not send', async () => {
     let res4 = await request(app)
-      .patch('/assistants')
-      .send({});
+      .patch('/assistants').send()
     expect(res4.statusCode).toEqual(400);
     expect(res4.body.state).toEqual('F');
-    expect(res4.body.error).toEqual('Invalid fields');
+    expect(res4.body.error).toEqual('You must be logged to do this');
   });
 
-  it('should fail in accept a new call because assistantId doesnt exists', async () => {
+  it('should fail in accept a new call because token is invalid', async () => {
     let res4 = await request(app)
       .patch('/assistants')
-      .send({
-        assistantId: 'm342h54hj35gj34hg',
-      });
+      .send().set('token', "INVALID-TOKEN");
     expect(res4.statusCode).toEqual(400);
     expect(res4.body.state).toEqual('F');
-    expect(res4.body.error).toEqual('Invalid assistandId');
+    expect(res4.body.error).toEqual('You must be logged to do this');
   });
 
   it('should create a new row on calls table', async () => {
     let res4 = await request(app)
       .patch('/assistants')
-      .send({
-        assistantId: current_assistant.id
-      });
+      .send()
+      .set('token', current_assistant.token);
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
@@ -80,9 +106,8 @@ describe('Session endpoints testing', () => {
   it('should create a new row on calls table', async () => {
     let res4 = await request(app)
       .patch('/assistants')
-      .send({
-        assistantId: current_assistant_2.id
-      });
+      .send()
+      .set('token', current_assistant_2.token);
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
@@ -100,9 +125,8 @@ describe('Session endpoints testing', () => {
   it('should update last row on calls table to 2 calls in this month', async () => {
     let res4 = await request(app)
       .patch('/assistants')
-      .send({
-        assistantId: current_assistant.id
-      });
+      .send()
+      .set('token', current_assistant.token);
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
@@ -121,9 +145,8 @@ describe('Session endpoints testing', () => {
   it('should update last row on calls table to 2 calls in this month', async () => {
     let res4 = await request(app)
       .patch('/assistants')
-      .send({
-        assistantId: current_assistant_2.id
-      });
+      .send()
+      .set('token', current_assistant_2.token);
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
