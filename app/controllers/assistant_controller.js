@@ -1,5 +1,7 @@
-const { assistant, user, store } = require('../models');
+const { assistant, user, store, call } = require('../models');
 const { uuid } = require('uuidv4');
+const { Op } = require("sequelize")
+const Sequelize = require("sequelize")
 
 // CREATE
 async function ascreate(req, res) {
@@ -49,6 +51,107 @@ async function ascreate(req, res) {
   }
 }
 
+//ACCEPT VIDEOCALL
+async function accept(req, res){
+  try{
+    if (!req.body.assistantId){
+      res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      return;
+    }
+    let current_assistant = await user.findOne({where: {id: req.body.assistantId}})
+
+    if(!current_assistant){
+      return res.status(400).json({ state: 'F', error: 'Invalid assistandId' });
+    }
+
+    let [today, first_day] = await Interval();
+
+    let last_record = await call.findOne({where:{
+      date: {
+        [Op.between]: [first_day, today]
+      },
+      userId: req.body.assistantId
+    }})
+
+    if(!last_record){
+      await call.create({
+        calls:1,
+        date: today,
+        year: today.getFullYear(),
+        month: today.getMonth(),
+        userId: req.body.assistantId
+      })
+      res.status(200).json({state:"OK"})
+      return
+    }
+    await call.update({
+      calls: last_record.calls + 1
+    }, {where: {
+      id: last_record.id
+    }})
+    res.status(200).json({state:"OK"})
+    return
+  } catch {
+    res.status(500).json({
+      state: 'F',
+      error: "Internal server error",
+    });
+  }
+}
+//Interval of time since the first day of the month to now.
+async function Interval(){
+  let today = new Date();
+  let first_day = new Date(today.getFullYear(), today.getMonth(), 1)
+  return [today, first_day]
+}
+
+//KPI: Number of calls per month, per assistant
+async function calls_per_month(req, res){
+  try{
+    if (!req.body.assistantId){
+      res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      return;
+    }
+    let current_assistant = await user.findOne({where: {id: req.body.assistantId}})
+    if(!current_assistant){
+      return res.status(400).json({ state: 'F', error: 'Invalid assistandId' });
+    }
+    let kpis = await call.findAll({attributes: { exclude: ['createdAt', 'updatedAt', 'id'] },where: {
+      userId: req.body.assistantId
+    }, order: [['date', 'DESC']]})
+
+    res.status(200).json({data: kpis})
+  } catch {
+    res.status(500).json({
+      state: 'F',
+      error: "Internal server error",
+    });
+  }
+}
+
+//KPI Total calls per month, GLOBAL
+
+async function calls_per_month_globally(req, res){
+  try{
+    let kpi = await call.findAll({
+      attributes: [
+          'year',
+          'month',
+          [Sequelize.fn('SUM', Sequelize.col('calls')), 'calls']
+      ],
+      group: ['year','month'],
+      order: [['year', 'DESC'],['month', 'DESC']]
+      });
+    
+    res.status(200).json({data: kpi})
+  } catch {
+    res.status(500).json({
+      state: 'F',
+      error: "Internal server error",
+    });
+  } 
+}
+
 // DELETE
 async function asdelete(req, res) {
   try {
@@ -87,6 +190,7 @@ async function asdelete(req, res) {
         storeId: current_store.id,
       },
     });
+
     res.status(200).json({
       state: 'OK',
     });
@@ -102,5 +206,9 @@ async function asdelete(req, res) {
 module.exports = {
   create: ascreate,
   delete: asdelete,
+  accept: accept,
+  kpi: calls_per_month,
+  kpi_globally: calls_per_month_globally,
+  interval: Interval
 };
 
