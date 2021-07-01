@@ -12,6 +12,7 @@ async function create(req, res) {
   const workbook = XLSX.read(req.files.excel.data, { type: 'buffer' });
   const workbookSheets = workbook.SheetNames;
   const sheet = workbookSheets[0];
+  console.log(workbookSheets);
   const caracteristicas = workbookSheets[1];
   const dataExcel = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
   const dataCaracteristicas = XLSX.utils.sheet_to_json(workbook.Sheets[caracteristicas]);
@@ -25,7 +26,7 @@ async function create(req, res) {
       try {
         const last_product = await product.findOne({ where: { sku: row.sku } });
         if (!row.name || !row.sku || !row.price || !row.image) {
-          failed += 1;
+          failed += 12;
           object_failed.push(row);
         } else if (last_product) {
           await product.update({
@@ -34,7 +35,7 @@ async function create(req, res) {
             price: ((row.price) ? row.price : last_product.price),
             image: ((row.image) ? row.image : last_product.image),
           }, { where: { sku: last_product.sku } });
-          succes += 1;
+          succes += 11;
         } else {
           await product.create({
             id: uuid(),
@@ -46,53 +47,51 @@ async function create(req, res) {
           succes += 1;
         }
       } catch (e) {
-        failed += 1;
+        failed += 10;
         object_failed.push(row);
       }
     }),
   );
 
   //CARACTERISTICAS
-  // await Promise.all(
-  //   dataCaracteristicas.map(async (row) => {
-  //     try {
-  //       const last_product = await technical_char.findOne({
-  //          where: { sku: row.sku } ,
-  //          include: [
-  //           {
-  //             model: product,
-  //           },
-  //         ],
-  //         });
-  //       console.log(last_product);
-  //       if (!row.name || !row.sku || !row.price || !row.image) {
-  //         failed += 1;
-  //         object_failed.push(row);
-  //       } else if (last_product) {
-  //         await product.update({
-  //           name: ((row.name) ? row.name : last_product.name),
-  //           sku: ((row.new_sku) ? row.new_sku : last_product.sku),
-  //           price: ((row.price) ? row.price : last_product.price),
-  //           image: ((row.image) ? row.image : last_product.image),
-  //         }, { where: { sku: last_product.sku } });
-  //         succes += 1;
-  //       } else {
-  //         await product.create({
-  //           id: uuid(),
-  //           name: row.name,
-  //           sku: row.sku,
-  //           price: row.price,
-  //           image: row.image,
-  //         });
-  //         succes += 1;
-  //       }
-  //     } catch (e) {
-  //       failed += 1;
-  //       object_failed.push(row);
-  //     }
-  //   }),
-  // );
-
+  
+  await Promise.all(
+    dataCaracteristicas.map(async (row) => {
+      try {
+        const last_product = await product.findOne({
+           where: { sku: row.sku }
+        });
+        const last_key = await technical_char.findOne({
+            where: { key: row.key, productId: last_product.id }
+          });
+      
+        
+        if (!row.key || !row.value) {
+          failed += 3;
+          object_failed.push(row);
+        } else if (last_product && last_key) {
+          await technical_char.update({
+            value: ((row.value) ? row.value : last_key.value),
+          }, { where: { key: last_key.key, productId: last_product.id } });
+          succes += 2;
+        } else if ( !last_product && last_key ){
+          failed += 5;
+          object_failed.push(row);
+        } else {
+          await technical_char.create({
+            id: uuid(),
+            key: row.key,
+            value: row.value,
+            productId: last_product.id,
+          });
+          succes += 1;
+        }
+      } catch (e) {
+        failed += 4;
+        object_failed.push(row);
+      }
+    }),
+  );
   res.status(200).json({
     succesfully: succes,
     failed,
@@ -103,3 +102,4 @@ async function create(req, res) {
 module.exports = {
   create,
 };
+    
