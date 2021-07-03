@@ -58,7 +58,7 @@ async function accept(req, res){
     let [today, first_day] = await Interval();
 
     let last_record = await call.findOne({where:{
-      date: {
+      createdAt: {
         [Op.between]: [first_day, today]
       },
       userId: req.assistantId
@@ -67,7 +67,6 @@ async function accept(req, res){
     if(!last_record){
       await call.create({
         calls:1,
-        date: today,
         year: today.getFullYear(),
         month: today.getMonth(),
         userId: req.assistantId
@@ -97,17 +96,17 @@ async function Interval(){
 //KPI: Number of calls per month, per assistant
 async function calls_per_month(req, res){
   try{
-    if (!req.body.assistantId){
+    if (!req.body.email){
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
-    let current_assistant = await user.findOne({where: {id: req.body.assistantId}})
+    let current_assistant = await user.findOne({where: {email: req.body.email}})
     if(!current_assistant){
-      return res.status(400).json({ state: 'F', error: 'Invalid assistandId' });
+      return res.status(400).json({ state: 'F', error: 'Invalid email' });
     }
-    let kpis = await call.findAll({attributes: { exclude: ['createdAt', 'updatedAt', 'id'] },where: {
-      userId: req.body.assistantId
-    }, order: [['date', 'DESC']]})
+    let kpis = await call.findAll({attributes: { exclude: ['updatedAt', 'id'] },where: {
+      userId: current_assistant.id
+    }, order: [['createdAt', 'DESC']]})
 
     res.status(200).json({data: kpis})
   } catch {

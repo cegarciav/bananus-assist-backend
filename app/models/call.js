@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   call.init({
-    date: DataTypes.DATEONLY,
     calls: DataTypes.INTEGER,
     year: DataTypes.INTEGER,
     month: DataTypes.INTEGER

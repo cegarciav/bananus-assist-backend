@@ -91,7 +91,7 @@ describe('Session endpoints testing', () => {
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
-        date: {
+      createdAt: {
             [Op.between]: [first_day, today]
         },
         userId: current_assistant.id
@@ -111,7 +111,7 @@ describe('Session endpoints testing', () => {
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
-        date: {
+      createdAt: {
             [Op.between]: [first_day, today]
         },
         userId: current_assistant_2.id
@@ -130,7 +130,7 @@ describe('Session endpoints testing', () => {
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
-        date: {
+      createdAt: {
             [Op.between]: [first_day, today]
         },
         userId: current_assistant.id
@@ -150,7 +150,7 @@ describe('Session endpoints testing', () => {
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
-        date: {
+      createdAt: {
             [Op.between]: [first_day, today]
         },
         userId: current_assistant_2.id
@@ -171,22 +171,22 @@ describe('Session endpoints testing', () => {
     expect(res4.body.error).toEqual('Invalid fields');
   });
 
-  it('should fail in get specific kpi because assistantId doesnt exists', async () => {
+  it('should fail in get specific kpi because email doesnt exists', async () => {
     let res4 = await request(app)
     .post('/assistants/kpi')
       .send({
-        assistantId: 'm342h54hj35gj34hg',
+        email: 'm342h54hj35gj34hg',
       });
     expect(res4.statusCode).toEqual(400);
     expect(res4.body.state).toEqual('F');
-    expect(res4.body.error).toEqual('Invalid assistandId');
+    expect(res4.body.error).toEqual('Invalid email');
   });
 
   it('should get kpi for a specific assistant', async () => {
     let res5 = await request(app)
       .post('/assistants/kpi')
       .send({
-        assistantId: current_assistant.id
+        email: current_assistant.email
       })
     expect(res5.statusCode).toEqual(200);
     expect(res5.body.data).toBeTruthy();

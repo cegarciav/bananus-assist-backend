@@ -7,10 +7,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      date: {
-        type:Sequelize.DATEONLY
-      },
-
       calls: {
         type:Sequelize.INTEGER
       },

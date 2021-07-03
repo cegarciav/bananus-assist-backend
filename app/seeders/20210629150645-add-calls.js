@@ -24,7 +24,6 @@ module.exports = {
             {
               userId: assistantIdData[index],
               calls: parseInt(Math.random() * (12 - 0) + 0),
-              date: new Date(año, mes, 1),
               month: mes,
               year: año,
               createdAt: new Date(),
@@ -44,5 +43,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+     await queryInterface.bulkDelete('calls', null, {});
   }
 };
