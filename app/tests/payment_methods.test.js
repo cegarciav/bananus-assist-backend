@@ -46,6 +46,7 @@ describe('payment method CRUD Testing', () => {
 
   // READ
   describe('payment method READ validaions', () => {
+    // READ ALL
     it('should read all payment methods', async () => {
       const res = await request(app)
         .get('/payment-methods');
@@ -55,6 +56,8 @@ describe('payment method CRUD Testing', () => {
       expect(methodNames).toContain('cash');
       expect(methodNames).toContain('Credit card');
     });
+
+    // READ ONE
     it('should fail reading one payment method because name is not sent', async () => {
       const res = await request(app)
         .post('/payment-methods/show')
