@@ -1,4 +1,7 @@
-const logger = require('pino')();
+const pino = require('pino')
+const logger = pino({
+  prettyPrint: { colorize: true }
+});
 
 class appLogger {
     constructor(configContext) {

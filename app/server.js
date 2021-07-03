@@ -50,6 +50,7 @@ app.use('/central-tablets', central_tablets);
 app.use('/devices', devices);
 
 const server = http.createServer(app);
+app.locals.logger.infoLog('server.js','Starting Bananus Assist','version 1.0');
 const io = socketio(server, {
   cors: true,
 });
