@@ -25,6 +25,9 @@ const app = express();
 const port = process.env.NODEJS_LOCAL_PORT;
 const frontendClient = process.env.FRONTEND_CLIENT_ORIGIN;
 
+const appLogger = require('./config/logs');
+app.locals.logger = new appLogger('development');
+
 app.use(cors({
   origin: frontendClient,
   optionsSuccessStatus: 200,
