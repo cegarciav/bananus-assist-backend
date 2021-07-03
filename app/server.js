@@ -15,6 +15,7 @@ const technical_chars = require('./routes/technical_chars');
 const sessions = require('./routes/session');
 const assistants = require('./routes/assistants');
 const massive_charge = require('./routes/massive_charge');
+const payment_methods = require('./routes/payment_methods');
 
 const central_tablets = require('./routes/central_tablets');
 const devices = require('./routes/devices');
@@ -48,6 +49,7 @@ app.use('/assistants', assistants);
 app.use('/massive_charge', massive_charge);
 app.use('/central-tablets', central_tablets);
 app.use('/devices', devices);
+app.use('/payment-methods', payment_methods);
 
 const server = http.createServer(app);
 app.locals.logger.infoLog('server.js','Starting Bananus Assist','version 1.0');

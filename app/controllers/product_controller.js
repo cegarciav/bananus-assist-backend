@@ -1,8 +1,14 @@
 const { uuid } = require('uuidv4');
-const { product, technical_char } = require('../models');
+const {
+  product,
+  technical_char,
+  available_payment_method,
+  sequelize,
+} = require('../models');
 
 // CREATE
 async function create(req, res) {
+  let transaction;
   try {
     if (!req.body.name || !req.body.sku || !req.body.price || !req.body.image) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
@@ -16,18 +22,44 @@ async function create(req, res) {
       return;
     }
 
+    transaction = await sequelize.transaction();
+
+    const productId = uuid();
     await product.create({
-      id: uuid(),
+      id: productId,
       name: req.body.name,
       sku: req.body.sku,
       price: req.body.price,
       image: req.body.image,
+    }, {
+      transaction,
     });
+
+    if (req.body.paymentMethodIds) {
+      const new_payment_methods = [...new Set(req.body.paymentMethodIds)]
+        .map((methodId) => ({
+          payment_methodId: methodId,
+          productId,
+        }));
+      await available_payment_method.bulkCreate(new_payment_methods, {
+        transaction,
+      });
+    }
+
+    await transaction.commit();
     res.status(201).json({
       state: 'OK',
     });
     return;
   } catch (e) {
+    await transaction.rollback();
+    if (e.name && e.name === 'SequelizeForeignKeyConstraintError') {
+      res.status(400).json({
+        state: 'F',
+        error: 'Some of the payment methods sent are not valid',
+      });
+      return;
+    }
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
@@ -39,10 +71,13 @@ async function create(req, res) {
 async function show_all(req, res) {
   try {
     const products = await product.findAll({
-      include: {
+      include: [{
         model: technical_char,
         attributes: ['id', 'key', 'value', 'productId'],
-      },
+      }, {
+        association: 'payment_methods',
+        attributes: ['id', 'name'],
+      }],
     });
     res.status(200).json(products);
     return;
@@ -64,10 +99,13 @@ async function show(req, res) {
 
     const current_product = await product.findOne({
       where: { sku: req.body.sku },
-      include: {
+      include: [{
         model: technical_char,
         attributes: ['id', 'key', 'value', 'productId'],
-      },
+      }, {
+        association: 'payment_methods',
+        attributes: ['id', 'name'],
+      }],
     });
 
     if (!current_product) {
@@ -86,6 +124,7 @@ async function show(req, res) {
 
 // UPDATE
 async function update(req, res) {
+  let transaction;
   try {
     if (!req.body.sku) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
@@ -104,16 +143,48 @@ async function update(req, res) {
       return;
     }
 
-    await product.update({
-      name: ((req.body.name) ? req.body.name : current_product.name),
-      sku: ((req.body.new_sku) ? req.body.new_sku : current_product.sku),
-      price: ((req.body.price) ? req.body.price : current_product.price),
-      image: ((req.body.image) ? req.body.image : current_product.image),
-    }, { where: { sku: current_product.sku } });
+    transaction = await sequelize.transaction();
 
+    if (req.body.paymentMethodIds) {
+      const new_payment_methods = [...new Set(req.body.paymentMethodIds)]
+        .map((methodId) => ({
+          payment_methodId: methodId,
+          productId: current_product.id,
+        }));
+
+      await available_payment_method.destroy({
+        where: {
+          productId: current_product.id,
+        },
+        transaction,
+      });
+      await available_payment_method.bulkCreate(new_payment_methods, {
+        transaction,
+      });
+    }
+
+    await product.update({
+      name: req.body.name || current_product.name,
+      sku: req.body.new_sku || current_product.sku,
+      price: req.body.price || current_product.price,
+      image: req.body.image || current_product.image,
+    }, {
+      where: { sku: current_product.sku },
+      transaction,
+    });
+
+    await transaction.commit();
     res.status(200).json({ state: 'OK' });
     return;
   } catch (e) {
+    await transaction.rollback();
+    if (e.name && e.name === 'SequelizeForeignKeyConstraintError') {
+      res.status(400).json({
+        state: 'F',
+        error: 'Some of the payment methods sent are not valid',
+      });
+      return;
+    }
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
