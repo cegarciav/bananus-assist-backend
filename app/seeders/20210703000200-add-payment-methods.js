@@ -8,12 +8,14 @@ module.exports = {
     const paymentMethodNames = [
       'check',
       'credit card',
+      'debit card',
       'cash',
+      'electronic bank transfer',
     ];
 
     const paymentMethodsData = paymentMethodNames.map((name) => ({
       id: faker.datatype.uuid(),
-      value: name,
+      name,
       createdAt: new Date(),
       updatedAt: new Date(),
     }));
