@@ -12,10 +12,9 @@ async function create(req, res) {
   const workbook = XLSX.read(req.files.excel.data, { type: 'buffer' });
   const workbookSheets = workbook.SheetNames;
   const sheet = workbookSheets[0];
-  console.log(workbookSheets);
-  const caracteristicas = workbookSheets[1];
+  const characteristics = workbookSheets[1];
   const dataExcel = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
-  const dataCaracteristicas = XLSX.utils.sheet_to_json(workbook.Sheets[caracteristicas]);
+  const dataCharacteristics = XLSX.utils.sheet_to_json(workbook.Sheets[characteristics]);
 
   let succes = 0;
   let failed = 0;
@@ -48,23 +47,25 @@ async function create(req, res) {
         }
       } catch (e) {
         failed += 10;
-        object_failed.push({key: index+2,
-          type: 'product'});
+        object_failed.push({
+          key: index + 2,
+          type: 'product',
+        });
       }
     }),
   );
 
-  //CARACTERISTICAS
-  
+  // Characteristics
+
   await Promise.all(
-    dataCaracteristicas.map(async (row, index) => {
+    dataCharacteristics.map(async (row, index) => {
       try {
         const last_product = await product.findOne({
-           where: { sku: row.sku }
+          where: { sku: row.sku },
         });
         const last_key = await technical_char.findOne({
-            where: { key: row.key, productId: last_product.id }
-          });
+          where: { key: row.key, productId: last_product.id },
+        });
         if (!row.key || !row.value) {
           failed += 3;
           object_failed.push(row);
@@ -73,7 +74,7 @@ async function create(req, res) {
             value: ((row.value) ? row.value : last_key.value),
           }, { where: { key: last_key.key, productId: last_product.id } });
           succes += 2;
-        } else if ( !last_product && last_key ){
+        } else if (!last_product && last_key) {
           failed += 5;
           object_failed.push(row);
         } else {
@@ -87,8 +88,10 @@ async function create(req, res) {
         }
       } catch (e) {
         failed += 4;
-        object_failed.push({key: index+2,
-        type: 'tech_char'});
+        object_failed.push({
+          key: index + 2,
+          type: 'tech_char',
+        });
       }
     }),
   );
@@ -102,4 +105,3 @@ async function create(req, res) {
 module.exports = {
   create,
 };
-    
