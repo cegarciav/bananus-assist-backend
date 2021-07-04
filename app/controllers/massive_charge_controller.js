@@ -28,7 +28,7 @@ async function create(req, res) {
         if (!row.name || !row.sku || !row.price || !row.image) {
           failed += 12;
           object_failed.push({key: index+2,
-            type: 'product'});;
+            type: 'product'});
         } else if (last_product) {
           await product.update({
             name: ((row.name) ? row.name : last_product.name),
@@ -68,7 +68,8 @@ async function create(req, res) {
           });
         if (!row.key || !row.value) {
           failed += 3;
-          object_failed.push(row);
+          object_failed.push({key: index+2,
+            type: 'tech_char'});
         } else if (last_product && last_key) {
           await technical_char.update({
             value: ((row.value) ? row.value : last_key.value),
@@ -76,7 +77,8 @@ async function create(req, res) {
           succes += 2;
         } else if ( !last_product && last_key ){
           failed += 5;
-          object_failed.push(row);
+          object_failed.push({key: index+2,
+            type: 'tech_char'});
         } else {
           await technical_char.create({
             id: uuid(),
