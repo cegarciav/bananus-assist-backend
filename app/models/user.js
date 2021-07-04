@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const {
   Model,
 } = require('sequelize');
-const assistant = require('.');
 
 const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT, 10);
 
@@ -11,10 +10,6 @@ async function buildPasswordHash(instance) {
     const hash = await bcrypt.hash(instance.password, PASSWORD_SALT);
     instance.set('password', hash);
   }
-}
-
-async function destroyStoreAssistant(instance) {
-  await assistant.destroy({ where: { userId: instance.id } });
 }
 
 module.exports = (sequelize, DataTypes) => {
@@ -44,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
 
   user.beforeUpdate(buildPasswordHash);
   user.beforeCreate(buildPasswordHash);
-  user.beforeDestroy(destroyStoreAssistant);
 
   user.prototype.checkPassword = function checkPassword(password) {
     return bcrypt.compare(password, this.password);
