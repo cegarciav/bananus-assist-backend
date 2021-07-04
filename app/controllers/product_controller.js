@@ -193,8 +193,8 @@ async function update(req, res) {
     });
 
     await transaction.commit();
-    req.app.locals.logger.debugLog('product_controller.js',`Successfully update '${req.body.sku}' product`, 'Ok');
     res.status(200).json({ state: 'OK' });
+    req.app.locals.logger.debugLog('product_controller.js',`Successfully update '${req.body.sku}' product`, 'Ok');
     return;
   } catch (e) {
     await transaction.rollback();
