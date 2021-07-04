@@ -6,6 +6,7 @@ const { technical_char } = require('../models');
 async function create(req, res) {
   if (!req.files) {
     res.status(400).json({ state: 'F', error: 'No file uploaded' });
+    req.app.locals.logger.errorLog('massive_charge_controller.js','Unable to perform a massive charge of products', 'No file uploaded');
     return;
   }
 
@@ -47,6 +48,7 @@ async function create(req, res) {
           succes += 1;
         }
       } catch (e) {
+        req.app.locals.logger.errorLog('massive_charge_controller.js','Unable to load a product', e);
         failed += 10;
         object_failed.push({key: index+2,
           type: 'product'});
@@ -86,6 +88,7 @@ async function create(req, res) {
           succes += 1;
         }
       } catch (e) {
+        req.app.locals.logger.errorLog('massive_charge_controller.js','Unable to load a technical characteristic of a product', e);
         failed += 4;
         object_failed.push({key: index+2,
         type: 'tech_char'});
@@ -97,6 +100,7 @@ async function create(req, res) {
     failed,
     failed_products: object_failed,
   });
+  req.app.locals.logger.debugLog('massive_charge_controller.js',`Successfully massive charge of the products`, 'OK');
 }
 
 module.exports = {
