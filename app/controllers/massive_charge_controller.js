@@ -27,7 +27,8 @@ async function create(req, res) {
         const last_product = await product.findOne({ where: { sku: row.sku } });
         if (!row.name || !row.sku || !row.price || !row.image) {
           failed += 12;
-          object_failed.push(row);
+          object_failed.push({key: index+2,
+            type: 'product'});;
         } else if (last_product) {
           await product.update({
             name: ((row.name) ? row.name : last_product.name),
