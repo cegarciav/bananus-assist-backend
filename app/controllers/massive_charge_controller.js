@@ -43,7 +43,7 @@ async function create(req, res) {
             price: ((row.price) ? row.price : last_product.price),
             image: ((row.image) ? row.image : last_product.image),
           }, { where: { sku: last_product.sku } });
-          success += 11;
+          success += 1;
         } else {
           await product.create({
             id: uuid(),
@@ -85,7 +85,7 @@ async function create(req, res) {
           await technical_char.update({
             value: ((row.value) ? row.value : last_key.value),
           }, { where: { key: last_key.key, productId: last_product.id } });
-          success += 2;
+          success += 1;
         } else if (!last_product && last_key) {
           failed += 1;
           object_failed.push({
