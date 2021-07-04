@@ -22,7 +22,7 @@ async function create(req, res) {
   const object_failed = [];
 
   await Promise.all(
-    dataExcel.map(async (row) => {
+    dataExcel.map(async (row, index) => {
       try {
         const last_product = await product.findOne({ where: { sku: row.sku } });
         if (!row.name || !row.sku || !row.price || !row.image) {
@@ -48,7 +48,8 @@ async function create(req, res) {
         }
       } catch (e) {
         failed += 10;
-        object_failed.push(row);
+        object_failed.push({key: index+2,
+          type: 'product'});
       }
     }),
   );
@@ -56,7 +57,7 @@ async function create(req, res) {
   //CARACTERISTICAS
   
   await Promise.all(
-    dataCaracteristicas.map(async (row) => {
+    dataCaracteristicas.map(async (row, index) => {
       try {
         const last_product = await product.findOne({
            where: { sku: row.sku }
@@ -64,8 +65,6 @@ async function create(req, res) {
         const last_key = await technical_char.findOne({
             where: { key: row.key, productId: last_product.id }
           });
-      
-        
         if (!row.key || !row.value) {
           failed += 3;
           object_failed.push(row);
@@ -88,7 +87,8 @@ async function create(req, res) {
         }
       } catch (e) {
         failed += 4;
-        object_failed.push(row);
+        object_failed.push({key: index+2,
+        type: 'tech_char'});
       }
     }),
   );
