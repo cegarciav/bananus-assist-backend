@@ -16,14 +16,9 @@ module.exports = {
       month : {
         type: Sequelize.INTEGER
       },
-      createdAt: {
-        allowNull: false,
+      date: {
         type: Sequelize.DATE
       },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      }
     });
   },
   down: async (queryInterface, Sequelize) => {

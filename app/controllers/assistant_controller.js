@@ -1,4 +1,4 @@
-const { assistant, user, store, call } = require('../models');
+const { assistant, user, store, call, sequelize } = require('../models');
 const { uuid } = require('uuidv4');
 const { Op } = require("sequelize")
 const Sequelize = require("sequelize")
@@ -58,7 +58,7 @@ async function accept(req, res){
     let [today, first_day] = await Interval();
 
     let last_record = await call.findOne({where:{
-      createdAt: {
+      date: {
         [Op.between]: [first_day, today]
       },
       userId: req.assistantId
@@ -106,7 +106,7 @@ async function calls_per_month(req, res){
     }
     let kpis = await call.findAll({attributes: { exclude: ['updatedAt', 'id'] },where: {
       userId: current_assistant.id
-    }, order: [['createdAt', 'DESC']]})
+    }, order: [['date', 'DESC']]})
 
     res.status(200).json({data: kpis})
   } catch {
@@ -123,16 +123,18 @@ async function calls_per_month_globally(req, res){
   try{
     let kpi = await call.findAll({
       attributes: [
-          'year',
-          'month',
+          [Sequelize.fn('YEAR', Sequelize.col('date')), 'current_year'],
+          [Sequelize.fn('MONTH', Sequelize.col('date')), 'current_month'],
           [Sequelize.fn('SUM', Sequelize.col('calls')), 'calls']
       ],
-      group: ['year','month'],
-      order: [['year', 'DESC'],['month', 'DESC']]
+      //group: ['year', 'month'],
+      group: [sequelize.literal('current_year'), sequelize.literal('current_month')],
+      //order: [[sequelize.literal('current_year'), 'DESC'], [sequelize.literal('current_month'), 'DESC']]
       });
     
     res.status(200).json({data: kpi})
-  } catch {
+  } catch (error){
+    console.log(error)
     res.status(500).json({
       state: 'F',
       error: "Internal server error",

@@ -1,3 +1,4 @@
+const { call } = require('../models');
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     /**
@@ -18,22 +19,23 @@ module.exports = {
     'ccc4a4fa-613a-47e8-b672-70c9941e99d7', 'e757e108-bd76-4790-8065-7fc9c529c372',
     'f05ac090-be24-46c3-95d8-0a8132e57a3d', 'f94a3416-e70e-4790-be85-8a057eeb310b'];
     for(let index = 0; index < 12; index ++){
-      for(let año = 2019; año<2022; año ++){
-        for(let mes = 0; mes < 12; mes ++){
+      for(let year = 2019; year<2022; year ++){
+        for(let month = 0; month < 12; month ++){
           call_data.push(
             {
               userId: assistantIdData[index],
               calls: parseInt(Math.random() * (12 - 0) + 0),
-              month: mes,
-              year: año,
-              createdAt: new Date(),
-              updatedAt: new Date(),
+              month: month,
+              year: year,
+              date: new Date(year.toString(), month.toString(), 5)
             }
           )
         }
       }
     }
-    return queryInterface.bulkInsert('calls', call_data);
+    //console.log(call_data.slice(0,20))
+    return
+    //queryInterface.bulkInsert('calls', call_data);
   },
 
   down: async (queryInterface, Sequelize) => {
