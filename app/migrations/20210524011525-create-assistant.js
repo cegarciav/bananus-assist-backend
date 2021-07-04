@@ -9,6 +9,8 @@ module.exports = {
       },
       userId: {
         type: Sequelize.UUID,
+        allowNull: false,
+        onDelete: 'CASCADE',
         references: {
           model: {
             tableName: 'users',
@@ -19,6 +21,8 @@ module.exports = {
       },
       storeId: {
         type: Sequelize.UUID,
+        allowNull: false,
+        onDelete: 'CASCADE',
         references: {
           model: {
             tableName: 'stores',
