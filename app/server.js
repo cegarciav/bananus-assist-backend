@@ -4,7 +4,7 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const socketio = require('socket.io');
-var fileupload = require("express-fileupload");
+const fileupload = require('express-fileupload');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -43,7 +43,7 @@ app.use('/products', products);
 app.use('/chars', technical_chars);
 app.use('/sessions', sessions);
 app.use('/assistants', assistants);
-app.use('/massive_charge', massive_charge);
+app.use('/massive-charge', massive_charge);
 app.use('/central-tablets', central_tablets);
 app.use('/devices', devices);
 app.use('/payment-methods', payment_methods);
@@ -95,14 +95,14 @@ io.on('connection', (socket) => {
   socket.on('ended', (data) => {
     io.to(data.to).emit('finished');
   });
-  
-  socket.on("face-detected", (sale_point_id) => {
-    socket.to(sale_point_id).emit("face-detected_assistant", socket.id)
-   });
-  
-   socket.on("assistant_alert", (client_id, msge) => {
-     socket.to(client_id).emit("user_alert", msge)
-   });
+
+  socket.on('face-detected', (sale_point_id) => {
+    socket.to(sale_point_id).emit('face-detected_assistant', socket.id);
+  });
+
+  socket.on('assistant_alert', (client_id, msge) => {
+    socket.to(client_id).emit('user_alert', msge);
+  });
 });
 
 db.sequelize
