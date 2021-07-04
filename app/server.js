@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 require('dotenv').config();
+const version = 'version 1.0';
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
@@ -52,7 +53,7 @@ app.use('/devices', devices);
 app.use('/payment-methods', payment_methods);
 
 const server = http.createServer(app);
-app.locals.logger.infoLog('server.js','Starting Bananus Assist','version 1.0');
+app.locals.logger.infoLog('server.js','Starting Bananus Assist',version);
 const io = socketio(server, {
   cors: true,
 });
@@ -113,6 +114,7 @@ db.sequelize
   .authenticate()
   .then(() => {
     console.log('Connection to the database has been established successfully.');
+    app.locals.logger.infoLog('server.js','Bananus Assist successfully connect with Mysql database','Connection to the database has been established successfully.');
 
     if (process.env.NODE_ENV !== 'test') {
       server.listen(port, (err) => {
@@ -120,10 +122,12 @@ db.sequelize
           return console.error('Failed', err);
         }
         console.log(`Listening on port ${port}`);
+        app.locals.logger.infoLog('server.js','Bananus Assist API ready to accept request',`Listening on port ${port}`);
         return app;
       });
     }
   })
-  .catch((err) => console.error('Unable to connect to the database:', err));
+  .catch((err) => {console.error('Unable to connect to the database:', err);
+    app.locals.logger.fatalLog('server.js','Bananus Assist API unable to connnect to database',err.parent.sqlMessage);});
 
 module.exports = app;

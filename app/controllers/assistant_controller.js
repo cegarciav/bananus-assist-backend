@@ -52,7 +52,7 @@ async function ascreate(req, res) {
       state: 'F',
       error: "Internal server error",
     });
-    req.app.locals.logger.errorLog('assistant_controler.js','Internal server error trying to assing assistant to a store', e);
+    req.app.locals.logger.errorLog('assistant_controler.js','Internal server error trying to assing assistant to a store', e.parent.sqlMessage);
   }
 }
 
@@ -108,7 +108,7 @@ async function asdelete(req, res) {
       state: 'F',
       error: "Internal server error",
     });
-    req.app.locals.logger.errorLog('assistant_controler.js','Internal server error trying to unassing assistant from a store', e);
+    req.app.locals.logger.errorLog('assistant_controler.js','Internal server error trying to unassing assistant from a store', e.parent.sqlMessage);
   }
 }
 

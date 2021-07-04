@@ -63,7 +63,7 @@ async function create(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to create a payment method', e);
+    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to create a payment method', e.parent.sqlMessage);
   }
 }
 
@@ -95,7 +95,7 @@ async function show_all(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to read all payment methods', e);
+    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to read all payment methods', e.parent.sqlMessage);
   }
 }
 
@@ -155,7 +155,7 @@ async function show(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to read a payment method', e);
+    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to read a payment method', e.parent.sqlMessage);
   }
 }
 
@@ -219,7 +219,7 @@ async function pdelete(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to delete a payment method', e);
+    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to delete a payment method', e.parent.sqlMessage);
   }
 }
 

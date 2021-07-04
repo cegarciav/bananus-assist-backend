@@ -72,7 +72,7 @@ async function create(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to create a product', e);
+    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to create a product', e.parent.sqlMessage);
   }
 }
 
@@ -96,7 +96,7 @@ async function show_all(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to read all products', e);
+    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to read all products', e.parent.sqlMessage);
   }
 }
 
@@ -133,7 +133,7 @@ async function show(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to read a product', e);
+    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to read a product', e.parent.sqlMessage);
   }
 }
 
@@ -210,7 +210,7 @@ async function update(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to update a product', e);
+    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to update a product', e.parent.sqlMessage);
   }
 }
 // DELETE
@@ -243,7 +243,7 @@ async function pdelete(req, res) {
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to delete a product', e);
+    req.app.locals.logger.errorLog('product_controller.js','Internal server error trying to delete a product', e.parent.sqlMessage);
   }
 }
 
