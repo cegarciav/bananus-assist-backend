@@ -6,6 +6,7 @@ async function screate(req, res) {
   try {
     if (!req.body.salePointId || !req.body.serialNumber || !req.body.password) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('entral_tablet_controller.js','You must send the id of a sale point, the serial number and the password of the central tablet to be able to create one', 'Invalid fields');
       return;
     }
     const last_central_tablet = await central_tablet.findOne({

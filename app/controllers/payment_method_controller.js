@@ -34,6 +34,7 @@ async function create(req, res) {
   try {
     if (!req.body.name) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('payment_method_controller.js','You must send the name of the payment method to be able to create one', 'Invalid fields');
       return;
     }
 
@@ -43,6 +44,7 @@ async function create(req, res) {
 
     if (existing_method) {
       res.status(400).json({ state: 'F', error: 'Payment method already exists' });
+      req.app.locals.logger.warnLog('payment_method_controller.js',`Unable to create a payment method with the name '${req.body.name}'`, 'Payment method already exists');
       return;
     }
 
@@ -54,12 +56,14 @@ async function create(req, res) {
       state: 'OK',
       paymentMethod: new_method,
     });
+    req.app.locals.logger.debugLog('payment_method_controller.js',`Successfully create '${req.body.name}' payment method`, 'Ok');
     return;
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
+    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to create a payment method', e);
   }
 }
 
@@ -84,12 +88,14 @@ async function show_all(req, res) {
   try {
     const methods_list = await payment_method.findAll();
     res.status(200).json(methods_list);
+    req.app.locals.logger.debugLog('payment_method_controller.js','Successfully read all payment methods from database');
     return;
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
+    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to read all payment methods', e);
   }
 }
 
@@ -128,6 +134,7 @@ async function show(req, res) {
   try {
     if (!req.body.name) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('payment_method_controller.js','You must send the name of the payment method to be able to read one', 'Invalid fields');
       return;
     }
 
@@ -137,15 +144,18 @@ async function show(req, res) {
 
     if (!current_method) {
       res.status(404).json({ state: 'F', error: "Payment method doesn't exist" });
+      req.app.locals.logger.warnLog('payment_method_controller.js',`Unable to read a payment method with the name '${req.body.name}'`, "Payment method doesn't exist");
       return;
     }
     res.status(200).json(current_method);
+    req.app.locals.logger.debugLog('payment_method_controller.js',`Successfully read '${req.body.name}' payment method from database`, 'Ok');
     return;
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
+    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to read a payment method', e);
   }
 }
 
@@ -184,6 +194,7 @@ async function pdelete(req, res) {
   try {
     if (!req.body.name) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('payment_method_controller.js','You must send the name of the payment method to be able to delete one', 'Invalid fields');
       return;
     }
     const curr_method = await payment_method.findOne({
@@ -191,6 +202,7 @@ async function pdelete(req, res) {
     });
     if (!curr_method) {
       res.status(404).json({ state: 'F', error: "Payment method doesn't exist" });
+      req.app.locals.logger.warnLog('payment_method_controller.js',`Unable to delete a payment method with the name '${req.body.name}'`, "Payment method doesn't exist");
       return;
     }
 
@@ -200,12 +212,14 @@ async function pdelete(req, res) {
       },
     });
     res.status(204).json({});
+    req.app.locals.logger.debugLog('payment_method_controller.js',`Successfully delete '${req.body.name}' payment method from database`, 'Ok');
     return;
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
+    req.app.locals.logger.errorLog('payment_method_controller.js','Internal server error trying to delete a payment method', e);
   }
 }
 

@@ -1,7 +1,13 @@
-const pino = require('pino')
-const logger = pino({
-  prettyPrint: { colorize: true }
-});
+const pino = require('pino');
+const logger = pino(
+  {
+    prettyPrint: {
+      colorize: true,
+      levelFirst: true,
+      translateTime: "yyyy-dd-mm, h:MM:ss TT",
+    },
+  },
+);
 
 class appLogger {
     constructor(configContext) {
