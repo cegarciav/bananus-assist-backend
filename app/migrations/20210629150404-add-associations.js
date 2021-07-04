@@ -31,7 +31,7 @@ module.exports = {
      */
   up: async (queryInterface, Sequelize) => (
     Promise.all([
-      setOneToNAssoc(queryInterface, Sequelize, 'users', 'calls')
+      setOneToNAssoc(queryInterface, Sequelize, 'users', 'calls'),
     ])
   ),
 
@@ -43,6 +43,6 @@ module.exports = {
    */
   down: async (queryInterface) => queryInterface
     .sequelize.transaction(async (t) => Promise.all([
-      removeOneToNAssoc(queryInterface, 'users', 'calls', t)
+      removeOneToNAssoc(queryInterface, 'users', 'calls', t),
     ])),
 };

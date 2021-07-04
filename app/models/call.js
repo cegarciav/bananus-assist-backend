@@ -1,6 +1,7 @@
 const {
-  Model
+  Model,
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class call extends Model {
     /**
@@ -10,17 +11,18 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.user, {foreignKey: 'userId'});
+      this.belongsTo(models.user, { foreignKey: 'userId' });
     }
-  };
+  }
+
   call.init({
     calls: DataTypes.INTEGER,
-    date: DataTypes.DATE
+    date: DataTypes.DATE,
 
   }, {
     sequelize,
     modelName: 'call',
-    timestamps: false
+    timestamps: false,
   });
   return call;
 };
