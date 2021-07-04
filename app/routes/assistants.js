@@ -11,8 +11,4 @@ router.patch('/', filters.only_logged, filters.only_user,
 filters.only_assistant, handlers.accept);
 // DELETE
 router.delete('/', handlers.delete);
-// Get Kpi of one assistant
-router.post('/kpi', handlers.kpi)
-// Get global kpi
-router.get('/kpi', handlers.kpi_globally)
 module.exports = router;

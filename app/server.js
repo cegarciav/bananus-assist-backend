@@ -15,6 +15,7 @@ const technical_chars = require('./routes/technical_chars');
 const sessions = require('./routes/session');
 const assistants = require('./routes/assistants');
 const massive_charge = require('./routes/massive_charge');
+const kpis = require('./routes/kpis');
 
 const central_tablets = require('./routes/central_tablets');
 const devices = require('./routes/devices');
@@ -45,6 +46,7 @@ app.use('/assistants', assistants);
 app.use('/massive_charge', massive_charge);
 app.use('/central-tablets', central_tablets);
 app.use('/devices', devices);
+app.use('/kpis', kpis);
 
 const server = http.createServer(app);
 const io = socketio(server, {

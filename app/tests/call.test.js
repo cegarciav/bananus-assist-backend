@@ -2,7 +2,7 @@
 const request = require('supertest');
 const { call } = require('../models');
 const { Op } = require("sequelize")
-const Interval = require('../controllers/assistant_controller').interval
+const Interval = require('../utils/Time').Interval;
 const app = require('../server');
 
 describe('Session endpoints testing', () => {
@@ -91,7 +91,7 @@ describe('Session endpoints testing', () => {
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
-      createdAt: {
+      date: {
             [Op.between]: [first_day, today]
         },
         userId: current_assistant.id
@@ -111,7 +111,7 @@ describe('Session endpoints testing', () => {
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
-      createdAt: {
+      date: {
             [Op.between]: [first_day, today]
         },
         userId: current_assistant_2.id
@@ -130,7 +130,7 @@ describe('Session endpoints testing', () => {
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
-      createdAt: {
+      date: {
             [Op.between]: [first_day, today]
         },
         userId: current_assistant.id
@@ -150,7 +150,7 @@ describe('Session endpoints testing', () => {
     let [today, first_day] = await Interval();
     
     let last_record = await call.findOne({where:{
-      createdAt: {
+      date: {
             [Op.between]: [first_day, today]
         },
         userId: current_assistant_2.id
@@ -164,7 +164,7 @@ describe('Session endpoints testing', () => {
   //KPI TESTS
   it('should fail in get specific kpi because fields not sent', async () => {
     let res4 = await request(app)
-      .post('/assistants/kpi')
+      .post('/kpis')
       .send({});
     expect(res4.statusCode).toEqual(400);
     expect(res4.body.state).toEqual('F');
@@ -173,7 +173,7 @@ describe('Session endpoints testing', () => {
 
   it('should fail in get specific kpi because email doesnt exists', async () => {
     let res4 = await request(app)
-    .post('/assistants/kpi')
+    .post('/kpis')
       .send({
         email: 'm342h54hj35gj34hg',
       });
@@ -184,7 +184,7 @@ describe('Session endpoints testing', () => {
 
   it('should get kpi for a specific assistant', async () => {
     let res5 = await request(app)
-      .post('/assistants/kpi')
+      .post('/kpis')
       .send({
         email: current_assistant.email
       })
@@ -194,7 +194,7 @@ describe('Session endpoints testing', () => {
 
   it('should get the global kpi', async () => {
     let res5 = await request(app)
-      .get('/assistants/kpi')
+      .get('/kpis')
       .send()
     expect(res5.statusCode).toEqual(200);
     expect(res5.body.data[0].calls).toEqual("4")

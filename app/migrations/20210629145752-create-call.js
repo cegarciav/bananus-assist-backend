@@ -10,17 +10,7 @@ module.exports = {
       calls: {
         type:Sequelize.INTEGER
       },
-      year: {
-        type: Sequelize.INTEGER
-      },
-      month : {
-        type: Sequelize.INTEGER
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
+      date: {
         allowNull: false,
         type: Sequelize.DATE
       }
