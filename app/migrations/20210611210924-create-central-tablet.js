@@ -18,6 +18,17 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
       },
+      sale_pointId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'sale_points',
+          },
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
