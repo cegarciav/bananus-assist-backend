@@ -106,6 +106,19 @@ describe('device CRUD Testing', () => {
     expect(res.body.error).toEqual('Invalid fields');
   });
 
+  it('should fail creating a device because central_tabletId doesnt exist in database', async () => {
+    const res = await request(app)
+      .post('/devices')
+      .send({
+        serialNumber: '100102312-2139324',
+        centralTabletId: 'FAKE-ID',
+        password: '12345',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid central tablet id');
+  });
+
   it('should create a new device', async () => {
     const res = await request(app)
       .post('/devices')
@@ -215,6 +228,18 @@ describe('device CRUD Testing', () => {
         new_serialNumber: '100102312-21391320',
       });
     expect(res.statusCode).toEqual(200);
+  });
+  it('should fail updating the central_tabletId of one device', async () => {
+    const res = await request(app)
+      .patch('/devices')
+      .send({
+        serialNumber: '100102312-21391320',
+        new_serialNumber: device.serialNumber,
+        centralTabletId: "FAKE"
+      });
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.state).toEqual('F');
+      expect(res.body.error).toEqual('Invalid central tablet id');
   });
 
   // DELETE
