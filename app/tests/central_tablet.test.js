@@ -92,6 +92,19 @@ describe('Central Tablet CRUD Testing', () => {
     expect(res.body.error).toEqual('Invalid fields');
   });
 
+  it('should fail creating a central tablet because sale point doesnt exist  in database', async () => {
+    const res = await request(app)
+      .post('/central-tablets')
+      .send({
+        serialNumber: '100102312-2139124',
+        salePointId: 'FAKE',
+        password: '12345',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid sale point id');
+  });
+
   it('should create a new central tablet', async () => {
     const res = await request(app)
       .post('/central-tablets')
@@ -193,6 +206,7 @@ describe('Central Tablet CRUD Testing', () => {
     expect(res.body.error).toEqual('This serial number already exist');
   });
 
+
   it('should update the serialNumber of one central tablet', async () => {
     const res = await request(app)
       .patch('/central-tablets')
@@ -202,6 +216,19 @@ describe('Central Tablet CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
+  });
+
+  it('should fail updating  because sale point associated doesnt exist in database', async () => {
+    const res = await request(app)
+      .patch('/central-tablets')
+      .send({
+        new_serialNumber: centralTablet.serialNumber,
+        salePointId: 'FAKE'
+
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid sale point id');
   });
 
   // DELETE
