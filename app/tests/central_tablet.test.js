@@ -222,6 +222,7 @@ describe('Central Tablet CRUD Testing', () => {
     const res = await request(app)
       .patch('/central-tablets')
       .send({
+        serialNumber:'100102312-2139120',
         new_serialNumber: centralTablet.serialNumber,
         salePointId: 'FAKE'
 
