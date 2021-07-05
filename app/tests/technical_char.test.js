@@ -233,13 +233,14 @@ describe('Technical Characteristic CRUD Testing', () => {
     const technicalChars = await request(app)
       .get('/chars');
 
-    technicalChars.body.forEach(async (tChar) => {
-      await request(app)
-        .delete('/chars')
-        .send({
-          id: tChar.id,
-        });
-    });
+    await Promise.all(technicalChars.body
+      .map(async (tChar) => {
+        await request(app)
+          .delete('/chars')
+          .send({
+            id: tChar.id,
+          });
+      }));
 
     // Delete product created
     await request(app)

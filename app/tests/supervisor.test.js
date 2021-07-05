@@ -189,13 +189,14 @@ describe('User Supervisor Testing', () => {
     const users = await request(app)
       .get('/users');
 
-    users.body.forEach(async (u) => {
-      await request(app)
-        .delete('/users')
-        .send({
-          email: u.email,
-        });
-    });
+    await Promise.all(users.body
+      .map(async (u) => {
+        await request(app)
+          .delete('/users')
+          .send({
+            email: u.email,
+          });
+      }));
 
     // Delete store created
     await request(app)

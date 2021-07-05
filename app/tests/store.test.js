@@ -190,5 +190,17 @@ describe('Store CRUD Testing', () => {
     expect(res.body.state).toEqual('OK');
   });
 
-  afterAll(async () => { });
+  afterAll(async () => {
+    const stores_test = await request(app)
+      .get('/stores');
+
+    await Promise.all(stores_test.body
+      .map(async (st) => {
+        await request(app)
+          .delete('/stores')
+          .send({
+            address: st.address,
+          });
+      }));
+  });
 });
