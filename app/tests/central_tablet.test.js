@@ -206,6 +206,7 @@ describe('Central Tablet CRUD Testing', () => {
     expect(res.body.error).toEqual('This serial number already exist');
   });
 
+
   it('should update the serialNumber of one central tablet', async () => {
     const res = await request(app)
       .patch('/central-tablets')
@@ -221,9 +222,9 @@ describe('Central Tablet CRUD Testing', () => {
     const res = await request(app)
       .patch('/central-tablets')
       .send({
+        serialNumber:'100102312-2139120',
         new_serialNumber: centralTablet.serialNumber,
-        salePointId: 'FAKE',
-
+        salePointId: 'FAKE'
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
