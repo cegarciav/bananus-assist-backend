@@ -27,7 +27,7 @@ describe('device CRUD Testing', () => {
       .post('/sale-points')
       .send({
         storeId: store.id,
-        department: 'Some Department',
+        department: 'Some Department in Devices',
       });
     const salePoints = await request(app)
       .get('/sale-points');
@@ -235,11 +235,11 @@ describe('device CRUD Testing', () => {
       .send({
         serialNumber: '100102312-21391320',
         new_serialNumber: device.serialNumber,
-        centralTabletId: "FAKE"
+        centralTabletId: 'FAKE',
       });
-      expect(res.statusCode).toEqual(400);
-      expect(res.body.state).toEqual('F');
-      expect(res.body.error).toEqual('Invalid central tablet id');
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid central tablet id');
   });
 
   // DELETE
@@ -279,19 +279,20 @@ describe('device CRUD Testing', () => {
     const devices = await request(app)
       .get('/devices');
 
-    devices.body.forEach(async (sp) => {
-      await request(app)
-        .delete('/devices')
-        .send({
-          serialNumber: sp.serialNumber,
-        });
-    });
+    await Promise.all(devices.body
+      .map(async (sp) => {
+        await request(app)
+          .delete('/devices')
+          .send({
+            serialNumber: sp.serialNumber,
+          });
+      }));
 
-    // Delete store created
+    // Delete central tablet created
     await request(app)
-      .delete('/stores')
+      .delete('/central-tablets')
       .send({
-        address: store.address,
+        serialNumber: centralTablet.serialNumber,
       });
 
     // Delete sale_point created
@@ -301,11 +302,11 @@ describe('device CRUD Testing', () => {
         id: salePoint.id,
       });
 
-    // Delete central tablet created
+    // Delete store created
     await request(app)
-      .delete('/central-tablets')
+      .delete('/stores')
       .send({
-        serialNumber: centralTablet.serialNumber,
+        address: store.address,
       });
   });
 });
