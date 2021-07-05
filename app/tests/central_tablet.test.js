@@ -26,7 +26,7 @@ describe('Central Tablet CRUD Testing', () => {
       .post('/sale-points')
       .send({
         storeId: store.id,
-        department: 'Some Department',
+        department: 'Some Department in Central Tablet',
       });
     const salePoints = await request(app)
       .get('/sale-points');
@@ -206,7 +206,6 @@ describe('Central Tablet CRUD Testing', () => {
     expect(res.body.error).toEqual('This serial number already exist');
   });
 
-
   it('should update the serialNumber of one central tablet', async () => {
     const res = await request(app)
       .patch('/central-tablets')
@@ -223,7 +222,7 @@ describe('Central Tablet CRUD Testing', () => {
       .patch('/central-tablets')
       .send({
         new_serialNumber: centralTablet.serialNumber,
-        salePointId: 'FAKE'
+        salePointId: 'FAKE',
 
       });
     expect(res.statusCode).toEqual(400);
@@ -268,20 +267,14 @@ describe('Central Tablet CRUD Testing', () => {
     const centralTablets = await request(app)
       .get('/central-tablets');
 
-    centralTablets.body.forEach(async (sp) => {
-      await request(app)
-        .delete('/central-tablets')
-        .send({
-          serialNumber: sp.serialNumber,
-        });
-    });
-
-    // Delete store created
-    await request(app)
-      .delete('/stores')
-      .send({
-        address: store.address,
-      });
+    await Promise.all(centralTablets.body
+      .map(async (sp) => {
+        await request(app)
+          .delete('/central-tablets')
+          .send({
+            serialNumber: sp.serialNumber,
+          });
+      }));
 
     // Delete sale_point created
     // Delete store created
@@ -289,6 +282,13 @@ describe('Central Tablet CRUD Testing', () => {
       .delete('/sale-points')
       .send({
         id: salePoint.id,
+      });
+
+    // Delete store created
+    await request(app)
+      .delete('/stores')
+      .send({
+        address: store.address,
       });
   });
 });

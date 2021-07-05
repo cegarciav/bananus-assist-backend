@@ -28,7 +28,7 @@ describe('Session endpoints testing', () => {
       .post('/sale-points')
       .send({
         storeId: store.id,
-        department: 'Some Department',
+        department: 'Some Department in Session Devices',
       });
 
     const salePoints = await request(app)
@@ -232,45 +232,49 @@ describe('Session endpoints testing', () => {
     const devices_test = await request(app)
       .get('/devices');
 
-    devices_test.body.forEach(async (dv) => {
-      await request(app)
-        .delete('/devices')
-        .send({
-          serialNumber: dv.serialNumber,
-        });
-    });
+    await Promise.all(devices_test.body
+      .map(async (dv) => {
+        await request(app)
+          .delete('/devices')
+          .send({
+            serialNumber: dv.serialNumber,
+          });
+      }));
 
     const central_tablets_test = await request(app)
       .get('/central-tablets');
 
-    central_tablets_test.forEach(async (ct) => {
-      await request(app)
-        .delete('/central-tablets')
-        .send({
-          serialNumber: ct.serialNumber,
-        });
-    });
+    await Promise.all(central_tablets_test.body
+      .map(async (ct) => {
+        await request(app)
+          .delete('/central-tablets')
+          .send({
+            serialNumber: ct.serialNumber,
+          });
+      }));
 
     const sale_points_test = await request(app)
       .get('/sale-points');
 
-    sale_points_test.forEach(async (sp) => {
-      await request(app)
-        .delete('/sale-points')
-        .send({
-          id: sp.id,
-        });
-    });
+    await Promise.all(sale_points_test.body
+      .map(async (sp) => {
+        await request(app)
+          .delete('/sale-points')
+          .send({
+            id: sp.id,
+          });
+      }));
 
     const stores_test = await request(app)
       .get('/stores');
 
-    stores_test.forEach(async (st) => {
-      await request(app)
-        .delete('/stores')
-        .send({
-          id: st.id,
-        });
-    });
+    await Promise.all(stores_test.body
+      .map(async (st) => {
+        await request(app)
+          .delete('/stores')
+          .send({
+            address: st.address,
+          });
+      }));
   });
 });
