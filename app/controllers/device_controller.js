@@ -11,6 +11,7 @@ async function screate(req, res) {
     }
     const current_central = await central_tablet.findOne({where:{id:req.body.centralTabletId}})
     if(!current_central){
+      req.app.locals.logger.warnLog('device_controller.js',`Unable to create a device with the central tablet '${req.body.centralTabletId}'`, 'Invalid central tablet id');
       return res.status(400).json({ state: 'F', error: "Invalid central tablet id" });
     }
     const last_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
@@ -122,6 +123,7 @@ async function update(req, res) {
     if(req.body.centralTabletId){
       const current_central = await central_tablet.findOne({where:{id:req.body.centralTabletId}})
       if(!current_central){
+        req.app.locals.logger.warnLog('device_controller.js',`Unable to update the device ${req.body.serialNumber} with the new central tablet '${req.body.centralTabletId}'`, 'Invalid central tablet id');
         return res.status(400).json({ state: 'F', error: "Invalid central tablet id" });
       }
     }

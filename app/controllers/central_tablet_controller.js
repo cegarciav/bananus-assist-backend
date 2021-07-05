@@ -11,6 +11,7 @@ async function screate(req, res) {
     }
     let current_sale_point = await sale_point.findOne({where: {id: req.body.salePointId}})
     if(!current_sale_point){
+      req.app.locals.logger.warnLog('central_tablet_controller.js',`Unable to create a central tablet in the sale point '${req.body.salePointId}'`, 'Invalid sale point id');
       return res.status(400).json({ state: 'F', error: "Invalid sale point id" });
     }
     const last_central_tablet = await central_tablet.findOne({
@@ -92,18 +93,18 @@ async function sshow(req, res) {
 // UPDATE
 async function update(req, res) {
   try {
-    if(req.body.salePointId){
-      let current_sale_point = await sale_point.findOne({where: {id: req.body.salePointId}})
-      if(!current_sale_point){
-      return res.status(400).json({ state: 'F', error: "Invalid sale point id" });
-      }
-    }
     if (!req.body.serialNumber) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       req.app.locals.logger.warnLog('central_tablet_controller.js','You must send the serial number of the central tablet to be able to update one', 'Invalid fields');
       return;
     }
-
+    if(req.body.salePointId){
+      let current_sale_point = await sale_point.findOne({where: {id: req.body.salePointId}})
+      if(!current_sale_point){
+        req.app.locals.logger.warnLog('central_tablet_controller.js',`Unable to update the central tablet '${req.body.serialNumber }' to the sale point ${req.body.salePointId}`, 'Invalid sale point id');
+      return res.status(400).json({ state: 'F', error: "Invalid sale point id" });
+      }
+    }
     const current_central_tablet = await central_tablet.findOne({
       where: { serialNumber: req.body.serialNumber },
     });
