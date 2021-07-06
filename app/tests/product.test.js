@@ -161,7 +161,7 @@ describe('Product CRUD Testing', () => {
       .send({
         sku: 123,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Product doesn't exist");
   });
@@ -209,7 +209,7 @@ describe('Product CRUD Testing', () => {
         sku: 123,
         price: 20000,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Product's sku doesnt exist");
   });
@@ -268,7 +268,7 @@ describe('Product CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Product's sku doesn't exist");
   });
@@ -281,8 +281,7 @@ describe('Product CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual('OK');
+    expect(res.statusCode).toEqual(204);
   });
 
   afterAll(async () => {

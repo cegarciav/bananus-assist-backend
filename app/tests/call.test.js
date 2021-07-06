@@ -94,7 +94,7 @@ describe('Session endpoints testing', () => {
     const res4 = await request(app)
       .patch('/assistants')
       .send();
-    expect(res4.statusCode).toEqual(400);
+    expect(res4.statusCode).toEqual(403);
     expect(res4.body.state).toEqual('F');
     expect(res4.body.error).toEqual('Only users can do this action');
   });
@@ -106,7 +106,7 @@ describe('Session endpoints testing', () => {
         authorization: 'INVALID-TOKEN',
       })
       .send();
-    expect(res4.statusCode).toEqual(400);
+    expect(res4.statusCode).toEqual(403);
     expect(res4.body.state).toEqual('F');
     expect(res4.body.error).toEqual('Only users can do this action');
   });
@@ -128,7 +128,7 @@ describe('Session endpoints testing', () => {
         userId: current_assistant.id,
       },
     });
-    expect(res4.statusCode).toEqual(200);
+    expect(res4.statusCode).toEqual(201);
     expect(last_record).toBeTruthy();
     expect(last_record.calls).toEqual(1);
   });
@@ -150,7 +150,7 @@ describe('Session endpoints testing', () => {
       },
     });
 
-    expect(res4.statusCode).toEqual(200);
+    expect(res4.statusCode).toEqual(201);
     expect(last_record).toBeTruthy();
     expect(last_record.calls).toEqual(1);
   });
@@ -170,7 +170,7 @@ describe('Session endpoints testing', () => {
       },
     });
 
-    expect(res4.statusCode).toEqual(200);
+    expect(res4.statusCode).toEqual(201);
     expect(last_record).toBeTruthy();
     expect(last_record.calls).toEqual(2);
   });
@@ -192,7 +192,7 @@ describe('Session endpoints testing', () => {
       },
     });
 
-    expect(res4.statusCode).toEqual(200);
+    expect(res4.statusCode).toEqual(201);
     expect(last_record).toBeTruthy();
     expect(last_record.calls).toEqual(2);
   });

@@ -1,0 +1,20 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Bananus Assist API",
+    "description": "Bananus Assist API documentation"
+  },
+  "servers": [{
+    "url": "http://localhost:3001",
+    "description": "development"
+  }],
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    }
+  }
+}

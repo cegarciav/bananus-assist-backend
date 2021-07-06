@@ -1,7 +1,47 @@
 const { uuid } = require('uuidv4');
 const { device, central_tablet } = require('../models');
 
-// CREATE
+/**
+ * @swagger
+ * /devices:
+ *  post:
+ *    tags:
+ *      - Devices
+ *    summary: new device
+ *    description: Allows to create a new device
+ *    operationId: devices.create
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - centralTabletId
+ *              - serialNumber
+ *              - password
+ *            properties:
+ *              centralTabletId:
+ *                type: string
+ *                format: uuidv4
+ *                description: id of an existing central tablet
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *              password:
+ *                type: string
+ *    responses:
+ *      '201':
+ *        description: Device created successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function screate(req, res) {
   try {
     if (!req.body.centralTabletId || !req.body.password || !req.body.serialNumber) {
@@ -67,7 +107,27 @@ async function screate(req, res) {
   }
 }
 
-// READ ALL
+/**
+ * @swagger
+ * /devices:
+ *  get:
+ *    tags:
+ *      - Devices
+ *    summary: list of devices
+ *    description: Allows to retrieve a list of devices
+ *    operationId: devices.list
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: List of devices retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function sshow_all(req, res) {
   try {
     const devices = await device.findAll();
@@ -91,7 +151,41 @@ async function sshow_all(req, res) {
   }
 }
 
-// READ ONE
+/**
+ * @swagger
+ * /devices/show:
+ *  post:
+ *    tags:
+ *      - Devices
+ *    summary: one device
+ *    description: Allows to retrieve one device
+ *    operationId: devices.show
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *    responses:
+ *      '200':
+ *        description: Information of the device retrieved successfully
+ *      '400':
+ *        description: Serial Number not sent
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '404':
+ *        description: Device does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function sshow(req, res) {
   try {
     if (!req.body.serialNumber) {
@@ -107,7 +201,7 @@ async function sshow(req, res) {
       where: { serialNumber: req.body.serialNumber },
     });
     if (!current_device) {
-      res.status(400).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
+      res.status(404).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
       req.app.locals.logger.warnLog(
         'device_controller.js',
         `Unable to read a device with the serial number'${req.body.serialNumber}'`,
@@ -135,7 +229,49 @@ async function sshow(req, res) {
   }
 }
 
-// UPDATE
+/**
+ * @swagger
+ * /devices:
+ *  patch:
+ *    tags:
+ *      - Devices
+ *    summary: edit one device
+ *    description: Allows to modify one device
+ *    operationId: devices.modify
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *            properties:
+ *              centralTabletId:
+ *                type: string
+ *                format: uuidv4
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *              new_serialNumber:
+ *                type: string
+ *                unique: true
+ *              password:
+ *                type: string
+ *    responses:
+ *      '200':
+ *        description: device updated successfully
+ *      '400':
+ *        description: Serial Number not sent or some of the fields sent are not valid
+ *      '403':
+ *        description: You don't have the authorization to modify this resource
+ *      '404':
+ *        description: Device does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function update(req, res) {
   try {
     if (!req.body.serialNumber) {
@@ -151,7 +287,7 @@ async function update(req, res) {
     const current_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
 
     if (!current_device) {
-      res.status(400).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
+      res.status(404).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
       req.app.locals.logger.warnLog(
         'device_controller.js',
         `Unable to update the device '${req.body.serialNumber}'`,
@@ -222,7 +358,41 @@ async function update(req, res) {
   }
 }
 
-// DELETE
+/**
+ * @swagger
+ * /devices:
+ *  delete:
+ *    tags:
+ *      - Devices
+ *    summary: delete one device
+ *    description: Allows to delete one device
+ *    operationId: devices.destroy
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *    responses:
+ *      '204':
+ *        description: Device deleted successfully
+ *      '400':
+ *        description: Serial Number not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
+ *      '404':
+ *        description: Device does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function sdelete(req, res) {
   try {
     if (!req.body.serialNumber) {
@@ -238,7 +408,7 @@ async function sdelete(req, res) {
     const current_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
 
     if (!current_device) {
-      res.status(400).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
+      res.status(404).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
       req.app.locals.logger.warnLog(
         'device_controller.js',
         `Unable to delete a device with the serial number '${req.body.serialNumber}'`,
@@ -251,7 +421,7 @@ async function sdelete(req, res) {
         serialNumber: req.body.serialNumber,
       },
     });
-    res.status(200).json({
+    res.status(204).json({
       state: 'OK',
     });
     req.app.locals.logger.debugLog(

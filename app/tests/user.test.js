@@ -123,7 +123,7 @@ describe('User CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User email doesnt exist');
   });
@@ -161,7 +161,7 @@ describe('User CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("User's email doesnt exist");
   });
@@ -240,7 +240,7 @@ describe('User CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User email doesnt exist');
   });
@@ -253,8 +253,7 @@ describe('User CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual('OK');
+    expect(res.statusCode).toEqual(204);
   });
 
   afterAll(async () => {

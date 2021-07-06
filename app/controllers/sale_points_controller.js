@@ -1,7 +1,43 @@
 const { uuid } = require('uuidv4');
 const { sale_point, store } = require('../models');
 
-// CREATE
+/**
+ * @swagger
+ * /sale-points:
+ *  post:
+ *    tags:
+ *      - Sale Points
+ *    summary: new sale point
+ *    description: Allows to create a new sale point for a given store
+ *    operationId: sale-points.create
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - department
+ *              - storeId
+ *            properties:
+ *              department:
+ *                type: string
+ *              storeId:
+ *                type: string
+ *                format: uuidv4
+ *                description: id of an existing store
+ *    responses:
+ *      '201':
+ *        description: Sale Point created successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function spcreate(req, res) {
   try {
     if (!req.body.storeId || !req.body.department) {
@@ -63,7 +99,27 @@ async function spcreate(req, res) {
   }
 }
 
-// READ ALL
+/**
+ * @swagger
+ * /sale-points:
+ *  get:
+ *    tags:
+ *      - Sale Points
+ *    summary: list of sale points
+ *    description: Allows to retrieve a list of sale points
+ *    operationId: sale-points.list
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: List of sale points retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function spshow_all(req, res) {
   try {
     const sale_points = await sale_point.findAll();
@@ -86,7 +142,39 @@ async function spshow_all(req, res) {
   }
 }
 
-// READ ONE
+/**
+ * @swagger
+ * /sale-points/show:
+ *  post:
+ *    tags:
+ *      - Sale Points
+ *    summary: one sale point
+ *    description: Allows to retrieve one sale point
+ *    operationId: sale-points.show
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - id
+ *            properties:
+ *              id:
+ *                type: string
+ *                format: uuidv4
+ *    responses:
+ *      '200':
+ *        description: Information of the sale point retrieved successfully
+ *      '400':
+ *        description: Id not sent or sale point does not exist
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function spshow(req, res) {
   try {
     if (!req.body.id) {
@@ -129,7 +217,47 @@ async function spshow(req, res) {
   }
 }
 
-// UPDATE
+/**
+ * @swagger
+ * /sale-points:
+ *  patch:
+ *    tags:
+ *      - Sale Points
+ *    summary: edit one sale point
+ *    description: Allows to modify one sale point
+ *    operationId: sale-points.modify
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - id
+ *            properties:
+ *              id:
+ *                type: string
+ *                format: uuidv4
+ *              department:
+ *                type: string
+ *              storeId:
+ *                type: string
+ *                format: uuidv4
+ *                description: id of an existing store
+ *    responses:
+ *      '200':
+ *        description: Sale point updated successfully
+ *      '400':
+ *        description: Id not sent or some of the fields sent are not valid
+ *      '403':
+ *        description: You don't have the authorization to modify this resource
+ *      '404':
+ *        description: Sale point does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function spupdate(req, res) {
   try {
     if (!req.body.id) {
@@ -143,7 +271,7 @@ async function spupdate(req, res) {
     }
     const sale_point_id = await sale_point.findOne({ where: { id: req.body.id } });
     if (!sale_point_id) {
-      res.status(400).json({ state: 'F', error: 'Sale point doesnt exist' });
+      res.status(404).json({ state: 'F', error: 'Sale point doesnt exist' });
       req.app.locals.logger.warnLog(
         'sale_points_controller.js',
         `Unable to update the sale point '${req.body.id}'`,
@@ -207,7 +335,41 @@ async function spupdate(req, res) {
   }
 }
 
-// DELETE
+/**
+ * @swagger
+ * /sale-points:
+ *  delete:
+ *    tags:
+ *      - Sale Points
+ *    summary: delete one sale point
+ *    description: Allows to delete one sale point
+ *    operationId: sale-points.destroy
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - id
+ *            properties:
+ *              id:
+ *                type: string
+ *                format: uuidv4
+ *    responses:
+ *      '204':
+ *        description: Sale point deleted successfully
+ *      '400':
+ *        description: Id not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
+ *      '404':
+ *        description: Sale point does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function spdelete(req, res) {
   try {
     if (!req.body.id) {
@@ -221,7 +383,7 @@ async function spdelete(req, res) {
     }
     const curr_sale_point = await sale_point.findOne({ where: { id: req.body.id } });
     if (!curr_sale_point) {
-      res.status(400).json({ state: 'F', error: "Sale's id doesn't exist" });
+      res.status(404).json({ state: 'F', error: "Sale's id doesn't exist" });
       req.app.locals.logger.warnLog(
         'sale_points_controller.js',
         `Unable to delete a sale point with the id '${req.body.id}'`,
@@ -235,7 +397,7 @@ async function spdelete(req, res) {
         id: req.body.id,
       },
     });
-    res.status(200).json({
+    res.status(204).json({
       state: 'OK',
     });
     req.app.locals.logger.debugLog(

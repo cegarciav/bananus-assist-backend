@@ -92,7 +92,7 @@ describe('User Supervisor Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(403);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });
@@ -108,7 +108,7 @@ describe('User Supervisor Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(403);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });
@@ -155,7 +155,7 @@ describe('User Supervisor Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(403);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });
@@ -169,7 +169,7 @@ describe('User Supervisor Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(403);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });
@@ -211,7 +211,7 @@ describe('User Supervisor Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(403);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User must be a supervisor to be able to assign a store');
   });

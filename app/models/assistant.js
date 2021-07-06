@@ -5,9 +5,26 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class assistant extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * components:
+     *   schemas:
+     *     assistant:
+     *       type: object
+     *       required:
+     *         - id
+     *         - userId
+     *         - storeId
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         userId:
+     *           type: string
+     *           format: uuidv4
+     *           description: id of an existing user
+     *         storeId:
+     *           type: string
+     *           format: uuidv4
+     *           description: id of an existing store
      */
     static associate() {
       // define association here

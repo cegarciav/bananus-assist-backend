@@ -5,9 +5,23 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class available_payment_method extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     available payment method:
+     *       type: object
+     *       required:
+     *         - payment_methodId
+     *         - productId
+     *       properties:
+     *         payment_methodId:
+     *           type: string
+     *           format: uuidv4
+     *           description: id of an existing payment method
+     *         productId:
+     *           type: string
+     *           format: uuidv4
+     *           description: id of an existing product
      */
     static associate(models) {
       this.belongsTo(models.payment_method, { foreignKey: 'payment_methodId' });

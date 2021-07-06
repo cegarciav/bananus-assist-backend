@@ -7,6 +7,47 @@ const {
   available_payment_method,
 } = require('../models');
 
+/**
+ * @swagger
+ * /massive-charge:
+ *  post:
+ *    tags:
+ *      - Bulk Load
+ *    summary: create multiple products
+ *    description: |
+ *      Allows to create multiple products with their technical
+ *      characteristics and payment methods included. An Excel file
+ *      is required with 3 sheets: one for the products, one for the
+ *      the technical characteristics and one for the payment methods.
+ *      The first sheet has 4 columns: name, sku, price, and image.
+ *      The second sheet has 3 columns: key, value, and sku
+ *      The third sheet has 2 columns: sku and paymentMethod
+ *    operationId: massive-charge.create
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            required:
+ *              - excel
+ *            type: object
+ *            properties:
+ *              excel:
+ *                type: string
+ *                format: binary
+ *    responses:
+ *      '200':
+ *        description: Massive charge performed successfully
+ *      '400':
+ *        description: File containing data is missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function create(req, res) {
   if (!req.files) {
     res.status(400).json({ state: 'F', error: 'No file uploaded' });

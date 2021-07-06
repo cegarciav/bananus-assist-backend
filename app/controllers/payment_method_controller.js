@@ -10,6 +10,8 @@ const { payment_method } = require('../models');
  *    summary: new payment method
  *    description: Allows to create a new payment method
  *    operationId: payment-methods.create
+ *    security:
+ *      - apiKey: []
  *    produces:
  *      - application/json
  *    requestBody:
@@ -27,6 +29,8 @@ const { payment_method } = require('../models');
  *        description: Payment method created successfully
  *      '400':
  *        description: Name not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
  *      '500':
  *        description: Internal server error
  */
@@ -92,11 +96,15 @@ async function create(req, res) {
  *    summary: list of payment methods
  *    description: Allows to retrieve a list of payment methods
  *    operationId: payment-methods.list
+ *    security:
+ *      - apiKey: []
  *    produces:
  *      - application/json
  *    responses:
  *      '200':
  *        description: List of payment-methods retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
  *      '500':
  *        description: Internal server error
  */
@@ -131,6 +139,8 @@ async function show_all(req, res) {
  *    summary: one payment method
  *    description: Allows to retrieve one payment method
  *    operationId: payment-methods.show
+ *    security:
+ *      - apiKey: []
  *    produces:
  *      - application/json
  *    requestBody:
@@ -148,6 +158,8 @@ async function show_all(req, res) {
  *        description: Information of the payment method retrieved successfully
  *      '400':
  *        description: Name not sent
+ *      '403':
+ *        description: You don't have the authorization to read this resource
  *      '404':
  *        description: payment method does not exist
  *      '500':
@@ -207,6 +219,8 @@ async function show(req, res) {
  *    summary: delete one payment method
  *    description: Allows to delete one payment method
  *    operationId: payment-methods.destroy
+ *    security:
+ *      - apiKey: []
  *    produces:
  *      - application/json
  *    requestBody:
@@ -220,10 +234,12 @@ async function show(req, res) {
  *                type: string
  *                unique: true
  *    responses:
- *      '200':
+ *      '204':
  *        description: Payment method deleted successfully
  *      '400':
  *        description: Name not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
  *      '404':
  *        description: payment method does not exist
  *      '500':

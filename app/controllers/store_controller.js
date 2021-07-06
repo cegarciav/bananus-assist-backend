@@ -1,7 +1,42 @@
 const { uuid } = require('uuidv4');
 const { store, user } = require('../models');
 
-// CREATE
+/**
+ * @swagger
+ * /stores:
+ *  post:
+ *    tags:
+ *      - Stores
+ *    summary: new store
+ *    description: Allows to create a new store
+ *    operationId: stores.create
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - name
+ *              - address
+ *            properties:
+ *              name:
+ *                type: string
+ *              address:
+ *                type: string
+ *                unique: true
+ *    responses:
+ *      '201':
+ *        description: Store created successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function screate(req, res) {
   try {
     if (!req.body.name || !req.body.address) {
@@ -51,7 +86,27 @@ async function screate(req, res) {
   }
 }
 
-// READ ALL
+/**
+ * @swagger
+ * /stores:
+ *  get:
+ *    tags:
+ *      - Stores
+ *    summary: list of stores
+ *    description: Allows to retrieve a list of stores
+ *    operationId: stores.list
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: List of stores retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function sshow_all(req, res) {
   try {
     const stores = await store.findAll({
@@ -85,7 +140,39 @@ async function sshow_all(req, res) {
   }
 }
 
-// READ ONE
+/**
+ * @swagger
+ * /stores/show:
+ *  post:
+ *    tags:
+ *      - Stores
+ *    summary: one store
+ *    description: Allows to retrieve one store
+ *    operationId: stores.show
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - address
+ *            properties:
+ *              address:
+ *                type: string
+ *                unique: true
+ *    responses:
+ *      '200':
+ *        description: Information of the store retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '400':
+ *        description: Address not sent or store does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function sshow(req, res) {
   try {
     if (!req.body.address) {
@@ -139,7 +226,46 @@ async function sshow(req, res) {
   }
 }
 
-// UPDATE
+/**
+ * @swagger
+ * /stores:
+ *  patch:
+ *    tags:
+ *      - Stores
+ *    summary: edit one store
+ *    description: Allows to modify one store
+ *    operationId: stores.modify
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - address
+ *            properties:
+ *              address:
+ *                type: string
+ *                unique: true
+ *              new_address:
+ *                type: string
+ *                unique: true
+ *              name:
+ *                type: string
+ *    responses:
+ *      '200':
+ *        description: Store updated successfully
+ *      '400':
+ *        description: Address not sent or some of the fields sent are not valid
+ *      '403':
+ *        description: You don't have the authorization to modify this resource
+ *      '404':
+ *        description: Store does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function update(req, res) {
   try {
     if (!req.body.address) {
@@ -155,7 +281,7 @@ async function update(req, res) {
     const current_store = await store.findOne({ where: { address: req.body.address } });
 
     if (!current_store) {
-      res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+      res.status(404).json({ state: 'F', error: 'Store address doesn\'t exist' });
       req.app.locals.logger.warnLog(
         'store_controller.js',
         `Unable to update the store '${req.body.address}'`,
@@ -202,7 +328,41 @@ async function update(req, res) {
   }
 }
 
-// DELETE
+/**
+ * @swagger
+ * /stores:
+ *  delete:
+ *    tags:
+ *      - Stores
+ *    summary: delete one store
+ *    description: Allows to delete one store
+ *    operationId: stores.destroy
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - address
+ *            properties:
+ *              address:
+ *                type: string
+ *                unique: true
+ *    responses:
+ *      '204':
+ *        description: Store deleted successfully
+ *      '400':
+ *        description: Address not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
+ *      '404':
+ *        description: Store does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function sdelete(req, res) {
   try {
     if (!req.body.address) {
@@ -218,7 +378,7 @@ async function sdelete(req, res) {
     const current_store = await store.findOne({ where: { address: req.body.address } });
 
     if (!current_store) {
-      res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+      res.status(404).json({ state: 'F', error: 'Store address doesn\'t exist' });
       req.app.locals.logger.warnLog(
         'store_controller.js',
         `Unable to delete a store with the address '${req.body.address}'`,
@@ -231,7 +391,7 @@ async function sdelete(req, res) {
         address: req.body.address,
       },
     });
-    res.status(200).json({
+    res.status(204).json({
       state: 'OK',
     });
     req.app.locals.logger.debugLog(
