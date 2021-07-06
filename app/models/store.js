@@ -5,9 +5,24 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class store extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     store:
+     *       type: object
+     *       required:
+     *         - id
+     *         - name
+     *         - address
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         name:
+     *           type: string
+     *         address:
+     *           type: string
+     *           unique: true
      */
     static associate(models) {
       this.belongsToMany(models.user, { through: models.assistant, as: 'assistants' });

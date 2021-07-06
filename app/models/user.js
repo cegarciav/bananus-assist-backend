@@ -15,9 +15,37 @@ async function buildPasswordHash(instance) {
 module.exports = (sequelize, DataTypes) => {
   class user extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     user:
+     *       type: object
+     *       required:
+     *         - id
+     *         - email
+     *         - password
+     *         - rol
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         name:
+     *           type: string
+     *         email:
+     *           type: string
+     *           format: email
+     *           unique: true
+     *         password:
+     *           type: string
+     *         rol:
+     *           type: string
+     *           enum: [administrator, supervisor, assistant]
+     *         token:
+     *           type: string
+     *         storeId:
+     *           type: string
+     *           format: uuidv4
+     *           description: id of an existing store
      */
     static associate(models) {
       this.belongsToMany(models.store, { through: models.assistant });

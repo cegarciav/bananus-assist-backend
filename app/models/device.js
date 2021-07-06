@@ -15,9 +15,31 @@ async function buildPasswordHash(instance) {
 module.exports = (sequelize, DataTypes) => {
   class device extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     device:
+     *       type: object
+     *       required:
+     *         - id
+     *         - serialNumber
+     *         - password
+     *         - central_tabletId
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         serialNumber:
+     *           type: string
+     *           unique: true
+     *         password:
+     *           type: string
+     *         central_tabletId:
+     *           type: string
+     *           format: uuidv4
+     *           description: id of an existing central tablet
+     *         token:
+     *           type: string
      */
     static associate(models) {
       this.belongsTo(models.central_tablet, { foreignKey: 'central_tabletId' });

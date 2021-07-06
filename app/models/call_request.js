@@ -5,9 +5,25 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class call_request extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     call request:
+     *       type: object
+     *       required:
+     *         - id
+     *         - calls
+     *         - date
+     *       properties:
+     *         id:
+     *           type: integer
+     *           unique: true
+     *         calls:
+     *           type: integer
+     *           minimum: 0
+     *         date:
+     *           type: string
+     *           format: date-time
      */
     static associate() {
       // define association here
