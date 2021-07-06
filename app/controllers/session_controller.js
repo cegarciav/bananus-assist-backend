@@ -9,15 +9,15 @@ const {
 
 async function set_middleware(req, res, next) {
   req.logged = false;
-  if (req.headers['Autorization']) {
+  if (req.headers['authorization']) {
     let curr_user;
     let curr_device;
     let curr_central_tablet;
     let curr_entity;
     try {
-      curr_user = await user.findOne({ where: { token: req.headers['Autorization'] } });
-      curr_device = await device.findOne({ where: { token: req.headers['Autorization'] } });
-      curr_central_tablet = await central_tablet.findOne({ where: { token: req.headers['Autorization'] } });
+      curr_user = await user.findOne({ where: { token: req.headers['authorization'] } });
+      curr_device = await device.findOne({ where: { token: req.headers['authorization'] } });
+      curr_central_tablet = await central_tablet.findOne({ where: { token: req.headers['authorization'] } });
       curr_entity = curr_device || curr_central_tablet;
     } catch (e){
       res.status(500).json({ state: 'F', error: 'Internal server error' });
@@ -26,7 +26,7 @@ async function set_middleware(req, res, next) {
     }
     if (curr_user) {
       try {
-        const payload = await jwt.verify(req.headers['Autorization'], process.env.JWT_SECRET);
+        const payload = await jwt.verify(req.headers['authorization'], process.env.JWT_SECRET);
         req.logged = true;
         req.email = payload;
         req.rol = curr_user.rol;
@@ -40,7 +40,7 @@ async function set_middleware(req, res, next) {
     }
     if (curr_entity) {
       try {
-        const payload = await jwt.verify(req.headers['Autorization'], process.env.JWT_SECRET);
+        const payload = await jwt.verify(req.headers['authorization'], process.env.JWT_SECRET);
         req.logged = true;
         req.device = ((curr_device) ? 'device' : 'central_tablet');
         req.serialNumber = payload;
