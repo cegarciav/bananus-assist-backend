@@ -1,23 +1,46 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
+const { uuid } = require('uuidv4');
 const app = require('../server');
+const { user } = require('../models');
 
 let centralTablet = null;
 let salePoint = null;
 let store = null;
+let token;
 
 describe('Central Tablet CRUD Testing', () => {
   beforeAll(async () => {
     // Create a store point to use its ID in the tests
+    await user.create({
+      id: uuid(),
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
+    });
+
+    const login = await request(app)
+      .post('/sessions')
+      .send({
+        email: 'admin@hotmail.cl',
+        password: '123',
+      });
+
+    token = login.body.token;
+
     await request(app)
       .post('/stores')
       .send({
         name: 'The Store',
         address: 'Fake Street 123',
+      }).set({
+        authorization: token,
       });
 
     const stores = await request(app)
-      .get('/stores');
+      .get('/stores').set({
+        authorization: token,
+      });
 
     [store] = stores.body;
 
@@ -27,9 +50,13 @@ describe('Central Tablet CRUD Testing', () => {
       .send({
         storeId: store.id,
         department: 'Some Department in Central Tablet',
+      }).set({
+        authorization: token,
       });
     const salePoints = await request(app)
-      .get('/sale-points');
+      .get('/sale-points').set({
+        authorization: token,
+      });
     [salePoint] = salePoints.body;
 
     // Create a central tablet to use its ID in the tests
@@ -39,9 +66,13 @@ describe('Central Tablet CRUD Testing', () => {
         salePointId: salePoint.id,
         serialNumber: '100102312-2139123',
         password: '12345',
+      }).set({
+        authorization: token,
       });
     const centralTablets = await request(app)
-      .get('/central-tablets');
+      .get('/central-tablets').set({
+        authorization: token,
+      });
     [centralTablet] = centralTablets.body;
   });
 
@@ -265,7 +296,9 @@ describe('Central Tablet CRUD Testing', () => {
   afterAll(async () => {
     // Delete all central tablets created
     const centralTablets = await request(app)
-      .get('/central-tablets');
+      .get('/central-tablets').set({
+        authorization: token,
+      });
 
     await Promise.all(centralTablets.body
       .map(async (sp) => {
@@ -273,6 +306,8 @@ describe('Central Tablet CRUD Testing', () => {
           .delete('/central-tablets')
           .send({
             serialNumber: sp.serialNumber,
+          }).set({
+            authorization: token,
           });
       }));
 
@@ -281,6 +316,8 @@ describe('Central Tablet CRUD Testing', () => {
       .delete('/sale-points')
       .send({
         id: salePoint.id,
+      }).set({
+        authorization: token,
       });
 
     // Delete store created
@@ -288,6 +325,11 @@ describe('Central Tablet CRUD Testing', () => {
       .delete('/stores')
       .send({
         address: store.address,
+      }).set({
+        authorization: token,
       });
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
   });
 });

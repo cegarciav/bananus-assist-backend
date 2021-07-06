@@ -1,9 +1,11 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
+const { uuid } = require('uuidv4');
 const app = require('../server');
+const { user } = require('../models');
 
 describe('Product CRUD Testing', () => {
   let paymentMethod;
+  let token;
   beforeAll(async () => {
     const res = await request(app)
       .post('/payment-methods')
@@ -11,6 +13,22 @@ describe('Product CRUD Testing', () => {
         name: 'Credit card',
       });
     paymentMethod = res.body.paymentMethod;
+    await user.create({
+      id: uuid(),
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
+    });
+
+    const login = await request(app)
+      .post('/sessions')
+      .send({
+        email: 'admin@hotmail.cl',
+        password: '123',
+      });
+
+    token = login.body.token;
   });
   // CREATE
   it('should fail creating fields not provided', async () => {
@@ -234,7 +252,9 @@ describe('Product CRUD Testing', () => {
   it('should fail deleting one product because sku is not sent', async () => {
     const res = await request(app)
       .delete('/products')
-      .send({});
+      .send({}).set({
+        authorization: token,
+      });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
@@ -245,6 +265,8 @@ describe('Product CRUD Testing', () => {
       .delete('/products')
       .send({
         sku: 123,
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -256,6 +278,8 @@ describe('Product CRUD Testing', () => {
       .delete('/products')
       .send({
         sku: 12345678,
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -266,6 +290,11 @@ describe('Product CRUD Testing', () => {
       .delete('/payment-methods')
       .send({
         name: 'Credit card',
+      }).set({
+        authorization: token,
       });
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
   });
 });

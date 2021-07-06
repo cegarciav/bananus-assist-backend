@@ -1,14 +1,38 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
+const { uuid } = require('uuidv4');
 const app = require('../server');
+const { user } = require('../models');
+
+let token;
 
 describe('User CRUD Testing', () => {
   // CREATE
+  beforeAll(async () => {
+    // Create a store point to use its ID in the tests
+    await user.create({
+      id: uuid(),
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
+    });
+
+    const login = await request(app)
+      .post('/sessions')
+      .send({
+        email: 'admin@hotmail.cl',
+        password: '123',
+      });
+
+    token = login.body.token;
+  });
 
   it('should fail create a new user because email and name not send', async () => {
     const res = await request(app)
       .post('/users')
-      .send();
+      .send().set({
+        authorization: token,
+      });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
@@ -19,6 +43,8 @@ describe('User CRUD Testing', () => {
       .post('/users')
       .send({
         name: 'test',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -30,6 +56,8 @@ describe('User CRUD Testing', () => {
       .post('/users')
       .send({
         email: 'test01@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -42,6 +70,8 @@ describe('User CRUD Testing', () => {
       .send({
         name: 'test',
         email: 'test01@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
@@ -53,6 +83,8 @@ describe('User CRUD Testing', () => {
       .send({
         name: 'test2',
         email: 'test01@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -63,7 +95,9 @@ describe('User CRUD Testing', () => {
 
   it('should read all users', async () => {
     const res = await request(app)
-      .get('/users');
+      .get('/users').set({
+        authorization: token,
+      });
 
     expect(res.statusCode).toEqual(200);
   });
@@ -73,7 +107,9 @@ describe('User CRUD Testing', () => {
   it('should fail read user because email not send', async () => {
     const res = await request(app)
       .post('/users/show')
-      .send({});
+      .send({}).set({
+        authorization: token,
+      });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
@@ -84,6 +120,8 @@ describe('User CRUD Testing', () => {
       .post('/users/show')
       .send({
         email: 'notanemail@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -95,6 +133,8 @@ describe('User CRUD Testing', () => {
       .post('/users/show')
       .send({
         email: 'test01@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.name).toEqual('test');
@@ -105,7 +145,9 @@ describe('User CRUD Testing', () => {
   it('should fail update user email not send', async () => {
     const res = await request(app)
       .patch('/users')
-      .send();
+      .send().set({
+        authorization: token,
+      });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
@@ -116,6 +158,8 @@ describe('User CRUD Testing', () => {
       .patch('/users')
       .send({
         email: 'notanemail@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -128,6 +172,8 @@ describe('User CRUD Testing', () => {
       .send({
         email: 'test01@test.cl',
         new_email: 'test01@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -140,6 +186,8 @@ describe('User CRUD Testing', () => {
       .send({
         new_email: 'testupdate@test.cl',
         email: 'test01@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -151,6 +199,8 @@ describe('User CRUD Testing', () => {
       .send({
         name: 'update',
         email: 'testupdate@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -162,6 +212,8 @@ describe('User CRUD Testing', () => {
       .send({
         email: 'testupdate@test.cl',
         password: 'update',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -172,7 +224,9 @@ describe('User CRUD Testing', () => {
   it('should fail delete user because email not send', async () => {
     const res = await request(app)
       .delete('/users')
-      .send({});
+      .send({}).set({
+        authorization: token,
+      });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
@@ -183,6 +237,8 @@ describe('User CRUD Testing', () => {
       .delete('/users')
       .send({
         email: 'test01@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -194,10 +250,16 @@ describe('User CRUD Testing', () => {
       .delete('/users')
       .send({
         email: 'testupdate@test.cl',
+      }).set({
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
   });
 
-  afterAll(async () => { });
+  afterAll(async () => {
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
+  });
 });
