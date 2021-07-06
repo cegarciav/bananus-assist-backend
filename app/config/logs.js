@@ -1,66 +1,68 @@
+/* eslint-disable class-methods-use-this */
 const pino = require('pino');
+
 const logger = pino(
   {
     prettyPrint: {
       colorize: true,
       levelFirst: true,
-      translateTime: "yyyy-dd-mm, h:MM:ss TT",
+      translateTime: 'yyyy-dd-mm, h:MM:ss TT',
     },
   },
 );
 
-class appLogger {
-    constructor(configContext) {
-        logger.level = 'info';
-        if (['development', 'test'].includes(configContext))
-            logger.level = 'debug';
-    }
+class AppLogger {
+  constructor(configContext) {
+    logger.level = 'info';
+    if (['development', 'test'].includes(configContext)) logger.level = 'debug';
 
-    debugLog(context, message, additionalInfo) {
-        logger.child({
-            type: "debug",
-            context,
-            additionalInfo
-        })
-        .debug(message)
-    }
+    this.debugLog = this.debugLog.bind(this);
+  }
 
-    infoLog(context, message, additionalInfo) {
-        logger.child({
-            type: "info",
-            context,
-            additionalInfo
-        })
-        .info(message)
-    }
+  debugLog(context, message, additionalInfo) {
+    logger.child({
+      type: 'debug',
+      context,
+      additionalInfo,
+    })
+      .debug(message);
+  }
 
-    warnLog(context, message, additionalInfo) {
-        logger.child({
-            type: "warn",
-            context,
-            additionalInfo
-        })
-        .warn(message)
-    }
+  infoLog(context, message, additionalInfo) {
+    logger.child({
+      type: 'info',
+      context,
+      additionalInfo,
+    })
+      .info(message);
+  }
 
-    errorLog(context, message, additionalInfo) {
-        logger.child({
-            type: "error",
-            context,
-            additionalInfo
-        })
-        .error(message)
-    }
+  warnLog(context, message, additionalInfo) {
+    logger.child({
+      type: 'warn',
+      context,
+      additionalInfo,
+    })
+      .warn(message);
+  }
 
-    fatalLog(context, message, additionalInfo) {
-        logger.child({
-            type: "error",
-            context,
-            additionalInfo
-        })
-        .fatal(message)
-    }
+  errorLog(context, message, additionalInfo) {
+    logger.child({
+      type: 'error',
+      context,
+      additionalInfo,
+    })
+      .error(message);
+  }
+
+  fatalLog(context, message, additionalInfo) {
+    logger.child({
+      type: 'error',
+      context,
+      additionalInfo,
+    })
+      .fatal(message);
+  }
 }
 
-
-module.exports = appLogger;
+module.exports = AppLogger;

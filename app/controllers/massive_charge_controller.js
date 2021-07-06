@@ -10,7 +10,11 @@ const {
 async function create(req, res) {
   if (!req.files) {
     res.status(400).json({ state: 'F', error: 'No file uploaded' });
-    req.app.locals.logger.errorLog('massive_charge_controller.js','Unable to perform a massive charge of products', 'No file uploaded');
+    req.app.locals.logger.errorLog(
+      'massive_charge_controller.js',
+      'Unable to perform a massive charge of products',
+      'No file uploaded',
+    );
     return;
   }
 
@@ -56,7 +60,11 @@ async function create(req, res) {
           success += 1;
         }
       } catch (e) {
-        req.app.locals.logger.errorLog('massive_charge_controller.js','Unable to load a product', e);
+        req.app.locals.logger.errorLog(
+          'massive_charge_controller.js',
+          'Unable to load a product',
+          e,
+        );
         failed += 1;
         object_failed.push({
           key: index + 2,
@@ -67,7 +75,6 @@ async function create(req, res) {
   );
 
   // Characteristics
-
   await Promise.all(
     dataCharacteristics.map(async (row, index) => {
       try {
@@ -104,7 +111,11 @@ async function create(req, res) {
           success += 1;
         }
       } catch (e) {
-        req.app.locals.logger.errorLog('massive_charge_controller.js','Unable to load a technical characteristic of a product', e);
+        req.app.locals.logger.errorLog(
+          'massive_charge_controller.js',
+          'Unable to load a technical characteristic of a product',
+          e,
+        );
         failed += 1;
         object_failed.push({
           key: index + 2,
@@ -139,7 +150,11 @@ async function create(req, res) {
           success += 1;
         }
       } catch (e) {
-        req.app.locals.logger.errorLog('massive_charge_controller.js','Unable to load a payment method of a product', e);
+        req.app.locals.logger.errorLog(
+          'massive_charge_controller.js',
+          'Unable to load a payment method of a product',
+          e,
+        );
         failed += 1;
         object_failed.push({
           key: index + 2,
@@ -154,7 +169,11 @@ async function create(req, res) {
     failed,
     failed_products: object_failed,
   });
-  req.app.locals.logger.debugLog('massive_charge_controller.js',`Successfully massive charge of the products`, 'OK');
+  req.app.locals.logger.debugLog(
+    'massive_charge_controller.js',
+    'Successfully massive charge of the products',
+    'OK',
+  );
 }
 
 module.exports = {
