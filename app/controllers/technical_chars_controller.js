@@ -36,6 +36,8 @@ const { technical_char, product } = require('../models');
  *        description: Technical characteristic created successfully
  *      '400':
  *        description: Some of the fields sent are not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
  *      '500':
  *        description: Internal server error
  */
@@ -124,6 +126,8 @@ async function create(req, res) {
  *    responses:
  *      '200':
  *        description: List of technical characteristics retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
  *      '500':
  *        description: Internal server error
  */
@@ -177,6 +181,8 @@ async function show_all(req, res) {
  *        description: Information of the technical characteristic retrieved successfully
  *      '400':
  *        description: Id not sent
+ *      '403':
+ *        description: You don't have the authorization to read this resource
  *      '404':
  *        description: Technical characteristic does not exist
  *      '500':
@@ -255,6 +261,8 @@ async function show(req, res) {
  *        description: Technical characteristic updated successfully
  *      '400':
  *        description: Id not sent
+ *      '403':
+ *        description: You don't have the authorization to modify this resource
  *      '404':
  *        description: Technical characteristic does not exist
  *      '500':
@@ -334,6 +342,8 @@ async function update(req, res) {
  *        description: Technical characteristic deleted successfully
  *      '400':
  *        description: Id not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
  *      '404':
  *        description: Technical characteristic does not exist
  *      '500':

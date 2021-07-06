@@ -163,7 +163,7 @@ describe('Technical Characteristic CRUD Testing', () => {
       .send({
         id: 999999999,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Technical characteristic doesn't exist");
   });
@@ -200,7 +200,7 @@ describe('Technical Characteristic CRUD Testing', () => {
         id: 999999999,
         value: 'some random new value for a technical characteristic',
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Technical characteristic doesn't exist");
   });
@@ -232,7 +232,7 @@ describe('Technical Characteristic CRUD Testing', () => {
       .send({
         id: 999999999,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Technical characteristic doesn't exist");
   });
@@ -243,8 +243,7 @@ describe('Technical Characteristic CRUD Testing', () => {
       .send({
         id: technicalChar.id,
       });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual('OK');
+    expect(res.statusCode).toEqual(204);
   });
 
   afterAll(async () => {

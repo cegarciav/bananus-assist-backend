@@ -7,7 +7,44 @@ const {
 } = require('../models');
 const { Interval } = require('../utils/Time');
 
-// CREATE
+/**
+ * @swagger
+ * /assistants:
+ *  post:
+ *    tags:
+ *      - Assistants
+ *    summary: new assistant
+ *    description: Allows to assign an assistant to a given store
+ *    operationId: assistants.create
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - address
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *                description: email of an existing user
+ *              address:
+ *                type: string
+ *                description: address of an existing store
+ *    responses:
+ *      '201':
+ *        description: Assistant created successfully
+ *      '400':
+ *        description: Email or address not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function ascreate(req, res) {
   try {
     if (!req.body.address || !req.body.email) {
@@ -86,7 +123,27 @@ async function ascreate(req, res) {
   }
 }
 
-// ACCEPT VIDEOCALL
+/**
+ * @swagger
+ * /assistants:
+ *  patch:
+ *    tags:
+ *      - Assistants
+ *    summary: register a call answered
+ *    description: register a call answered by a given assistant
+ *    operationId: assistant.calls-modify
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '201':
+ *        description: Answered call registered successfully
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function accept_call(req, res) {
   try {
     const [today, first_day] = await Interval();
@@ -106,7 +163,7 @@ async function accept_call(req, res) {
         date: today,
         userId: req.assistantId,
       });
-      res.status(200).json({ state: 'OK' });
+      res.status(201).json({ state: 'OK' });
       return;
     }
     await call.update({
@@ -116,7 +173,7 @@ async function accept_call(req, res) {
         id: last_record.id,
       },
     });
-    res.status(200).json({ state: 'OK' });
+    res.status(201).json({ state: 'OK' });
   } catch (e) {
     res.status(500).json({
       state: 'F',
@@ -130,7 +187,46 @@ async function accept_call(req, res) {
   }
 }
 
-// DELETE
+/**
+ * @swagger
+ * /assistants:
+ *  delete:
+ *    tags:
+ *      - Assistants
+ *    summary: delete one assistant
+ *    description: Allows to delete one assistant
+ *    operationId: assistants.destroy
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - address
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *                description: email of an existing user
+ *              address:
+ *                type: string
+ *                description: address of an existing store
+ *    responses:
+ *      '204':
+ *        description: Assistant deleted successfully
+ *      '400':
+ *        description: Email or address not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
+ *      '404':
+ *        description: User is not an assistant of the given store
+ *      '500':
+ *        description: Internal server error
+ */
 async function asdelete(req, res) {
   try {
     if (!req.body.address || !req.body.email) {
@@ -180,7 +276,7 @@ async function asdelete(req, res) {
       return;
     }
     if (!current_assistant) {
-      res.status(400).json({ state: 'F', error: 'User is not a store assistant' });
+      res.status(404).json({ state: 'F', error: 'User is not a store assistant' });
       req.app.locals.logger.warnLog(
         'assistant_controler.js',
         `Unable to unassing user '${req.body.email}' from the store '${req.body.address}'. Non-existent data`,
@@ -195,7 +291,7 @@ async function asdelete(req, res) {
       },
     });
 
-    res.status(200).json({
+    res.status(204).json({
       state: 'OK',
     });
 

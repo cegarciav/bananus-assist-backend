@@ -6,7 +6,54 @@ const {
   sequelize,
 } = require('../models');
 
-// CREATE
+/**
+ * @swagger
+ * /products:
+ *  post:
+ *    tags:
+ *      - Products
+ *    summary: new product
+ *    description: Allows to create a new product
+ *    operationId: product.create
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - name
+ *              - sku
+ *              - price
+ *              - image
+ *            properties:
+ *              name:
+ *                type: string
+ *              sku:
+ *                type: integer
+ *                unique: true
+ *              price:
+ *                type: integer
+ *                minimum: 0
+ *              image:
+ *                type: string
+ *                format: uri
+ *              paymentMethodIds:
+ *                type: array
+ *                items:
+ *                  - type: string
+ *    responses:
+ *      '201':
+ *        description: Product created successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function create(req, res) {
   let transaction;
   try {
@@ -102,7 +149,27 @@ async function create(req, res) {
   }
 }
 
-// READ ALL
+/**
+ * @swagger
+ * /products:
+ *  get:
+ *    tags:
+ *      - Products
+ *    summary: list of products
+ *    description: Allows to retrieve a list of products
+ *    operationId: products.list
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: List of products retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function show_all(req, res) {
   try {
     const products = await product.findAll({
@@ -133,7 +200,41 @@ async function show_all(req, res) {
   }
 }
 
-// READ ONE
+/**
+ * @swagger
+ * /products/show:
+ *  post:
+ *    tags:
+ *      - Products
+ *    summary: one product
+ *    description: Allows to retrieve one product
+ *    operationId: products.show
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - sku
+ *            properties:
+ *              sku:
+ *                type: integer
+ *                unique: true
+ *    responses:
+ *      '200':
+ *        description: Information of the product retrieved successfully
+ *      '400':
+ *        description: Sku not sent
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '404':
+ *        description: Product does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function show(req, res) {
   try {
     if (!req.body.sku) {
@@ -158,7 +259,7 @@ async function show(req, res) {
     });
 
     if (!current_product) {
-      res.status(400).json({ state: 'F', error: "Product doesn't exist" });
+      res.status(404).json({ state: 'F', error: "Product doesn't exist" });
       req.app.locals.logger.warnLog(
         'product_controller.js',
         `Unable to read a product with the sku '${req.body.sku}'`,
@@ -186,7 +287,56 @@ async function show(req, res) {
   }
 }
 
-// UPDATE
+/**
+ * @swagger
+ * /products:
+ *  patch:
+ *    tags:
+ *      - Products
+ *    summary: edit one product
+ *    description: Allows to modify one product
+ *    operationId: products.modify
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - sku
+ *            properties:
+ *              name:
+ *                type: string
+ *              sku:
+ *                type: integer
+ *                unique: true
+ *              new_sku:
+ *                type: integer
+ *                unique: true
+ *              price:
+ *                type: integer
+ *                minimum: 0
+ *              paymentMethodIds:
+ *                type: array
+ *                items:
+ *                  - type: string
+ *              image:
+ *                type: string
+ *                format: uri
+ *    responses:
+ *      '200':
+ *        description: product updated successfully
+ *      '400':
+ *        description: Sku not sent or some of the fields sent are not valid
+ *      '403':
+ *        description: You don't have the authorization to modify this resource
+ *      '404':
+ *        description: Product does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function update(req, res) {
   let transaction;
   try {
@@ -213,7 +363,7 @@ async function update(req, res) {
     }
     const current_product = await product.findOne({ where: { sku: req.body.sku } });
     if (!current_product) {
-      res.status(400).json({ state: 'F', error: "Product's sku doesnt exist" });
+      res.status(404).json({ state: 'F', error: "Product's sku doesnt exist" });
       req.app.locals.logger.warnLog(
         'product_controller.js',
         `Unable to update the product '${req.body.sku}'`,
@@ -289,7 +439,42 @@ async function update(req, res) {
     );
   }
 }
-// DELETE
+
+/**
+ * @swagger
+ * /products:
+ *  delete:
+ *    tags:
+ *      - Products
+ *    summary: delete one product
+ *    description: Allows to delete one product
+ *    operationId: products.destroy
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - sku
+ *            properties:
+ *              sku:
+ *                type: integer
+ *                unique: true
+ *    responses:
+ *      '204':
+ *        description: Product deleted successfully
+ *      '400':
+ *        description: Sku not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
+ *      '404':
+ *        description: Product does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function pdelete(req, res) {
   try {
     if (!req.body.sku) {
@@ -303,7 +488,7 @@ async function pdelete(req, res) {
     }
     const curr_product = await product.findOne({ where: { sku: req.body.sku } });
     if (!curr_product) {
-      res.status(400).json({ state: 'F', error: "Product's sku doesn't exist" });
+      res.status(404).json({ state: 'F', error: "Product's sku doesn't exist" });
       req.app.locals.logger.warnLog(
         'product_controller.js',
         `Unable to delete a product with the sku '${req.body.sku}'`,
@@ -317,7 +502,7 @@ async function pdelete(req, res) {
         sku: req.body.sku,
       },
     });
-    res.status(200).json({
+    res.status(204).json({
       state: 'OK',
     });
     req.app.locals.logger.debugLog(

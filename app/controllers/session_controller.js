@@ -149,6 +149,8 @@ async function log_in_user(req, res) {
  *    summary: log out
  *    description: Allows a user to log out the application
  *    operationId: users.logout
+ *    security:
+ *      - apiKey: []
  *    produces:
  *      - application/json
  *    responses:

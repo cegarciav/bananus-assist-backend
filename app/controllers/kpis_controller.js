@@ -3,7 +3,31 @@ const { Op } = require('sequelize');
 const { user, call, call_request } = require('../models');
 const { Interval } = require('../utils/Time');
 
-// KPI: Number of calls per month, per assistant
+/**
+ * @swagger
+ * /kpis:
+ *  post:
+ *    tags:
+ *      - KPIs
+ *    summary: amount of calls answered by a given assistant
+ *    description: |
+ *      Allows to retrieve de amount of successful calls answered
+ *      by a given assistant
+ *    operationId: kpis.successful-calls
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '201':
+ *        description: Call registered successfully
+ *      '400':
+ *        description: Assistant's email not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function calls_accepted_per_month(req, res) {
   try {
     if (!req.body.email) {
@@ -34,7 +58,28 @@ async function calls_accepted_per_month(req, res) {
   }
 }
 
-// KPI Total calls per month, GLOBAL
+/**
+ * @swagger
+ * /kpis:
+ *  get:
+ *    tags:
+ *      - KPIs
+ *    summary: amount of successful calls performed in the system
+ *    description: Allows to retrieve the total amount of calls received
+ *                 and answered by the assistants, grouped by date (month/year)
+ *    operationId: kpis.call-list
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: amount of successful calls retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function calls_accepted_per_month_globally(req, res) {
   try {
     const kpi = await call.findAll({
@@ -55,8 +100,39 @@ async function calls_accepted_per_month_globally(req, res) {
   }
 }
 
-// KPI: Total calls
-// Call request entering
+/**
+ * @swagger
+ * /assistants/call:
+ *  post:
+ *    tags:
+ *      - Assistants
+ *    summary: register a call request to the system
+ *    description: |
+ *      Allows to leave a register of a call request coming
+ *      from users of the catalog
+ *    operationId: assistants.call-request
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *    responses:
+ *      '201':
+ *        description: Call registered successfully
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function enter_call(req, res) {
   try {
     const [today, first_day] = await Interval();
@@ -72,7 +148,7 @@ async function enter_call(req, res) {
         calls: 1,
         date: today,
       });
-      res.status(200).json({ state: 'OK' });
+      res.status(201).json({ state: 'OK' });
       return;
     }
     await call_request.update({
@@ -82,7 +158,7 @@ async function enter_call(req, res) {
         id: last_record.id,
       },
     });
-    res.status(200).json({ state: 'OK' });
+    res.status(201).json({ state: 'OK' });
   } catch (e) {
     res.status(500).json({
       state: 'F',
@@ -91,7 +167,29 @@ async function enter_call(req, res) {
   }
 }
 
-// KPI Total calls per month, GLOBAL
+/**
+ * @swagger
+ * /kpis/total:
+ *  get:
+ *    tags:
+ *      - KPIs
+ *    summary: amount of calls requests received by the system
+ *    description: |
+ *      Allows to retrieve the total amount of calls received
+ *      by the system, grouped by date (month/year)
+ *    operationId: kpis.total
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: amount of call requests retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function total_calls_accepted_per_month_globally(req, res) {
   try {
     const kpi = await call_request.findAll({

@@ -40,7 +40,8 @@ const { sendMail } = require('../config/mail.js');
  *      '400':
  *        description: Some of the fields sent are not valid or missing
  *      '403':
- *        description: You don't have the authorization to assign some of the fields sent
+ *        description: You don't have the authorization to create this resource or
+ *                     to assign some of the fields sent
  *      '500':
  *        description: Internal server error
  */
@@ -145,6 +146,8 @@ async function ucreate(req, res) {
  *    responses:
  *      '200':
  *        description: List of users retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
  *      '500':
  *        description: Internal server error
  */
@@ -197,6 +200,8 @@ async function ushow_all(req, res) {
  *        description: Information of the user retrieved successfully
  *      '400':
  *        description: Email not sent
+ *      '403':
+ *        description: You don't have the authorization to read this resource
  *      '404':
  *        description: User does not exist
  *      '500':
@@ -293,7 +298,8 @@ async function ushow(req, res) {
  *      '400':
  *        description: Email not sent or some of the fields sent are not valid
  *      '403':
- *        description: You don't have the authorization to modify some of the fields sent
+ *        description: You don't have the authorization to modify this resources or
+ *                     some of the fields sent
  *      '404':
  *        description: User does not exist
  *      '500':
@@ -428,6 +434,8 @@ async function update(req, res) {
  *        description: User deleted successfully
  *      '400':
  *        description: Email not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
  *      '404':
  *        description: User with the email sent doesn't exist
  *      '500':

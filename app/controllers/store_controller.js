@@ -32,6 +32,8 @@ const { store, user } = require('../models');
  *        description: Store created successfully
  *      '400':
  *        description: Some of the fields sent are not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
  *      '500':
  *        description: Internal server error
  */
@@ -100,6 +102,8 @@ async function screate(req, res) {
  *    responses:
  *      '200':
  *        description: List of stores retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
  *      '500':
  *        description: Internal server error
  */
@@ -162,6 +166,8 @@ async function sshow_all(req, res) {
  *    responses:
  *      '200':
  *        description: Information of the store retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
  *      '400':
  *        description: Address not sent or store does not exist
  *      '500':
@@ -253,6 +259,8 @@ async function sshow(req, res) {
  *        description: Store updated successfully
  *      '400':
  *        description: Address not sent or some of the fields sent are not valid
+ *      '403':
+ *        description: You don't have the authorization to modify this resource
  *      '404':
  *        description: Store does not exist
  *      '500':
@@ -348,6 +356,8 @@ async function update(req, res) {
  *        description: Store deleted successfully
  *      '400':
  *        description: Address not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
  *      '404':
  *        description: Store does not exist
  *      '500':

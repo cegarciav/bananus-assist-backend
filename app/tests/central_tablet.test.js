@@ -186,7 +186,7 @@ describe('Central Tablet CRUD Testing', () => {
       .send({
         serialNumber: '99999999999',
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Central tablet serial number doesn't exist");
   });
@@ -220,7 +220,7 @@ describe('Central Tablet CRUD Testing', () => {
       .send({
         serialNumber: '99999999999',
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Central tablet serial number doesn\'t exist');
   });
@@ -278,7 +278,7 @@ describe('Central Tablet CRUD Testing', () => {
       .send({
         serialNumber: '99999999999',
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Central tablet serial number doesn't exist");
   });
@@ -289,8 +289,7 @@ describe('Central Tablet CRUD Testing', () => {
       .send({
         serialNumber: '100102312-2139124',
       });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual('OK');
+    expect(res.statusCode).toEqual(204);
   });
 
   afterAll(async () => {

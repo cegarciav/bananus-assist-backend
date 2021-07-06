@@ -108,7 +108,7 @@ describe('Session endpoints testing', () => {
         password: '1233',
       })
       .set('authorization', token2);
-    expect(res4.statusCode).toEqual(400);
+    expect(res4.statusCode).toEqual(403);
     expect(res4.body.state).toEqual('F');
     expect(res4.body.error).toEqual('You must be unlogged to do this');
   });
@@ -118,7 +118,7 @@ describe('Session endpoints testing', () => {
     const res5 = await request(app)
       .delete('/sessions')
       .send();
-    expect(res5.statusCode).toEqual(400);
+    expect(res5.statusCode).toEqual(401);
     expect(res5.body.state).toEqual('F');
     expect(res5.body.error).toEqual('You must be logged to do this');
   });
@@ -128,7 +128,7 @@ describe('Session endpoints testing', () => {
       .delete('/sessions')
       .send()
       .set('token', 'no soy un jwt');
-    expect(res5.statusCode).toEqual(400);
+    expect(res5.statusCode).toEqual(401);
     expect(res5.body.state).toEqual('F');
     expect(res5.body.error).toEqual('You must be logged to do this');
   });
@@ -138,7 +138,7 @@ describe('Session endpoints testing', () => {
       .delete('/sessions/devices')
       .send()
       .set('authorization', token2);
-    expect(res5.statusCode).toEqual(400);
+    expect(res5.statusCode).toEqual(403);
     expect(res5.body.state).toEqual('F');
     expect(res5.body.error).toEqual('Only devices or tablets can do this action');
   });
@@ -148,8 +148,7 @@ describe('Session endpoints testing', () => {
       .delete('/sessions')
       .send()
       .set('authorization', token2);
-    expect(res5.statusCode).toEqual(200);
-    expect(res5.body.state).toEqual('OK');
+    expect(res5.statusCode).toEqual(204);
   });
 
   afterAll(async () => {

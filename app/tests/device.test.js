@@ -201,7 +201,7 @@ describe('device CRUD Testing', () => {
       .send({
         serialNumber: '99999999999',
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Device serial number doesn't exist");
   });
@@ -235,7 +235,7 @@ describe('device CRUD Testing', () => {
       .send({
         serialNumber: '99999999999',
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Device serial number doesn't exist");
   });
@@ -291,7 +291,7 @@ describe('device CRUD Testing', () => {
       .send({
         serialNumber: '99999999999',
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Device serial number doesn't exist");
   });
@@ -302,8 +302,7 @@ describe('device CRUD Testing', () => {
       .send({
         serialNumber: '100102312-21391320',
       });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual('OK');
+    expect(res.statusCode).toEqual(204);
   });
 
   afterAll(async () => {

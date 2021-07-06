@@ -298,7 +298,7 @@ describe('Assistant Testing', () => {
     expect(res.body.error).toEqual('User must be an assistant');
   });
 
-  it('should unassign store  assitant', async () => {
+  it('should unassign store assitant', async () => {
     const res = await request(app)
       .delete('/assistants')
       .send({
@@ -307,7 +307,7 @@ describe('Assistant Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(204);
   });
 
   it('should fail unassign store user is not an assitant', async () => {
@@ -319,7 +319,7 @@ describe('Assistant Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('User is not a store assistant');
   });

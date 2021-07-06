@@ -1,7 +1,47 @@
 const { uuid } = require('uuidv4');
 const { central_tablet, device, sale_point } = require('../models');
 
-// CREATE
+/**
+ * @swagger
+ * /central-tablets:
+ *  post:
+ *    tags:
+ *      - Central Tablets
+ *    summary: new central tablet
+ *    description: Allows to create a new central tablet
+ *    operationId: central-tablets.create
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *              - password
+ *              - salePointId
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *              password:
+ *                type: string
+ *              salePointId:
+ *                type: string
+ *                format: uuidv4
+ *                description: id of an existing sale point
+ *    responses:
+ *      '201':
+ *        description: Central tablet created successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '403':
+ *        description: You don't have the authorization to create this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function screate(req, res) {
   try {
     if (!req.body.salePointId || !req.body.serialNumber || !req.body.password) {
@@ -68,7 +108,27 @@ async function screate(req, res) {
   }
 }
 
-// READ ALL
+/**
+ * @swagger
+ * /central-tablets:
+ *  get:
+ *    tags:
+ *      - Central Tablets
+ *    summary: list of central tablets
+ *    description: Allows to retrieve a list of central tablets
+ *    operationId: central-tablets.list
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: List of central-tablets retrieved successfully
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '500':
+ *        description: Internal server error
+ */
 async function sshow_all(req, res) {
   try {
     const central_tablets = await central_tablet.findAll();
@@ -92,7 +152,41 @@ async function sshow_all(req, res) {
   }
 }
 
-// READ ONE
+/**
+ * @swagger
+ * /central-tablet/show:
+ *  post:
+ *    tags:
+ *      - Central Tablets
+ *    summary: one central tablet
+ *    description: Allows to retrieve one central tablet
+ *    operationId: central-tablets.show
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *    responses:
+ *      '200':
+ *        description: Information of the central tablet retrieved successfully
+ *      '400':
+ *        description: Serial Number not sent
+ *      '403':
+ *        description: You don't have the authorization to read this resource
+ *      '404':
+ *        description: Central tablet does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function sshow(req, res) {
   try {
     if (!req.body.serialNumber) {
@@ -108,7 +202,7 @@ async function sshow(req, res) {
       where: { serialNumber: req.body.serialNumber },
     });
     if (!current_central_tablet) {
-      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
+      res.status(404).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
       req.app.locals.logger.warnLog(
         'central_tablet_controller.js',
         `Unable to read a central tablet with the serial number'${req.body.serialNumber}'`,
@@ -136,7 +230,50 @@ async function sshow(req, res) {
   }
 }
 
-// UPDATE
+/**
+ * @swagger
+ * /central-tablets:
+ *  patch:
+ *    tags:
+ *      - Central Tablets
+ *    summary: edit one central tablet
+ *    description: Allows to modify one central tablet
+ *    operationId: central-tablets.modify
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *              new_serialNumber:
+ *                type: string
+ *                unique: true
+ *              password:
+ *                type: string
+ *              salePointId:
+ *                type: string
+ *                format: uuidv4
+ *                description: id of an existing sale point
+ *    responses:
+ *      '200':
+ *        description: Central tablet updated successfully
+ *      '400':
+ *        description: Serial Number not sent or some of the fields sent are not valid
+ *      '403':
+ *        description: You don't have the authorization to modify this resource
+ *      '404':
+ *        description: Central tablet does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function update(req, res) {
   try {
     if (!req.body.serialNumber) {
@@ -167,7 +304,7 @@ async function update(req, res) {
     });
 
     if (!current_central_tablet) {
-      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
+      res.status(404).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
       req.app.locals.logger.warnLog(
         'central_tablet_controller.js',
         `Unable to update the central tablet '${req.body.serialNumber}'`,
@@ -223,7 +360,41 @@ async function update(req, res) {
   }
 }
 
-// DELETE
+/**
+ * @swagger
+ * /central-tablets:
+ *  delete:
+ *    tags:
+ *      - Central Tablets
+ *    summary: delete one central tablet
+ *    description: Allows to delete one central tablet
+ *    operationId: central-tablets.destroy
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *    responses:
+ *      '204':
+ *        description: Central tablet deleted successfully
+ *      '400':
+ *        description: Serial Number not sent
+ *      '403':
+ *        description: You don't have the authorization to delete this resource
+ *      '404':
+ *        description: Central tablet does not exist
+ *      '500':
+ *        description: Internal server error
+ */
 async function sdelete(req, res) {
   try {
     if (!req.body.serialNumber) {
@@ -241,7 +412,7 @@ async function sdelete(req, res) {
     });
 
     if (!current_central_tablet) {
-      res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
+      res.status(404).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
       req.app.locals.logger.warnLog(
         'central_tablet_controller.js',
         `Unable to delete a central tablet with the serial number '${req.body.serialNumber}'`,
@@ -254,7 +425,7 @@ async function sdelete(req, res) {
         serialNumber: req.body.serialNumber,
       },
     });
-    res.status(200).json({
+    res.status(204).json({
       state: 'OK',
     });
     req.app.locals.logger.debugLog(

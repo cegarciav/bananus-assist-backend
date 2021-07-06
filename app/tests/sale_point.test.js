@@ -211,7 +211,7 @@ describe('Sale Point CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Sale point doesnt exist');
   });
@@ -277,7 +277,7 @@ describe('Sale Point CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(404);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual("Sale's id doesn't exist");
   });
@@ -290,8 +290,7 @@ describe('Sale Point CRUD Testing', () => {
       }).set({
         authorization: token,
       });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.state).toEqual('OK');
+    expect(res.statusCode).toEqual(204);
   });
 
   afterAll(async () => {
