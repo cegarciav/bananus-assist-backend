@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const handlers = require('../controllers/product_controller');
+const filters = require('../controllers/session_controller').filters;
 
 // CREATE
 router.post('/', handlers.create);
@@ -12,6 +13,6 @@ router.post('/show', handlers.show_one);
 // UPDATE
 router.patch('/', handlers.update);
 // DELETE
-router.delete('/', handlers.delete);
+router.delete('/', filters.only_user, filters.only_administrator, handlers.delete);
 
 module.exports = router;
