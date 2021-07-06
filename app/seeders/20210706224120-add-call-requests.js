@@ -1,6 +1,6 @@
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    let call_data = [];
+  up: async (queryInterface) => {
+    const call_data = [];
     for (let year = 2019; year < 2022; year += 1) {
       for (let month = 0; month < 12; month += 1) {
         call_data.push({
@@ -9,11 +9,10 @@ module.exports = {
         });
       }
     }
-      await queryInterface.bulkInsert('call_requests', call_data);
+    await queryInterface.bulkInsert('call_requests', call_data);
   },
 
-  down: async (queryInterface, Sequelize) => {
-
-     await queryInterface.bulkDelete('call_requests', null, {});
-  }
+  down: async (queryInterface) => {
+    await queryInterface.bulkDelete('call_requests', null, {});
+  },
 };
