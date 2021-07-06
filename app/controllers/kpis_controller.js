@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize');
 const { Op } = require('sequelize');
 const { user, call, call_request } = require('../models');
-const Interval = require('../utils/Time').Interval
+const { Interval } = require('../utils/Time');
+
 // KPI: Number of calls per month, per assistant
 async function calls_accepted_per_month(req, res) {
   try {
@@ -54,9 +55,8 @@ async function calls_accepted_per_month_globally(req, res) {
   }
 }
 
-
 // KPI: Total calls
-//Call request entering
+// Call request entering
 async function enter_call(req, res) {
   try {
     const [today, first_day] = await Interval();
@@ -64,13 +64,13 @@ async function enter_call(req, res) {
       where: {
         date: {
           [Op.between]: [first_day, today],
-        }
+        },
       },
     });
     if (!last_record) {
       await call_request.create({
         calls: 1,
-        date: today
+        date: today,
       });
       res.status(200).json({ state: 'OK' });
       return;
@@ -84,7 +84,6 @@ async function enter_call(req, res) {
     });
     res.status(200).json({ state: 'OK' });
   } catch (e) {
-    console.log(e)
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
@@ -99,9 +98,12 @@ async function total_calls_accepted_per_month_globally(req, res) {
       attributes: [
         [Sequelize.fn('YEAR', Sequelize.col('date')), 'current_year'],
         [Sequelize.fn('MONTH', Sequelize.col('date')), 'current_month'],
-        'calls'
+        'calls',
       ],
-      order: [[Sequelize.literal('current_year'), 'DESC'], [Sequelize.literal('current_month'), 'DESC']],
+      order: [
+        [Sequelize.literal('current_year'), 'DESC'],
+        [Sequelize.literal('current_month'), 'DESC'],
+      ],
     });
     res.status(200).json({ data: kpi });
   } catch (error) {
@@ -116,5 +118,5 @@ module.exports = {
   single_kpi: calls_accepted_per_month,
   global_kpi: calls_accepted_per_month_globally,
   total_kpi: total_calls_accepted_per_month_globally,
-  enter: enter_call
+  enter: enter_call,
 };

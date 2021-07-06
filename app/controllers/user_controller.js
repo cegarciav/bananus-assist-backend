@@ -8,7 +8,11 @@ async function ucreate(req, res) {
   try {
     if (!req.body.name || !req.body.email) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
-      req.app.locals.logger.warnLog('user_controller.js','You must send the name and email of the user to be able to create one', 'Invalid fields');
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        'You must send the name and email of the user to be able to create one',
+        'Invalid fields',
+      );
       return;
     }
     const current_user = await user.findOne({ where: { email: req.body.email } });
@@ -19,17 +23,29 @@ async function ucreate(req, res) {
     );
     if (current_user) {
       res.status(400).json({ state: 'F', error: 'Email already in use' });
-      req.app.locals.logger.warnLog('user_controller.js',`Unable to create a user with the email '${req.body.email}'`, 'Email already in use');
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        `Unable to create a user with the email '${req.body.email}'`,
+        'Email already in use',
+      );
       return;
     }
     if (!current_store) {
       res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
-      req.app.locals.logger.warnLog('user_controller.js',`Unable to create a user with the store '${req.body.address}'`, 'Store doesnt exist');
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        `Unable to create a user with the store '${req.body.address}'`,
+        'Store doesnt exist',
+      );
       return;
     }
     if (req.body.address && req.body.rol !== 'supervisor') {
       res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
-      req.app.locals.logger.warnLog('user_controller.js',`Unable to create a user with the store '${req.body.address}'`, 'User must be a supervisor to be able to assign a store' );
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        `Unable to create a user with the store '${req.body.address}'`,
+        'User must be a supervisor to be able to assign a store',
+      );
       return;
     }
 
@@ -45,21 +61,31 @@ async function ucreate(req, res) {
     });
     sendMail(req.body.email, req.body.name, password, (err, data) => {
       if (err) {
-        // eslint-disable-next-line no-console
-        req.app.locals.logger.errorLog('user_controller.js',`Unable to send the welcome email to the user'${req.body.email}'`, data);
-        console.log('Error sending mail...', data);
+        req.app.locals.logger.errorLog(
+          'user_controller.js',
+          `Unable to send the welcome email to the user'${req.body.email}'`,
+          data,
+        );
       }
     });
     res.status(201).json({
       state: 'OK',
     });
-    req.app.locals.logger.debugLog('user_controller.js',`Successfully create '${req.body.email}' user`, 'Ok');
+    req.app.locals.logger.debugLog(
+      'user_controller.js',
+      `Successfully create '${req.body.email}' user`,
+      'Ok',
+    );
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('user_controller.js','Internal server error trying to create a user', e.parent.sqlMessage);
+    req.app.locals.logger.errorLog(
+      'user_controller.js',
+      'Internal server error trying to create a user',
+      e.parent.sqlMessage,
+    );
   }
 }
 
@@ -68,13 +94,20 @@ async function ushow_all(req, res) {
   try {
     const users = await user.findAll({ include: store });
     res.status(200).json(users);
-    req.app.locals.logger.debugLog('user_controller.js','Successfully read all users from database');
+    req.app.locals.logger.debugLog(
+      'user_controller.js',
+      'Successfully read all users from database',
+    );
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('user_controller.js','Internal server error trying to read all users', e.parent.sqlMessage);
+    req.app.locals.logger.errorLog(
+      'user_controller.js',
+      'Internal server error trying to read all users',
+      e.parent.sqlMessage,
+    );
   }
 }
 
@@ -82,9 +115,13 @@ async function ushow_all(req, res) {
 async function ushow(req, res) {
   try {
     if (!req.body.email) {
-    res.status(400).json({ state: 'F', error: 'Invalid fields' });
-    req.app.locals.logger.warnLog('user_controller.js','You must send the email of the user to be able to read one', 'Invalid fields');
-    return;
+      res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        'You must send the email of the user to be able to read one',
+        'Invalid fields',
+      );
+      return;
     }
     const current_user = await user.findOne({
       where: { email: req.body.email },
@@ -96,28 +133,43 @@ async function ushow(req, res) {
     });
     if (!current_user) {
       res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
-      req.app.locals.logger.warnLog('user_controller.js',`Unable to read a user with the email '${req.body.email}'`, 'User email doesnt exist');
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        `Unable to read a user with the email '${req.body.email}'`,
+        'User email doesnt exist',
+      );
       return;
     }
     res.status(200).json(current_user);
-    req.app.locals.logger.debugLog('user_controller.js',`Successfully read '${req.body.email}' user from database`, 'Ok');
+    req.app.locals.logger.debugLog(
+      'user_controller.js',
+      `Successfully read '${req.body.email}' user from database`,
+      'Ok',
+    );
     return;
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('user_controller.js','Internal server error trying to read a user', e.parent.sqlMessage);
+    req.app.locals.logger.errorLog(
+      'user_controller.js',
+      'Internal server error trying to read a user',
+      e.parent.sqlMessage,
+    );
   }
 }
-
 
 // UPDATE
 async function update(req, res) {
   try {
     if (!req.body.email) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
-      req.app.locals.logger.warnLog('user_controller.js','You must send the email of the user to be able to update one', 'Invalid fields');
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        'You must send the email of the user to be able to update one',
+        'Invalid fields',
+      );
       return;
     }
 
@@ -125,14 +177,22 @@ async function update(req, res) {
 
     if (!current_user) {
       res.status(400).json({ state: 'F', error: "User's email doesnt exist" });
-      req.app.locals.logger.warnLog('user_controller.js',`Unable to update the user '${req.body.email }'`, "User's email doesnt exist");
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        `Unable to update the user '${req.body.email}'`,
+        "User's email doesnt exist",
+      );
       return;
     }
     if (req.body.new_email) {
       const last_user = await user.findOne({ where: { email: req.body.new_email } });
       if (last_user) {
         res.status(400).json({ state: 'F', error: 'New email already in use' });
-        req.app.locals.logger.warnLog('user_controller.js',`Unable to update the email of the user from '${req.body.email}' to '${req.body.new_email }'`, 'New email already in use');
+        req.app.locals.logger.warnLog(
+          'user_controller.js',
+          `Unable to update the email of the user from '${req.body.email}' to '${req.body.new_email}'`,
+          'New email already in use',
+        );
         return;
       }
     }
@@ -150,18 +210,30 @@ async function update(req, res) {
 
     if (!current_store) {
       res.status(400).json({ state: 'F', error: 'Store doesnt exist' });
-      req.app.locals.logger.warnLog('user_controller.js',`Unable to update the user '${req.body.email}' with the store '${req.body.address }'`,'Store doesnt exist');
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        `Unable to update the user '${req.body.email}' with the store '${req.body.address}'`,
+        'Store doesnt exist',
+      );
       return;
     }
     if (rol !== 'supervisor' && new_store) {
       res.status(400).json({ state: 'F', error: 'User must be a supervisor to be able to assign a store' });
-      req.app.locals.logger.warnLog('user_controller.js',`Unable to update the user '${req.body.email}' with the store '${req.body.address }'`,'User must be a supervisor to be able to assign a store');
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        `Unable to update the user '${req.body.email}' with the store '${req.body.address}'`,
+        'User must be a supervisor to be able to assign a store',
+      );
       return;
     }
 
     if (rol !== current_user.rol && current_user.rol === 'supervisor') {
-      req.app.locals.logger.debugLog('user_controller.js',`User '${req.body.email}' unassing the store '${current_user.storeId}'`,`User rol change from '${current_user.rol}' to '${rol}'`);
-      current_user.storeId = null;     
+      req.app.locals.logger.debugLog(
+        'user_controller.js',
+        `User '${req.body.email}' unassing the store '${current_user.storeId}'`,
+        `User rol change from '${current_user.rol}' to '${rol}'`,
+      );
+      current_user.storeId = null;
     }
 
     await user.update({
@@ -172,27 +244,44 @@ async function update(req, res) {
       rol: req.body.rol || current_user.rol,
     }, { where: { email: current_user.email }, individualHooks: true });
     res.status(200).json({ state: 'OK' });
-    req.app.locals.logger.debugLog('user_controller.js',`Successfully update '${req.body.email}' user`, 'Ok');
+    req.app.locals.logger.debugLog(
+      'user_controller.js',
+      `Successfully update '${req.body.email}' user`,
+      'Ok',
+    );
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('user_controller.js','Internal server error trying to update a user', e.parent.sqlMessage);
+    req.app.locals.logger.errorLog(
+      'user_controller.js',
+      'Internal server error trying to update a user',
+      e.parent.sqlMessage,
+    );
   }
 }
+
 // DELETE
 async function udelete(req, res) {
   if (!req.body.email) {
     res.status(400).json({ state: 'F', error: 'Invalid fields' });
-    req.app.locals.logger.warnLog('user_controller.js','You must send the email of the user to be able to delete one', 'Invalid fields');
+    req.app.locals.logger.warnLog(
+      'user_controller.js',
+      'You must send the email of the user to be able to delete one',
+      'Invalid fields',
+    );
     return;
   }
   try {
     const current_user = await user.findOne({ where: { email: req.body.email } });
     if (!current_user) {
       res.status(400).json({ state: 'F', error: 'User email doesnt exist' });
-      req.app.locals.logger.warnLog('user_controller.js',`Unable to delete a user with the email '${req.body.email}'`, 'User email doesnt exist' );
+      req.app.locals.logger.warnLog(
+        'user_controller.js',
+        `Unable to delete a user with the email '${req.body.email}'`,
+        'User email doesnt exist',
+      );
       return;
     }
     await user.destroy({
@@ -204,13 +293,21 @@ async function udelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-    req.app.locals.logger.debugLog('user_controller.js',`Successfully delete '${req.body.email}' user from database`, 'Ok');
+    req.app.locals.logger.debugLog(
+      'user_controller.js',
+      `Successfully delete '${req.body.email}' user from database`,
+      'Ok',
+    );
   } catch (e) {
     res.status(500).json({
       state: 'F',
       error: 'Internal server error',
     });
-    req.app.locals.logger.errorLog('user_controller.js','Internal server error trying to delete a user', e.parent.sqlMessage);
+    req.app.locals.logger.errorLog(
+      'user_controller.js',
+      'Internal server error trying to delete a user',
+      e.parent.sqlMessage,
+    );
   }
 }
 
