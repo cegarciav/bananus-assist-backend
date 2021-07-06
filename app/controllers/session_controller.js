@@ -25,6 +25,7 @@ async function set_middleware(req, res, next) {
       return null;
     }
     if (curr_user) {
+      
       try {
         const payload = await jwt.verify(req.headers['authorization'], process.env.JWT_SECRET);
         req.logged = true;
