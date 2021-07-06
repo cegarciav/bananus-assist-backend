@@ -251,15 +251,17 @@ describe('Session endpoints testing', () => {
         authorization: token,
       });
 
-    users.body.forEach(async (u) => {
-      await request(app)
-        .delete('/users')
-        .send({
-          email: u.email,
-        }).set({
-          authorization: token,
-        });
-    });
+    await Promise.all(users.body
+      .map(async (u) => {
+        await request(app)
+          .delete('/users')
+          .send({
+            email: u.email,
+          }).set({
+            authorization: token,
+          });
+      }));
+
     await user.destroy({
       where: { email: 'admin@hotmail.cl' },
     });
@@ -267,7 +269,12 @@ describe('Session endpoints testing', () => {
     // Delete records created on calls table
     await call.destroy({
       where: {
-        userId: { [Op.or]: [current_assistant_2.id, current_assistant.id] },
+        userId: current_assistant_2.id,
+      },
+    });
+    await call.destroy({
+      where: {
+        userId: current_assistant.id,
       },
     });
     const [today, first_day] = await Interval();
