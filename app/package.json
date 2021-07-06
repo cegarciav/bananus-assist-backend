@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "bananus-assist-api",
   "version": "1.0.0",
   "description": "API for bananus assistent",
   "main": "index.js",
