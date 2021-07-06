@@ -201,7 +201,9 @@ describe('Session endpoints testing', () => {
   it('should fail in get specific kpi because fields not sent', async () => {
     const res4 = await request(app)
       .post('/kpis')
-      .send({});
+      .send({}).set({
+        authorization: token,
+      });
     expect(res4.statusCode).toEqual(400);
     expect(res4.body.state).toEqual('F');
     expect(res4.body.error).toEqual('Invalid fields');
@@ -212,6 +214,8 @@ describe('Session endpoints testing', () => {
       .post('/kpis')
       .send({
         email: 'm342h54hj35gj34hg',
+      }).set({
+        authorization: token,
       });
     expect(res4.statusCode).toEqual(400);
     expect(res4.body.state).toEqual('F');
@@ -223,6 +227,8 @@ describe('Session endpoints testing', () => {
       .post('/kpis')
       .send({
         email: current_assistant.email,
+      }).set({
+        authorization: token,
       });
     expect(res5.statusCode).toEqual(200);
     expect(res5.body.data).toBeTruthy();
@@ -231,7 +237,9 @@ describe('Session endpoints testing', () => {
   it('should get the global kpi', async () => {
     const res5 = await request(app)
       .get('/kpis')
-      .send();
+      .send().set({
+        authorization: token,
+      });
     expect(res5.statusCode).toEqual(200);
     expect(res5.body.data[0].calls).toEqual('4');
   });
