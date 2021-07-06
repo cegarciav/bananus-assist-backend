@@ -236,13 +236,14 @@ describe('Sale Point CRUD Testing', () => {
     const salePoints = await request(app)
       .get('/sale-points');
 
-    salePoints.body.forEach(async (sp) => {
-      await request(app)
-        .delete('/sale-points')
-        .send({
-          id: sp.id,
-        });
-    });
+    await Promise.all(salePoints.body
+      .map(async (sp) => {
+        await request(app)
+          .delete('/sale-points')
+          .send({
+            id: sp.id,
+          });
+      }));
 
     // Delete store created
     await request(app)

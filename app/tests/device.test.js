@@ -27,7 +27,7 @@ describe('device CRUD Testing', () => {
       .post('/sale-points')
       .send({
         storeId: store.id,
-        department: 'Some Department',
+        department: 'Some Department in Devices',
       });
     const salePoints = await request(app)
       .get('/sale-points');
@@ -104,6 +104,19 @@ describe('device CRUD Testing', () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
     expect(res.body.error).toEqual('Invalid fields');
+  });
+
+  it('should fail creating a device because central_tabletId doesnt exist in database', async () => {
+    const res = await request(app)
+      .post('/devices')
+      .send({
+        serialNumber: '100102312-2139324',
+        centralTabletId: 'FAKE-ID',
+        password: '12345',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid central tablet id');
   });
 
   it('should create a new device', async () => {
@@ -216,6 +229,18 @@ describe('device CRUD Testing', () => {
       });
     expect(res.statusCode).toEqual(200);
   });
+  it('should fail updating the central_tabletId of one device', async () => {
+    const res = await request(app)
+      .patch('/devices')
+      .send({
+        serialNumber: '100102312-21391320',
+        new_serialNumber: device.serialNumber,
+        centralTabletId: 'FAKE',
+      });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.state).toEqual('F');
+    expect(res.body.error).toEqual('Invalid central tablet id');
+  });
 
   // DELETE
 
@@ -254,19 +279,20 @@ describe('device CRUD Testing', () => {
     const devices = await request(app)
       .get('/devices');
 
-    devices.body.forEach(async (sp) => {
-      await request(app)
-        .delete('/devices')
-        .send({
-          serialNumber: sp.serialNumber,
-        });
-    });
+    await Promise.all(devices.body
+      .map(async (sp) => {
+        await request(app)
+          .delete('/devices')
+          .send({
+            serialNumber: sp.serialNumber,
+          });
+      }));
 
-    // Delete store created
+    // Delete central tablet created
     await request(app)
-      .delete('/stores')
+      .delete('/central-tablets')
       .send({
-        address: store.address,
+        serialNumber: centralTablet.serialNumber,
       });
 
     // Delete sale_point created
@@ -276,11 +302,11 @@ describe('device CRUD Testing', () => {
         id: salePoint.id,
       });
 
-    // Delete central tablet created
+    // Delete store created
     await request(app)
-      .delete('/central-tablets')
+      .delete('/stores')
       .send({
-        serialNumber: centralTablet.serialNumber,
+        address: store.address,
       });
   });
 });

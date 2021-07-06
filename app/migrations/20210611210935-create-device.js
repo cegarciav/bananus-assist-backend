@@ -22,6 +22,17 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
       },
+      central_tabletId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'central_tablets',
+          },
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+      },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE

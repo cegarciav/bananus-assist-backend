@@ -6,12 +6,14 @@ async function screate(req, res) {
   try {
     if (!req.body.name || !req.body.address) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('store_controller.js','You must send the name and the address of the store to be able to create one', 'Invalid fields');
       return;
     }
     const last_store = await store.findOne({ where: { address: req.body.address } });
 
     if (last_store) {
       res.status(400).json({ state: 'F', error: "There's another store in the same address" });
+      req.app.locals.logger.warnLog('store_controller.js',`Unable to create the store '${req.body.address}'`, "There's another store in the same address" );
       return;
     }
     await store.create({
@@ -22,12 +24,14 @@ async function screate(req, res) {
     res.status(201).json({
       state: 'OK',
     });
+    req.app.locals.logger.debugLog('store_controller.js',`Successfully create '${req.body.address}' store`, 'Ok');
     return;
-  } catch{
+  } catch (e){
     res.status(500).json({
       state: 'F',
       error: "Internal server error",
     });
+    req.app.locals.logger.errorLog('store_controller.js','Internal server error trying to create a store', e.parent.sqlMessage);
   }
 }
 
@@ -47,12 +51,14 @@ async function sshow_all(req, res) {
       ],
     });
     res.status(200).json(stores);
+    req.app.locals.logger.debugLog('store_controller.js','Successfully read all stores from database');
     return;
-  } catch{
+  } catch (e){
     res.status(500).json({
       state: 'F',
       error: "Internal server error",
     });
+    req.app.locals.logger.errorLog('store_controller.js','Internal server error trying to read all stores', e.parent.sqlMessage);
   }
 }
 
@@ -61,6 +67,7 @@ async function sshow(req, res) {
   try {
     if (!req.body.address) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('store_controller.js','You must send the address of the store to be able to read one', 'Invalid fields');
       return;
     }
     const current_store = await store.findOne({
@@ -78,15 +85,18 @@ async function sshow(req, res) {
     });
     if (!current_store) {
       res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+      req.app.locals.logger.warnLog('store_controller.js',`Unable to read a store with the address '${req.body.address}'`, "Store address doesn't exist" );
       return;
     }
     res.status(200).json(current_store);
+    req.app.locals.logger.debugLog('store_controller.js',`Successfully read '${req.body.address}' store from database`, 'Ok');
     return;
-  } catch{
+  } catch (e){
     res.status(500).json({
       state: 'F',
       error: "Internal server error",
     });
+    req.app.locals.logger.errorLog('store_controller.js','Internal server error trying to read a store', e.parent.sqlMessage);
   }
 }
 
@@ -95,6 +105,7 @@ async function update(req, res) {
   try {
     if (!req.body.address) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('store_controller.js','You must send the address of the store to be able to update one', 'Invalid fields');
       return;
     }
 
@@ -102,6 +113,7 @@ async function update(req, res) {
 
     if (!current_store) {
       res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+      req.app.locals.logger.warnLog('store_controller.js',`Unable to update the store '${req.body.address }'`, "Store address doesn't exist");
       return;
     }
 
@@ -109,6 +121,7 @@ async function update(req, res) {
       const last_store = await store.findOne({ where: { address: req.body.new_address } });
       if (last_store) {
         res.status(400).json({ state: 'F', error: 'This address already exist' });
+        req.app.locals.logger.warnLog('store_controller.js',`Unable to update the address of the store from '${req.body.address}' to '${req.body.new_address}'`, 'This address already exist');
         return;
       }
     }
@@ -119,12 +132,14 @@ async function update(req, res) {
     }, { where: { address: req.body.address } });
 
     res.status(200).json({ state: 'OK' });
+    req.app.locals.logger.debugLog('store_controller.js',`Successfully update '${req.body.address}' store`, 'Ok');
     return;
-  } catch{
+  } catch (e){
     res.status(500).json({
       state: 'F',
       error: "Internal server error",
     });
+    req.app.locals.logger.errorLog('store_controller.js','Internal server error trying to update a store', e.parent.sqlMessage);
   }
 }
 
@@ -133,6 +148,7 @@ async function sdelete(req, res) {
   try {
     if (!req.body.address) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('store_controller.js','You must send the address of the store to be able to delete one', 'Invalid fields');
       return;
     }
 
@@ -140,6 +156,7 @@ async function sdelete(req, res) {
 
     if (!current_store) {
       res.status(400).json({ state: 'F', error: 'Store address doesn\'t exist' });
+      req.app.locals.logger.warnLog('store_controller.js',`Unable to delete a store with the address '${req.body.address}'`, "Store address doesn't exist");
       return;
     }
     await store.destroy({
@@ -150,11 +167,13 @@ async function sdelete(req, res) {
     res.status(200).json({
       state: 'OK',
     });
-  } catch{
+    req.app.locals.logger.debugLog('store_controller.js',`Successfully delete '${req.body.address}' store from database`, 'Ok');
+  } catch (e){
     res.status(500).json({
       state: 'F',
       error: "Internal server error",
     });
+    req.app.locals.logger.errorLog('store_controller.js','Internal server error trying to delete a store', e.parent.sqlMessage);
   }
 }
 

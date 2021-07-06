@@ -19,8 +19,9 @@ async function set_middleware(req, res, next) {
       curr_device = await device.findOne({ where: { token: req.headers.token } });
       curr_central_tablet = await central_tablet.findOne({ where: { token: req.headers.token } });
       curr_entity = curr_device || curr_central_tablet;
-    } catch {
+    } catch (e){
       res.status(500).json({ state: 'F', error: 'Internal server error' });
+      req.app.locals.logger.errorLog('session_controller.js','Internal server error trying to set up the middleware', e.parent.sqlMessage);
       return null;
     }
     if (curr_user) {
@@ -56,6 +57,7 @@ async function log_in_user(req, res) {
   try {
     if (!req.body.email || !req.body.password) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('session_controller.js','You must send the email and the password of an user to be able to log in', 'Invalid fields');
       return;
     }
     const curr_user = await user.findOne({
@@ -69,11 +71,14 @@ async function log_in_user(req, res) {
       await user.update({ token },
         { where: { email: req.body.email } });
       res.status(200).json({ state: 'OK', token, rol: curr_user.rol });
+      req.app.locals.logger.debugLog('session_controller.js',`Successfully log in of the user '${req.body.email}'`, 'OK');
       return;
     }
     res.status(400).json({ state: 'F', error: 'Invalid email or password' });
+    req.app.locals.logger.warnLog('session_controller.js','Unable to log in user', 'Invalid email or password');
   } catch (e) {
     res.status(500).json({ state: 'F', error: 'Internal server error' });
+    req.app.locals.logger.errorLog('session_controller.js','Internal server error trying to log in an user', e.parent.sqlMessage);
   }
 }
 
@@ -81,9 +86,11 @@ async function log_out_user(req, res) {
   try {
     await user.update({ token: null }, { where: { email: req.email } });
     res.status(200).json({ state: 'OK' });
+    req.app.locals.logger.debugLog('session_controller.js',`Successfully log out of the user '${req.email}'`, 'OK');
     return;
   } catch (e) {
     res.status(500).json({ state: 'F', error: 'Internal server error' });
+    req.app.locals.logger.errorLog('session_controller.js','Internal server error trying to log out an user', e.parent.sqlMessage);
   }
 }
 
@@ -91,6 +98,7 @@ async function log_in_devices(req, res) {
   try {
     if (!req.body.serialNumber || !req.body.password) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
+      req.app.locals.logger.warnLog('session_controller.js','You must send the password and the serial number of a device to be able to log in', 'Invalid fields');
       return;
     }
     const curr_normal_device = await device.findOne({
@@ -130,9 +138,11 @@ async function log_in_devices(req, res) {
         sale_pointId: sale_point_associate.id,
         storeId: sale_point_associate.storeId,
       });
+      req.app.locals.logger.debugLog('session_controller.js',`Successfully log in of the device '${req.body.serialNumber}}'`, 'OK');
       return;
     }
     res.status(400).json({ state: 'F', error: 'Invalid Serial Number or password' });
+    req.app.locals.logger.warnLog('session_controller.js','Unable to log in device', 'Invalid Serial Number or password');
   } catch (e) {
     res.status(500).json({ state: 'F', error: 'Internal server error' });
   }
@@ -143,8 +153,10 @@ async function log_out_devices(req, res) {
   try {
     await curr_device.update({ token: null }, { where: { serialNumber: req.serialNumber } });
     res.status(200).json({ state: 'OK' });
+    req.app.locals.logger.debugLog('session_controller.js',`Successfully log out of the device '${req.serialNumber}'`, 'OK');
   } catch (e) {
     res.status(500).json({ state: 'F', error: 'Internal server error' });
+    req.app.locals.logger.errorLog('session_controller.js','Internal server error trying to log out a device', e.parent.sqlMessage);
   }
 }
 
@@ -152,6 +164,7 @@ async function only_logged(req, res, next) {
   if (req.logged) {
     return next();
   }
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'You must be logged to do this');
   return res.status(400).json({ state: 'F', error: 'You must be logged to do this' });
 }
 
@@ -159,6 +172,7 @@ async function only_unlogged(req, res, next) {
   if (!req.logged) {
     return next();
   }
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'You must be unlogged to do this');
   return res.status(400).json({ state: 'F', error: 'You must be unlogged to do this' });
 }
 
@@ -168,6 +182,7 @@ async function only_user(req, res, next) {
     return;
   }
   res.status(400).json({ state: 'F', error: 'Only users can do this action' });
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'Only users can do this action' );
 }
 
 async function only_device(req, res, next) {
@@ -176,6 +191,7 @@ async function only_device(req, res, next) {
     return;
   }
   res.status(400).json({ state: 'F', error: 'Only devices or tablets can do this action' });
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'Only devices or tablets can do this action');
 }
 
 async function only_assistant(req, res, next) {
