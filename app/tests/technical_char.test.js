@@ -1,12 +1,32 @@
 /* eslint-disable no-unused-expressions */
 const request = require('supertest');
 const app = require('../server');
+const {user} = require('../models');
+const { uuid } = require('uuidv4');
 
 let product = null;
 let technicalChar = null;
+let token;
 
 describe('Technical Characteristic CRUD Testing', () => {
   beforeAll(async () => {
+    await user.create({
+      id: uuid(),
+      name: "admin",
+      password:"123",
+      email: "admin@hotmail.cl",
+      rol: "administrator"
+    });
+
+    let login = await request(app)
+      .post('/sessions')
+      .send({
+        email: 'admin@hotmail.cl',
+        password: '123',
+      });
+
+    token = login.body.token
+    
     // Create a new product to use its ID in the tests
     await request(app)
       .post('/products')
@@ -247,6 +267,9 @@ describe('Technical Characteristic CRUD Testing', () => {
       .delete('/products')
       .send({
         sku: 12345678,
+      }).set({
+        'authorization': token
       });
+    await user.destroy({where:{email: 'admin@hotmail.cl'}})
   });
 });
