@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
-const assistant = require('../models');
+const {
+  Model,
+} = require('sequelize');
 
 const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT, 10);
 
@@ -9,10 +11,6 @@ async function buildPasswordHash(instance) {
     instance.set('password', hash);
   }
 }
-
-const {
-  Model,
-} = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class user extends Model {
@@ -24,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsToMany(models.store, { through: models.assistant });
       this.belongsTo(models.store);
+      this.hasMany(models.call, { foreignKey: 'userId' });
     }
   }
   user.init({
@@ -37,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'user',
   });
-  
+
   user.beforeUpdate(buildPasswordHash);
   user.beforeCreate(buildPasswordHash);
 

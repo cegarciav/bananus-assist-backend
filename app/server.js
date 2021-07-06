@@ -16,6 +16,7 @@ const technical_chars = require('./routes/technical_chars');
 const sessions = require('./routes/session');
 const assistants = require('./routes/assistants');
 const massive_charge = require('./routes/massive_charge');
+const kpis = require('./routes/kpis');
 const payment_methods = require('./routes/payment_methods');
 
 const central_tablets = require('./routes/central_tablets');
@@ -50,6 +51,7 @@ app.use('/assistants', assistants);
 app.use('/massive-charge', massive_charge);
 app.use('/central-tablets', central_tablets);
 app.use('/devices', devices);
+app.use('/kpis', kpis);
 app.use('/payment-methods', payment_methods);
 
 const server = http.createServer(app);

@@ -29,6 +29,10 @@ async function set_middleware(req, res, next) {
         const payload = await jwt.verify(req.headers.token, process.env.JWT_SECRET);
         req.logged = true;
         req.email = payload;
+        req.rol = curr_user.rol;
+        if (curr_user.rol === 'assistant') {
+          req.assistantId = curr_user.id;
+        }
         return next();
       } catch (err) {
         return next();
@@ -189,6 +193,14 @@ async function only_device(req, res, next) {
   res.status(400).json({ state: 'F', error: 'Only devices or tablets can do this action' });
   req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'Only devices or tablets can do this action');
 }
+
+async function only_assistant(req, res, next) {
+  if (req.rol === 'assistant') {
+    next();
+    return;
+  }
+  res.status(400).json({ state: 'F', error: 'Only assistants can do this action' });
+}
 module.exports = {
   check_session: set_middleware,
   log_in_user,
@@ -200,5 +212,6 @@ module.exports = {
     only_unlogged,
     only_user,
     only_device,
+    only_assistant,
   },
 };
