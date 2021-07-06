@@ -200,7 +200,18 @@ async function only_assistant(req, res, next) {
     return;
   }
   res.status(400).json({ state: 'F', error: 'Only assistants can do this action' });
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'Only assistants can do this action');
 }
+
+async function only_administrator(req, res, next){
+  if(req.rol === 'administrator') {
+    next()
+    return
+  }
+  res.status(400).json({ state: 'F', error: 'Only administrators can do this action' });
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'Only administrators can do this action');
+}
+
 module.exports = {
   check_session: set_middleware,
   log_in_user,
@@ -213,5 +224,6 @@ module.exports = {
     only_user,
     only_device,
     only_assistant,
+    only_administrator
   },
 };
