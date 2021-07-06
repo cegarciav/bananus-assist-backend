@@ -7,5 +7,14 @@
   "servers": [{
     "url": "http://localhost:3001",
     "description": "development"
-  }]
+  }],
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    }
+  }
 }
