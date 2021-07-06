@@ -1,34 +1,32 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
 const { Op } = require('sequelize');
+const { uuid } = require('uuidv4');
 const { call } = require('../models');
 const { Interval } = require('../utils/Time');
 const app = require('../server');
-const {user} = require('../models');
-const { uuid } = require('uuidv4');
+const { user } = require('../models');
 
 describe('Session endpoints testing', () => {
   let current_assistant;
   let current_assistant_2;
   let token;
   beforeAll(async () => {
-
     await user.create({
       id: uuid(),
-      name: "admin",
-      password:"123",
-      email: "admin@hotmail.cl",
-      rol: "administrator"
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
     });
 
-    let login = await request(app)
+    const login = await request(app)
       .post('/sessions')
       .send({
         email: 'admin@hotmail.cl',
         password: '123',
       });
 
-    token = login.body.token
+    token = login.body.token;
     // Create assistant to test
 
     await request(app)
@@ -38,7 +36,7 @@ describe('Session endpoints testing', () => {
         email: 'assist@test.cl',
         rol: 'assistant',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     await request(app)
@@ -47,7 +45,7 @@ describe('Session endpoints testing', () => {
         email: 'assist@test.cl',
         password: '1233',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     await request(app)
@@ -57,7 +55,7 @@ describe('Session endpoints testing', () => {
         email: 'assist@test2.cl',
         rol: 'assistant',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     await request(app)
@@ -66,7 +64,7 @@ describe('Session endpoints testing', () => {
         email: 'assist@test2.cl',
         password: '1233',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     await request(app)
@@ -83,8 +81,12 @@ describe('Session endpoints testing', () => {
         password: '1233',
       });
 
-    current_assistant = await user.findOne({where: {email:'assist@test.cl'}})
-    current_assistant_2 = await user.findOne({where: {email:'assist@test2.cl'}})
+    current_assistant = await user.findOne({
+      where: { email: 'assist@test.cl' },
+    });
+    current_assistant_2 = await user.findOne({
+      where: { email: 'assist@test2.cl' },
+    });
   });
 
   // CREATE
@@ -100,7 +102,9 @@ describe('Session endpoints testing', () => {
   it('should fail in accept a new call because token is invalid', async () => {
     const res4 = await request(app)
       .patch('/assistants')
-      .set({'authorization': 'INVALID-TOKEN'})
+      .set({
+        authorization: 'INVALID-TOKEN',
+      })
       .send();
     expect(res4.statusCode).toEqual(400);
     expect(res4.body.state).toEqual('F');
@@ -110,7 +114,9 @@ describe('Session endpoints testing', () => {
   it('should create a new row on calls table', async () => {
     const res4 = await request(app)
       .patch('/assistants')
-      .set({'authorization':current_assistant.token})
+      .set({
+        authorization: current_assistant.token,
+      })
       .send();
     const [today, first_day] = await Interval();
 
@@ -234,7 +240,7 @@ describe('Session endpoints testing', () => {
     // Delete all users
     const users = await request(app)
       .get('/users').set({
-        'authorization': token
+        authorization: token,
       });
 
     users.body.forEach(async (u) => {
@@ -243,10 +249,12 @@ describe('Session endpoints testing', () => {
         .send({
           email: u.email,
         }).set({
-          'authorization': token
+          authorization: token,
         });
     });
-    await user.destroy({where:{email: 'admin@hotmail.cl'}})
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
 
     // Delete records created on calls table
     await call.destroy({
@@ -264,6 +272,5 @@ describe('Session endpoints testing', () => {
         userId: current_assistant_2.id,
       },
     });
-
   });
 });

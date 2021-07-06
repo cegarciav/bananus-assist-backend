@@ -5,7 +5,6 @@ const handlers = require('../controllers/massive_charge_controller');
 const { filters } = require('../controllers/session_controller');
 
 // CREATE
-router.post('/',filters.only_user, filters.only_administrator, handlers.create);
-
+router.post('/', filters.only_user, filters.only_administrator, handlers.create);
 
 module.exports = router;

@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
-const app = require('../server');
-const {user} = require('../models');
 const { uuid } = require('uuidv4');
+const app = require('../server');
+const { user } = require('../models');
 
 describe('Session endpoints testing', () => {
   let token;
@@ -10,20 +9,20 @@ describe('Session endpoints testing', () => {
   beforeAll(async () => {
     await user.create({
       id: uuid(),
-      name: "admin",
-      password:"123",
-      email: "admin@hotmail.cl",
-      rol: "administrator"
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
     });
 
-    let login = await request(app)
+    const login = await request(app)
       .post('/sessions')
       .send({
         email: 'admin@hotmail.cl',
         password: '123',
       });
 
-    token = login.body.token
+    token = login.body.token;
 
     await request(app)
       .post('/users')
@@ -31,7 +30,7 @@ describe('Session endpoints testing', () => {
         name: 'test',
         email: 'test01@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     await request(app)
       .patch('/users')
@@ -39,10 +38,9 @@ describe('Session endpoints testing', () => {
         email: 'test01@test.cl',
         password: '1233',
       }).set({
-        'authorization': token
+        authorization: token,
       });
   });
-
 
   // CREATE
   it('should fail in create a new session because fields is not sent', async () => {
@@ -158,8 +156,10 @@ describe('Session endpoints testing', () => {
     await request(app)
       .delete('/users')
       .send({ email: 'test01@test.cl' }).set({
-        'authorization': token
+        authorization: token,
       });
-    await user.destroy({where:{email: 'admin@hotmail.cl'}})
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
   });
 });

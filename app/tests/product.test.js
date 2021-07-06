@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
-const app = require('../server');
 const { uuid } = require('uuidv4');
-const {user} = require('../models');
+const app = require('../server');
+const { user } = require('../models');
 
 describe('Product CRUD Testing', () => {
   let paymentMethod;
@@ -16,20 +15,20 @@ describe('Product CRUD Testing', () => {
     paymentMethod = res.body.paymentMethod;
     await user.create({
       id: uuid(),
-      name: "admin",
-      password:"123",
-      email: "admin@hotmail.cl",
-      rol: "administrator"
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
     });
 
-    let login = await request(app)
+    const login = await request(app)
       .post('/sessions')
       .send({
         email: 'admin@hotmail.cl',
         password: '123',
       });
 
-    token = login.body.token
+    token = login.body.token;
   });
   // CREATE
   it('should fail creating fields not provided', async () => {
@@ -254,7 +253,7 @@ describe('Product CRUD Testing', () => {
     const res = await request(app)
       .delete('/products')
       .send({}).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -267,7 +266,7 @@ describe('Product CRUD Testing', () => {
       .send({
         sku: 123,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -280,7 +279,7 @@ describe('Product CRUD Testing', () => {
       .send({
         sku: 12345678,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -292,9 +291,10 @@ describe('Product CRUD Testing', () => {
       .send({
         name: 'Credit card',
       }).set({
-        'authorization': token
+        authorization: token,
       });
-    await user.destroy({where:{email: 'admin@hotmail.cl'}})
-    
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
   });
 });

@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
-const app = require('../server');
-const {user} = require('../models');
 const { uuid } = require('uuidv4');
+const app = require('../server');
+const { user } = require('../models');
 
 describe('Session endpoints testing', () => {
   let token;
@@ -15,20 +14,20 @@ describe('Session endpoints testing', () => {
   beforeAll(async () => {
     await user.create({
       id: uuid(),
-      name: "admin",
-      password:"123",
-      email: "admin@hotmail.cl",
-      rol: "administrator"
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
     });
 
-    let login = await request(app)
+    const login = await request(app)
       .post('/sessions')
       .send({
         email: 'admin@hotmail.cl',
         password: '123',
       });
 
-    token = login.body.token
+    token = login.body.token;
 
     // Create a store point to use its ID in the tests
     await request(app)
@@ -37,12 +36,12 @@ describe('Session endpoints testing', () => {
         name: 'The Store',
         address: 'Fake Street 123',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     const stores = await request(app)
       .get('/stores').set({
-        'authorization': token
+        authorization: token,
       });
 
     [store] = stores.body;
@@ -54,12 +53,12 @@ describe('Session endpoints testing', () => {
         storeId: store.id,
         department: 'Some Department in Session Devices',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     const salePoints = await request(app)
       .get('/sale-points').set({
-        'authorization': token
+        authorization: token,
       });
 
     [sale_point] = salePoints.body;
@@ -72,12 +71,12 @@ describe('Session endpoints testing', () => {
         serialNumber: '100102312-2139123',
         password: '12345',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     const centralTablets = await request(app)
       .get('/central-tablets').set({
-        'authorization': token
+        authorization: token,
       });
 
     [central_tablet] = centralTablets.body;
@@ -89,11 +88,11 @@ describe('Session endpoints testing', () => {
         serialNumber: '100102312-2139321',
         password: '12345',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     const devices = await request(app)
       .get('/devices').set({
-        'authorization': token
+        authorization: token,
       });
 
     [device] = devices.body;
@@ -125,7 +124,7 @@ describe('Session endpoints testing', () => {
       .post('/sessions/devices')
       .send({
         serialNumber: '100102312-2139321',
-      })
+      });
     expect(res4.statusCode).toEqual(400);
     expect(res4.body.state).toEqual('F');
     expect(res4.body.error).toEqual('Invalid fields');
@@ -267,7 +266,7 @@ describe('Session endpoints testing', () => {
     // Delete all devices created
     const devices_test = await request(app)
       .get('/devices').set({
-        'authorization': token
+        authorization: token,
       });
 
     await Promise.all(devices_test.body
@@ -277,13 +276,13 @@ describe('Session endpoints testing', () => {
           .send({
             serialNumber: dv.serialNumber,
           }).set({
-            'authorization': token
+            authorization: token,
           });
       }));
 
     const central_tablets_test = await request(app)
       .get('/central-tablets').set({
-        'authorization': token
+        authorization: token,
       });
 
     await Promise.all(central_tablets_test.body
@@ -293,13 +292,13 @@ describe('Session endpoints testing', () => {
           .send({
             serialNumber: ct.serialNumber,
           }).set({
-            'authorization': token
+            authorization: token,
           });
       }));
 
     const sale_points_test = await request(app)
       .get('/sale-points').set({
-        'authorization': token
+        authorization: token,
       });
 
     await Promise.all(sale_points_test.body
@@ -309,13 +308,13 @@ describe('Session endpoints testing', () => {
           .send({
             id: sp.id,
           }).set({
-            'authorization': token
+            authorization: token,
           });
       }));
 
     const stores_test = await request(app)
       .get('/stores').set({
-        'authorization': token
+        authorization: token,
       });
 
     await Promise.all(stores_test.body
@@ -325,9 +324,11 @@ describe('Session endpoints testing', () => {
           .send({
             address: st.address,
           }).set({
-            'authorization': token
+            authorization: token,
           });
       }));
-    await user.destroy({where:{email: 'admin@hotmail.cl'}})
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
   });
 });

@@ -1,8 +1,7 @@
-//* eslint-disable no-unused-expressions */
 const request = require('supertest');
-const app = require('../server');
-const {user} = require('../models');
 const { uuid } = require('uuidv4');
+const app = require('../server');
+const { user } = require('../models');
 
 let store = null;
 let salePoint = null;
@@ -12,20 +11,20 @@ describe('Sale Point CRUD Testing', () => {
   beforeAll(async () => {
     await user.create({
       id: uuid(),
-      name: "admin",
-      password:"123",
-      email: "admin@hotmail.cl",
-      rol: "administrator"
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
     });
 
-    let login = await request(app)
+    const login = await request(app)
       .post('/sessions')
       .send({
         email: 'admin@hotmail.cl',
         password: '123',
       });
 
-    token = login.body.token
+    token = login.body.token;
 
     // Create a new store to use its ID in the tests
     await request(app)
@@ -34,12 +33,12 @@ describe('Sale Point CRUD Testing', () => {
         name: 'The Store',
         address: 'Fake Street 123',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     const stores = await request(app)
       .get('/stores').set({
-        'authorization': token
+        authorization: token,
       });
 
     [store] = stores.body;
@@ -51,11 +50,11 @@ describe('Sale Point CRUD Testing', () => {
         storeId: store.id,
         department: 'Some Department',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     const salePoints = await request(app)
       .get('/sale-points').set({
-        'authorization': token
+        authorization: token,
       });
     [salePoint] = salePoints.body;
   });
@@ -66,7 +65,7 @@ describe('Sale Point CRUD Testing', () => {
     const res = await request(app)
       .post('/sale-points')
       .send({}).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -79,7 +78,7 @@ describe('Sale Point CRUD Testing', () => {
       .send({
         department: 'Another Department',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -92,7 +91,7 @@ describe('Sale Point CRUD Testing', () => {
       .send({
         storeId: store.id,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -106,7 +105,7 @@ describe('Sale Point CRUD Testing', () => {
         storeId: 9999999999,
         department: 'Another Department',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -120,7 +119,7 @@ describe('Sale Point CRUD Testing', () => {
         storeId: store.id,
         department: 'Another Department',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
@@ -133,7 +132,7 @@ describe('Sale Point CRUD Testing', () => {
         storeId: store.id,
         department: 'Another Department',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -144,7 +143,7 @@ describe('Sale Point CRUD Testing', () => {
   it('should read all sale points', async () => {
     const res = await request(app)
       .get('/sale-points').set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
   });
@@ -154,7 +153,7 @@ describe('Sale Point CRUD Testing', () => {
     const res = await request(app)
       .post('/sale-points/show')
       .send({}).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -167,7 +166,7 @@ describe('Sale Point CRUD Testing', () => {
       .send({
         id: 99999999999,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -180,7 +179,7 @@ describe('Sale Point CRUD Testing', () => {
       .send({
         id: salePoint.id,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.id).toEqual(salePoint.id);
@@ -196,7 +195,7 @@ describe('Sale Point CRUD Testing', () => {
       .send({
         department: 'New department value',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -210,7 +209,7 @@ describe('Sale Point CRUD Testing', () => {
         id: 99999999999,
         department: 'New department value',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -224,7 +223,7 @@ describe('Sale Point CRUD Testing', () => {
         id: salePoint.id,
         storeId: 99999999999,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -239,7 +238,7 @@ describe('Sale Point CRUD Testing', () => {
         storeId: store.id,
         department: 'Another Department',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -253,7 +252,7 @@ describe('Sale Point CRUD Testing', () => {
         id: salePoint.id,
         department: 'New department value',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
   });
@@ -263,7 +262,7 @@ describe('Sale Point CRUD Testing', () => {
     const res = await request(app)
       .delete('/sale-points')
       .send({}).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -276,7 +275,7 @@ describe('Sale Point CRUD Testing', () => {
       .send({
         id: 99999999999,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -289,7 +288,7 @@ describe('Sale Point CRUD Testing', () => {
       .send({
         id: salePoint.id,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -299,7 +298,7 @@ describe('Sale Point CRUD Testing', () => {
     // Delete all sale points created
     const salePoints = await request(app)
       .get('/sale-points').set({
-        'authorization': token
+        authorization: token,
       });
 
     await Promise.all(salePoints.body
@@ -309,7 +308,7 @@ describe('Sale Point CRUD Testing', () => {
           .send({
             id: sp.id,
           }).set({
-            'authorization': token
+            authorization: token,
           });
       }));
 
@@ -319,8 +318,10 @@ describe('Sale Point CRUD Testing', () => {
       .send({
         address: store.address,
       }).set({
-        'authorization': token
+        authorization: token,
       });
-    await user.destroy({where:{email: 'admin@hotmail.cl'}})
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
   });
 });

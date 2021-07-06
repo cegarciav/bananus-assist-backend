@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
-const app = require('../server');
-const {user} = require('../models');
 const { uuid } = require('uuidv4');
+const app = require('../server');
+const { user } = require('../models');
 
 let administrator = null;
 let supervisor = null;
@@ -14,20 +13,20 @@ describe('User Supervisor Testing', () => {
   beforeAll(async () => {
     await user.create({
       id: uuid(),
-      name: "admin",
-      password:"123",
-      email: "admin@hotmail.cl",
-      rol: "administrator"
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
     });
 
-    let login = await request(app)
+    const login = await request(app)
       .post('/sessions')
       .send({
         email: 'admin@hotmail.cl',
         password: '123',
       });
 
-    token = login.body.token
+    token = login.body.token;
     // Create a new user administrador to use in the tests
     await request(app)
       .post('/users')
@@ -36,7 +35,7 @@ describe('User Supervisor Testing', () => {
         email: 'admin@test.cl',
         rol: 'administrator',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     administrator = 'admin@test.cl';
@@ -49,7 +48,7 @@ describe('User Supervisor Testing', () => {
         email: 'super@test.cl',
         rol: 'supervisor',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     supervisor = 'super@test.cl';
@@ -62,7 +61,7 @@ describe('User Supervisor Testing', () => {
         email: 'assist@test.cl',
         rol: 'assistant',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     assistant = 'assist@test.cl';
@@ -74,7 +73,7 @@ describe('User Supervisor Testing', () => {
         name: 'The Store',
         address: 'Fake Street 123',
       }).set({
-        'authorization': token
+        authorization: token,
       });
 
     store = 'Fake Street 123';
@@ -91,7 +90,7 @@ describe('User Supervisor Testing', () => {
         rol: 'administrator',
         address: store,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -107,7 +106,7 @@ describe('User Supervisor Testing', () => {
         rol: 'assistant',
         address: store,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -123,7 +122,7 @@ describe('User Supervisor Testing', () => {
         rol: 'supervisor',
         address: 'Not an address',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -139,7 +138,7 @@ describe('User Supervisor Testing', () => {
         rol: 'supervisor',
         address: store,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
@@ -154,7 +153,7 @@ describe('User Supervisor Testing', () => {
         email: administrator,
         address: store,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -168,7 +167,7 @@ describe('User Supervisor Testing', () => {
         email: assistant,
         address: store,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -182,7 +181,7 @@ describe('User Supervisor Testing', () => {
         email: supervisor,
         address: 'Not an address',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -196,7 +195,7 @@ describe('User Supervisor Testing', () => {
         email: supervisor,
         address: store,
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -210,7 +209,7 @@ describe('User Supervisor Testing', () => {
         address: store,
         rol: 'assistant',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -225,7 +224,7 @@ describe('User Supervisor Testing', () => {
         address: store,
         rol: 'supervisor',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -235,7 +234,7 @@ describe('User Supervisor Testing', () => {
     // Delete all users created
     const users = await request(app)
       .get('/users').set({
-        'authorization': token
+        authorization: token,
       });
 
     await Promise.all(users.body
@@ -245,7 +244,7 @@ describe('User Supervisor Testing', () => {
           .send({
             email: u.email,
           }).set({
-            'authorization': token
+            authorization: token,
           });
       }));
 
@@ -255,8 +254,10 @@ describe('User Supervisor Testing', () => {
       .send({
         address: store,
       }).set({
-        'authorization': token
+        authorization: token,
       });
-    await user.destroy({where:{email: 'admin@hotmail.cl'}})
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
   });
 });

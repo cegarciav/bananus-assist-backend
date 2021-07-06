@@ -1,8 +1,8 @@
-/* eslint-disable no-unused-expressions */
 const request = require('supertest');
-const app = require('../server');
-const {user} = require('../models');
 const { uuid } = require('uuidv4');
+const app = require('../server');
+const { user } = require('../models');
+
 let token;
 
 describe('User CRUD Testing', () => {
@@ -11,27 +11,27 @@ describe('User CRUD Testing', () => {
     // Create a store point to use its ID in the tests
     await user.create({
       id: uuid(),
-      name: "admin",
-      password:"123",
-      email: "admin@hotmail.cl",
-      rol: "administrator"
+      name: 'admin',
+      password: '123',
+      email: 'admin@hotmail.cl',
+      rol: 'administrator',
     });
 
-    let login = await request(app)
+    const login = await request(app)
       .post('/sessions')
       .send({
         email: 'admin@hotmail.cl',
         password: '123',
       });
 
-    token = login.body.token
+    token = login.body.token;
   });
 
   it('should fail create a new user because email and name not send', async () => {
     const res = await request(app)
       .post('/users')
       .send().set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -44,7 +44,7 @@ describe('User CRUD Testing', () => {
       .send({
         name: 'test',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -57,7 +57,7 @@ describe('User CRUD Testing', () => {
       .send({
         email: 'test01@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -71,7 +71,7 @@ describe('User CRUD Testing', () => {
         name: 'test',
         email: 'test01@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body.state).toEqual('OK');
@@ -84,7 +84,7 @@ describe('User CRUD Testing', () => {
         name: 'test2',
         email: 'test01@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -96,7 +96,7 @@ describe('User CRUD Testing', () => {
   it('should read all users', async () => {
     const res = await request(app)
       .get('/users').set({
-        'authorization': token
+        authorization: token,
       });
 
     expect(res.statusCode).toEqual(200);
@@ -108,7 +108,7 @@ describe('User CRUD Testing', () => {
     const res = await request(app)
       .post('/users/show')
       .send({}).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -121,7 +121,7 @@ describe('User CRUD Testing', () => {
       .send({
         email: 'notanemail@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -134,7 +134,7 @@ describe('User CRUD Testing', () => {
       .send({
         email: 'test01@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.name).toEqual('test');
@@ -146,7 +146,7 @@ describe('User CRUD Testing', () => {
     const res = await request(app)
       .patch('/users')
       .send().set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -159,7 +159,7 @@ describe('User CRUD Testing', () => {
       .send({
         email: 'notanemail@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -173,7 +173,7 @@ describe('User CRUD Testing', () => {
         email: 'test01@test.cl',
         new_email: 'test01@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -187,7 +187,7 @@ describe('User CRUD Testing', () => {
         new_email: 'testupdate@test.cl',
         email: 'test01@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -200,7 +200,7 @@ describe('User CRUD Testing', () => {
         name: 'update',
         email: 'testupdate@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -213,7 +213,7 @@ describe('User CRUD Testing', () => {
         email: 'testupdate@test.cl',
         password: 'update',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
@@ -225,7 +225,7 @@ describe('User CRUD Testing', () => {
     const res = await request(app)
       .delete('/users')
       .send({}).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -238,7 +238,7 @@ describe('User CRUD Testing', () => {
       .send({
         email: 'test01@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -251,13 +251,15 @@ describe('User CRUD Testing', () => {
       .send({
         email: 'testupdate@test.cl',
       }).set({
-        'authorization': token
+        authorization: token,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.state).toEqual('OK');
   });
 
-  afterAll(async () => { 
-    await user.destroy({where:{email: 'admin@hotmail.cl'}})
+  afterAll(async () => {
+    await user.destroy({
+      where: { email: 'admin@hotmail.cl' },
+    });
   });
 });

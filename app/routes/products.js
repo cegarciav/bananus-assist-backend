@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const handlers = require('../controllers/product_controller');
-const filters = require('../controllers/session_controller').filters;
+const { filters } = require('../controllers/session_controller');
 
 // CREATE
 router.post('/', handlers.create);
