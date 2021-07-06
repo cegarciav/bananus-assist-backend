@@ -63,6 +63,38 @@ async function set_middleware(req, res, next) {
   return next();
 }
 
+/**
+ * @swagger
+ * /sessions:
+ *  post:
+ *    tags:
+ *      - Users
+ *    summary: log in
+ *    description: Allows a user to log in the application
+ *    operationId: users.login
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - email
+ *              - password
+ *            properties:
+ *              email:
+ *                type: string
+ *                format: email
+ *              password:
+ *                type: string
+ *    responses:
+ *      '200':
+ *        description: User logged-in successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '500':
+ *        description: Internal server error
+ */
 async function log_in_user(req, res) {
   try {
     if (!req.body.email || !req.body.password) {
@@ -108,10 +140,29 @@ async function log_in_user(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /sessions:
+ *  delete:
+ *    tags:
+ *      - Users
+ *    summary: log out
+ *    description: Allows a user to log out the application
+ *    operationId: users.logout
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '204':
+ *        description: User logged-out successfully
+ *      '401':
+ *        description: You must be logged-in to log out
+ *      '500':
+ *        description: Internal server error
+ */
 async function log_out_user(req, res) {
   try {
     await user.update({ token: null }, { where: { email: req.email } });
-    res.status(200).json({ state: 'OK' });
+    res.status(204).json({ state: 'OK' });
     req.app.locals.logger.debugLog(
       'session_controller.js',
       `Successfully log out of the user '${req.email}'`,
@@ -128,6 +179,39 @@ async function log_out_user(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /sessions/devices:
+ *  post:
+ *    tags:
+ *      - Devices
+ *      - Central Tablets
+ *    summary: log in
+ *    description: Allows a device or central tablet to log in the application
+ *    operationId: devices.login
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            required:
+ *              - serialNumber
+ *              - password
+ *            properties:
+ *              serialNumber:
+ *                type: string
+ *                unique: true
+ *              password:
+ *                type: string
+ *    responses:
+ *      '200':
+ *        description: Device or Central Tablet logged-in successfully
+ *      '400':
+ *        description: Some of the fields sent are not valid or missing
+ *      '500':
+ *        description: Internal server error
+ */
 async function log_in_devices(req, res) {
   try {
     if (!req.body.serialNumber || !req.body.password) {
@@ -194,11 +278,33 @@ async function log_in_devices(req, res) {
   }
 }
 
+/**
+ * @swagger
+ * /sessions/devices:
+ *  delete:
+ *    tags:
+ *      - Devices
+ *      - Central Tablets
+ *    summary: log out
+ *    description: Allows a device or central tablet to log out the application
+ *    operationId: devices.logout
+ *    security:
+ *      - apiKey: []
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      '204':
+ *        description: Device or Central Tablet logged-out successfully
+ *      '401':
+ *        description: You must be logged-in to log out
+ *      '500':
+ *        description: Internal server error
+ */
 async function log_out_devices(req, res) {
   const curr_device = ((req.device === 'device') ? device : central_tablet);
   try {
     await curr_device.update({ token: null }, { where: { serialNumber: req.serialNumber } });
-    res.status(200).json({ state: 'OK' });
+    res.status(204).json({ state: 'OK' });
     req.app.locals.logger.debugLog(
       'session_controller.js',
       `Successfully log out of the device '${req.serialNumber}'`,
@@ -223,7 +329,7 @@ async function only_logged(req, res, next) {
     'Unable to perform the action',
     'You must be logged to do this',
   );
-  return res.status(400).json({ state: 'F', error: 'You must be logged to do this' });
+  return res.status(401).json({ state: 'F', error: 'You must be logged to do this' });
 }
 
 async function only_unlogged(req, res, next) {
@@ -235,7 +341,7 @@ async function only_unlogged(req, res, next) {
     'Unable to perform the action',
     'You must be unlogged to do this',
   );
-  return res.status(400).json({ state: 'F', error: 'You must be unlogged to do this' });
+  return res.status(403).json({ state: 'F', error: 'You must be unlogged to do this' });
 }
 
 async function only_user(req, res, next) {
@@ -243,7 +349,7 @@ async function only_user(req, res, next) {
     next();
     return;
   }
-  res.status(400).json({ state: 'F', error: 'Only users can do this action' });
+  res.status(403).json({ state: 'F', error: 'Only users can do this action' });
   req.app.locals.logger.warnLog(
     'session_controller.js',
     'Unable to perform the action',
@@ -256,7 +362,7 @@ async function only_device(req, res, next) {
     next();
     return;
   }
-  res.status(400).json({ state: 'F', error: 'Only devices or tablets can do this action' });
+  res.status(403).json({ state: 'F', error: 'Only devices or tablets can do this action' });
   req.app.locals.logger.warnLog(
     'session_controller.js',
     'Unable to perform the action',
@@ -269,7 +375,7 @@ async function only_assistant(req, res, next) {
     next();
     return;
   }
-  res.status(400).json({ state: 'F', error: 'Only assistants can do this action' });
+  res.status(403).json({ state: 'F', error: 'Only assistants can do this action' });
   req.app.locals.logger.warnLog(
     'session_controller.js',
     'Unable to perform the action',
@@ -282,7 +388,7 @@ async function only_administrator(req, res, next) {
     next();
     return;
   }
-  res.status(400).json({ state: 'F', error: 'Only administrators can do this action' });
+  res.status(403).json({ state: 'F', error: 'Only administrators can do this action' });
   req.app.locals.logger.warnLog(
     'session_controller.js',
     'Unable to perform the action',
@@ -295,7 +401,7 @@ async function administrator_or_assistant(req, res, next) {
     next();
     return;
   }
-  res.status(400).json({ state: 'F', error: 'Only administrators or assistants can do this action' });
+  res.status(403).json({ state: 'F', error: 'Only administrators or assistants can do this action' });
   req.app.locals.logger.warnLog(
     'session_controller.js',
     'Unable to perform the action',
