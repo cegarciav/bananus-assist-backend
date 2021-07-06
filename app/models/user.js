@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
      *       required:
      *         - id
      *         - email
+     *         - name
      *         - password
      *         - rol
      *       properties:
