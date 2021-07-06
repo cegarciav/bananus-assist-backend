@@ -259,7 +259,12 @@ describe('Session endpoints testing', () => {
     // Delete records created on calls table
     await call.destroy({
       where: {
-        userId: { [Op.or]: [current_assistant_2.id, current_assistant.id] },
+        userId: current_assistant_2.id ,
+      },
+    });
+    await call.destroy({
+      where: {
+        userId: current_assistant.id ,
       },
     });
     const [today, first_day] = await Interval();
