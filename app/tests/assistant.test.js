@@ -6,9 +6,29 @@ let administrator = null;
 let supervisor = null;
 let assistant = null;
 let store = null;
+const {user} = require('../models');
+const { uuid } = require('uuidv4');
+
+let token;
 
 describe('Assistant Testing', () => {
   beforeAll(async () => {
+    await user.create({
+      id: uuid(),
+      name: "admin",
+      password:"123",
+      email: "admin@hotmail.cl",
+      rol: "administrator"
+    });
+
+    let login = await request(app)
+      .post('/sessions')
+      .send({
+        email: 'admin@hotmail.cl',
+        password: '123',
+      });
+
+    token = login.body.token
     // Create a new user administrador to use in the tests
     await request(app)
       .post('/users')
@@ -16,6 +36,8 @@ describe('Assistant Testing', () => {
         name: 'Super Admin',
         email: 'admin@test.cl',
         rol: 'administrator',
+      }).set({
+        'authorization': token
       });
 
     administrator = 'admin@test.cl';
@@ -27,6 +49,8 @@ describe('Assistant Testing', () => {
         name: 'Supervisor',
         email: 'super@test.cl',
         rol: 'supervisor',
+      }).set({
+        'authorization': token
       });
 
     supervisor = 'super@test.cl';
@@ -38,6 +62,8 @@ describe('Assistant Testing', () => {
         name: 'Assistant',
         email: 'assist@test.cl',
         rol: 'assistant',
+      }).set({
+        'authorization': token
       });
 
     assistant = 'assist@test.cl';
@@ -48,6 +74,8 @@ describe('Assistant Testing', () => {
       .send({
         name: 'The Store',
         address: 'Fake Street 123',
+      }).set({
+        'authorization': token
       });
 
     store = 'Fake Street 123';
@@ -59,6 +87,8 @@ describe('Assistant Testing', () => {
     const res = await request(app)
       .post('/assistants')
       .send({
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -70,6 +100,8 @@ describe('Assistant Testing', () => {
       .post('/assistants')
       .send({
         email: assistant,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -81,6 +113,8 @@ describe('Assistant Testing', () => {
       .post('/assistants')
       .send({
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -93,6 +127,8 @@ describe('Assistant Testing', () => {
       .send({
         email: assistant,
         address: 'Not an address',
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -105,6 +141,8 @@ describe('Assistant Testing', () => {
       .send({
         email: 'notreal@email.cl',
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -117,6 +155,8 @@ describe('Assistant Testing', () => {
       .send({
         email: administrator,
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -129,6 +169,8 @@ describe('Assistant Testing', () => {
       .send({
         email: supervisor,
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -141,6 +183,8 @@ describe('Assistant Testing', () => {
       .send({
         email: assistant,
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(201);
   });
@@ -151,6 +195,8 @@ describe('Assistant Testing', () => {
       .send({
         email: assistant,
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -163,6 +209,8 @@ describe('Assistant Testing', () => {
     const res = await request(app)
       .delete('/assistants')
       .send({
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -174,6 +222,8 @@ describe('Assistant Testing', () => {
       .delete('/assistants')
       .send({
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -185,6 +235,8 @@ describe('Assistant Testing', () => {
       .delete('/assistants')
       .send({
         email: assistant,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -197,6 +249,8 @@ describe('Assistant Testing', () => {
       .send({
         email: 'notreal@email.cl',
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -209,6 +263,8 @@ describe('Assistant Testing', () => {
       .send({
         email: assistant,
         address: 'Not an address',
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -221,6 +277,8 @@ describe('Assistant Testing', () => {
       .send({
         email: administrator,
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -233,6 +291,8 @@ describe('Assistant Testing', () => {
       .send({
         email: supervisor,
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -245,6 +305,8 @@ describe('Assistant Testing', () => {
       .send({
         email: assistant,
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(200);
   });
@@ -255,6 +317,8 @@ describe('Assistant Testing', () => {
       .send({
         email: assistant,
         address: store,
+      }).set({
+        'authorization': token
       });
     expect(res.statusCode).toEqual(400);
     expect(res.body.state).toEqual('F');
@@ -264,7 +328,9 @@ describe('Assistant Testing', () => {
   afterAll(async () => {
     // Delete all users created
     const users = await request(app)
-      .get('/users');
+      .get('/users').set({
+        'authorization': token
+      });
 
     await Promise.all(users.body
       .map(async (u) => {
@@ -272,6 +338,8 @@ describe('Assistant Testing', () => {
           .delete('/users')
           .send({
             email: u.email,
+          }).set({
+            'authorization': token
           });
       }));
 
@@ -280,6 +348,8 @@ describe('Assistant Testing', () => {
       .delete('/stores')
       .send({
         address: 'Fake Street 123',
+      }).set({
+        'authorization': token
       });
   });
 });

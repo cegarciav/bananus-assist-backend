@@ -9,15 +9,15 @@ const {
 
 async function set_middleware(req, res, next) {
   req.logged = false;
-  if (req.headers.token) {
+  if (req.headers['authorization']) {
     let curr_user;
     let curr_device;
     let curr_central_tablet;
     let curr_entity;
     try {
-      curr_user = await user.findOne({ where: { token: req.headers.token } });
-      curr_device = await device.findOne({ where: { token: req.headers.token } });
-      curr_central_tablet = await central_tablet.findOne({ where: { token: req.headers.token } });
+      curr_user = await user.findOne({ where: { token: req.headers['authorization'] } });
+      curr_device = await device.findOne({ where: { token: req.headers['authorization'] } });
+      curr_central_tablet = await central_tablet.findOne({ where: { token: req.headers['authorization'] } });
       curr_entity = curr_device || curr_central_tablet;
     } catch (e){
       res.status(500).json({ state: 'F', error: 'Internal server error' });
@@ -25,8 +25,9 @@ async function set_middleware(req, res, next) {
       return null;
     }
     if (curr_user) {
+      
       try {
-        const payload = await jwt.verify(req.headers.token, process.env.JWT_SECRET);
+        const payload = await jwt.verify(req.headers['authorization'], process.env.JWT_SECRET);
         req.logged = true;
         req.email = payload;
         req.rol = curr_user.rol;
@@ -40,7 +41,7 @@ async function set_middleware(req, res, next) {
     }
     if (curr_entity) {
       try {
-        const payload = await jwt.verify(req.headers.token, process.env.JWT_SECRET);
+        const payload = await jwt.verify(req.headers['authorization'], process.env.JWT_SECRET);
         req.logged = true;
         req.device = ((curr_device) ? 'device' : 'central_tablet');
         req.serialNumber = payload;
@@ -200,7 +201,27 @@ async function only_assistant(req, res, next) {
     return;
   }
   res.status(400).json({ state: 'F', error: 'Only assistants can do this action' });
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'Only assistants can do this action');
 }
+
+async function only_administrator(req, res, next){
+  if(req.rol === 'administrator') {
+    next()
+    return
+  }
+  res.status(400).json({ state: 'F', error: 'Only administrators can do this action' });
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'Only administrators can do this action');
+}
+
+async function administrator_or_assistant(req, res, next){
+  if(req.rol === 'administrator' || req.rol === 'assistant') {
+    next()
+    return
+  }
+  res.status(400).json({ state: 'F', error: 'Only administrators or assistants can do this action' });
+  req.app.locals.logger.warnLog('session_controller.js','Unable to perform the action', 'Only administrators or assistants can do this action');
+}
+
 module.exports = {
   check_session: set_middleware,
   log_in_user,
@@ -213,5 +234,7 @@ module.exports = {
     only_user,
     only_device,
     only_assistant,
+    only_administrator,
+    administrator_or_assistant
   },
 };
