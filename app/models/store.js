@@ -1,5 +1,3 @@
-const assistant = require('../models');
-
 const {
   Model,
 } = require('sequelize');
