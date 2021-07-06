@@ -234,6 +234,7 @@ module.exports = {
     only_user,
     only_device,
     only_assistant,
-    only_administrator
+    only_administrator,
+    administrator_or_assistant
   },
 };
