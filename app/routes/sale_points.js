@@ -13,6 +13,6 @@ router.post('/show', filters.only_user,filters.administrator_or_assistant,handle
 // UPDATE
 router.patch('/', filters.only_user, filters.only_administrator, handlers.update);
 // DELETE
-router.delete('/', filters.only_user, filters.administrator_or_assistant, handlers.delete);
+router.delete('/', filters.only_user, filters.only_administrator, handlers.delete);
 
 module.exports = router;
