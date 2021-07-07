@@ -32,6 +32,23 @@ module.exports = {
       token: {
         type: Sequelize.STRING,
       },
+      storeId: {
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'stores',
+          },
+          key: 'id',
+        },
+        validate: {
+          supervisorValidator(value) {
+            if (this.rol !== 'supervisor' && value !== null) {
+              throw new Error('Invalid association. User must be a supervisor to be able to assign a store');
+            }
+          },
+        },
+        onDelete: 'SET NULL',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -5,14 +5,44 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class product extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     product:
+     *       type: object
+     *       required:
+     *         - id
+     *         - name
+     *         - sku
+     *         - price
+     *         - image
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         name:
+     *           type: string
+     *         sku:
+     *           type: integer
+     *           unique: true
+     *         price:
+     *           type: integer
+     *           minimum: 0
+     *         image:
+     *           type: string
+     *           format: uri
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.store);
       this.hasMany(models.technical_char);
+      this.belongsToMany(
+        models.payment_method,
+        {
+          through: models.available_payment_method,
+          foreignKey: 'productId',
+          as: 'payment_methods',
+        },
+      );
     }
   }
   product.init({

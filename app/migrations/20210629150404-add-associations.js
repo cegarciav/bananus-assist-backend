@@ -31,10 +31,7 @@ module.exports = {
      */
   up: async (queryInterface, Sequelize) => (
     Promise.all([
-      setOneToNAssoc(queryInterface, Sequelize, 'users', 'stores'),
-      setOneToNAssoc(queryInterface, Sequelize, 'stores', 'products'),
-      setOneToNAssoc(queryInterface, Sequelize, 'stores', 'sale_points'),
-      setOneToNAssoc(queryInterface, Sequelize, 'products', 'technical_chars'),
+      setOneToNAssoc(queryInterface, Sequelize, 'users', 'calls'),
     ])
   ),
 
@@ -46,9 +43,6 @@ module.exports = {
    */
   down: async (queryInterface) => queryInterface
     .sequelize.transaction(async (t) => Promise.all([
-      removeOneToNAssoc(queryInterface, 'products', 'technical_chars', t),
-      removeOneToNAssoc(queryInterface, 'stores', 'sale_points', t),
-      removeOneToNAssoc(queryInterface, 'stores', 'products', t),
-      removeOneToNAssoc(queryInterface, 'users', 'stores', t),
+      removeOneToNAssoc(queryInterface, 'users', 'calls', t),
     ])),
 };

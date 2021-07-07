@@ -1,4 +1,7 @@
 const bcrypt = require('bcrypt');
+const {
+  Model,
+} = require('sequelize');
 
 const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT, 10);
 
@@ -9,20 +12,46 @@ async function buildPasswordHash(instance) {
   }
 }
 
-const {
-  Model,
-} = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
   class user extends Model {
     /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
+     * @swagger
+     * components:
+     *   schemas:
+     *     user:
+     *       type: object
+     *       required:
+     *         - id
+     *         - email
+     *         - name
+     *         - password
+     *         - rol
+     *       properties:
+     *         id:
+     *           type: string
+     *           format: uuidv4
+     *         name:
+     *           type: string
+     *         email:
+     *           type: string
+     *           format: email
+     *           unique: true
+     *         password:
+     *           type: string
+     *         rol:
+     *           type: string
+     *           enum: [administrator, supervisor, assistant]
+     *         token:
+     *           type: string
+     *         storeId:
+     *           type: string
+     *           format: uuidv4
+     *           description: id of an existing store
      */
     static associate(models) {
-      this.hasMany(models.store);
-      // define association here
+      this.belongsToMany(models.store, { through: models.assistant });
+      this.belongsTo(models.store);
+      this.hasMany(models.call, { foreignKey: 'userId' });
     }
   }
   user.init({
@@ -31,6 +60,7 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     rol: DataTypes.STRING,
     token: DataTypes.STRING,
+    storeId: DataTypes.UUID,
   }, {
     sequelize,
     modelName: 'user',
