@@ -42,6 +42,8 @@ async function set_middleware(req, res, next) {
         req.rol = curr_user.rol;
         if (curr_user.rol === 'assistant') {
           req.assistantId = curr_user.id;
+        } else if(req.rol == 'supervisor') {
+          req.rol = 'administrator'
         }
         return next();
       } catch (err) {

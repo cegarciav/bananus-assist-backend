@@ -283,8 +283,7 @@ describe('Session endpoints testing', () => {
       where: {
         date: {
           [Op.between]: [first_day, today],
-        },
-        userId: current_assistant_2.id,
+        }
       },
     });
   });
