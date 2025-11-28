@@ -44,7 +44,12 @@ async function update(req, res) {
         const user_update = await user.update({
             name: ((req.body.name)? req.body.name: current_user.name),
             password: ((req.body.password)? req.body.password:current_user.password),
-            email: ((req.body.new_email)? req.body.new_email:current_user.email)
+            email: ((req.body.new_email)? req.body.new_email:current_user.email),
+            profilePicture: (
+                (req.body.new_profile_picture)
+                ? req.body.new_profile_picture
+                :current_user.profilePicture
+            ),
         },{
             where: {
                 email: current_user.email
