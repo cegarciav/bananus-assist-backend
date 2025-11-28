@@ -28,7 +28,7 @@ describe('User CRUD Testing', () => {
   }),
   it('should update the email of one user', async () => {
     const res = await request(app)
-      .patch('/users')
+      .patch('/users/test')
       .send({
         new_email: "testupdate@test.cl",
         email: "test01@test.cl",
