@@ -36,7 +36,7 @@ async function  ushow(req, res) {
 };
 //UPDATE
 async function update(req, res) {
-    let current_user = await user.findOne({where : {email: req.body.email}})
+    let current_user = await user.findOne({where : {email: req.body.new_email}})
     if (!current_user){
         return res.json({state: 'F',error: 'User email doesnt exist'});
     }
