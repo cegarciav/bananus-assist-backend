@@ -4,11 +4,11 @@ require( 'dotenv' ).config();
 
 async function set_middleware(req, res, next){
     req.logged = false;
-    if(req.headers['token']){
+    if(req.headers['Authorization']){
         let curr_user = await user.findOne({where:{token: req.headers.token}})
         if (curr_user){
             try{
-                const payload = await jwt.verify( req.headers["token"], process.env.JWT_SECRET);
+                const payload = await jwt.verify( req.headers["Authorization"], process.env.JWT_SECRET);
                 req.logged = true;
                 req.email = payload;
                 return next()
