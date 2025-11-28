@@ -10,7 +10,7 @@ async function set_middleware(req, res, next){
             try{
                 const payload = await jwt.verify( req.headers["Authorization"], process.env.JWT_SECRET);
                 req.logged_in = true;
-                req.email = payload;
+                req.body.email = payload;
                 return next()
             } catch( err ) {
                 return next()
