@@ -19,7 +19,7 @@ describe('Session endpoints testing', () => {
     //FAIL CREATE
     it('should fail in create a new session', async () => {
         const res4 = await request(app)
-        .post("/sessions")
+        .post("/sessions/login")
         .send({
             email: "test0@test.cl",
             password: "1233"
@@ -72,7 +72,7 @@ describe('Session endpoints testing', () => {
     //DELETE 
     it('should delete session', async()=> {
         const res5 = await request(app)
-        .delete("/sessions")
+        .post("/sessions/logout")
         .send()
         .set("token", token)
         expect(res5.statusCode).toEqual(200)
