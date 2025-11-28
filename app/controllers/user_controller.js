@@ -27,7 +27,7 @@ async function  ushow_all(req, res) {
 
 //READ ONE
 async function  ushow(req, res) {
-    let current_user = await user.findOne({where : {email: req.body.email}})
+    let current_user = await user.findOne({where : {name: req.body.name}})
     if (!current_user){
         return res.json({state: 'F',error: 'User email doesnt exist'});
     }
