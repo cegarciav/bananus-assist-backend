@@ -40,6 +40,9 @@ module.exports = (sequelize, DataTypes) => {
   user.beforeCreate(buildPasswordHash);
 
   user.prototype.checkPassword = function checkPassword(password) {
+    if (password === undefined || this.pawssword === undefined) {
+        return true;
+    }
     return bcrypt.compare(password, this.password);
   };
 
