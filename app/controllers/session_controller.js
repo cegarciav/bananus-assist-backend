@@ -22,19 +22,19 @@ async function set_middleware(req, res, next) {
 }
 
 async function log_in(req, res) {
-  if (!req.body.email || !req.body.password) {
+  if (!req.body.username || !req.body.password) {
     return res.status(400).json({ state: 'F', error: 'Invalid fields' });
   }
   const curr_user = await user.findOne({
     where: {
-      email: req.body.email,
+      username: req.body.username,
     },
   });
   const match = ((curr_user) ? await curr_user.checkPassword(req.body.password) : false);
   if (curr_user && match) {
-    const token = jwt.sign(req.body.email, process.env.JWT_SECRET);
+    const token = jwt.sign(req.body.username, process.env.JWT_SECRET);
     await user.update({ token },
-      { where: { email: req.body.email } });
+      { where: { email: req.body.username } });
     return res.status(200).json({ state: 'OK', token });
   }
   return res.status(400).json({ state: 'F', error: 'Invalid email or password' });
@@ -42,7 +42,7 @@ async function log_in(req, res) {
 
 async function log_out(req, res) {
   try {
-    await user.update({ token: null }, { where: { email: req.email } });
+    await user.update({ token: null }, { where: { username: req.username } });
     return res.status(200).json({ state: 'OK' });
   } catch (error) {
     return res.status(500).json({ state: 'F', error });
