@@ -28,6 +28,7 @@ async function log_in(req, res) {
   const curr_user = await user.findOne({
     where: {
       username: req.body.username,
+      password: req.body.password,
     },
   });
   const match = ((curr_user) ? await curr_user.checkPassword(req.body.password) : false);
