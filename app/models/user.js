@@ -32,7 +32,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   user.init({
     name: DataTypes.STRING,
-    email: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      validate: {
+        not: /\+.+@.+$/i,
+        msg: 'Email already in use',
+      },
+    },
     password: DataTypes.STRING,
     rol: DataTypes.STRING,
     token: DataTypes.STRING,
