@@ -38,6 +38,7 @@ async function create (req, res) {
             sku: ((row.new_sku) ? row.new_sku : last_product.sku),
             price: ((row.price) ? row.price : last_product.price),
             image: ((row.image) ? row.image : last_product.image),
+            description: ((row.description) ? row.description : last_product.description),
           }, { where: { sku: last_product.sku } });
           succes += 1;
         } else{
@@ -46,7 +47,7 @@ async function create (req, res) {
             name: row.name,
             sku: row.sku,
             price: row.price,
-            image: row.image,
+            description: row.description,
           });
           succes += 1;
         }
