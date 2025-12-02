@@ -39,7 +39,15 @@ module.exports = (sequelize, DataTypes) => {
         msg: 'Email already in use',
       },
     },
-    password: DataTypes.STRING,
+    password: {
+      type: DataTypes.STRING,
+      validate: {
+        is: {
+          args: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\^\$\*\.\[\]\{\}\(\)\?"!@#%&/\\,><':;|_~`=+\-]).{8,}$/i,
+          msg: "Password doesn't fulfill the security requirements",
+        },
+      },
+    },
     rol: DataTypes.STRING,
     token: DataTypes.STRING,
     storeId: DataTypes.UUID,
