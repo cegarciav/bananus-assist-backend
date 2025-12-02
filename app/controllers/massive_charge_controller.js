@@ -26,11 +26,11 @@ async function create (req, res) {
   for (const row of dataExcel){
     console.log("2")
     try {        
-      const last_product = await product.findOne({ where: { sku: row.sku } });
       if(!row.name || !row.sku || !row.price || !row.image) {
         failed += 1;
         object_failed.push(row);
       } else{
+        const last_product = product.findOne({ where: { sku: row.sku } });
         if (last_product) {
           //res.status(400).json({ state: 'F', error: 'That sku already exists' });
           await product.update({
