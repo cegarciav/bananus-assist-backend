@@ -121,12 +121,12 @@ async function update(req, res) {
 // DELETE
 async function sdelete(req, res) {
   try {
-    if (!req.body.serialNumber) {
+    if (!req.body.serial_number) {
       res.status(400).json({ state: 'F', error: 'Invalid fields' });
       return;
     }
 
-    const current_device = await device.findOne({ where: { serialNumber: req.body.serialNumber } });
+    const current_device = await device.findOne({ where: { serialNumber: req.body.serial_number } });
 
     if (!current_device) {
       res.status(400).json({ state: 'F', error: 'Device serial number doesn\'t exist' });
@@ -134,7 +134,7 @@ async function sdelete(req, res) {
     }
     await device.destroy({
       where: {
-        serialNumber: req.body.serialNumber,
+        serialNumber: req.body.serial_number,
       },
     });
     res.status(200).json({
