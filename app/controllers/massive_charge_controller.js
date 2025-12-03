@@ -19,7 +19,7 @@ async function create(req, res) {
 
   let succes = 0;
   let failed = 0;
-  const object_failed = [];
+  const failed_products = [];
 
   await Promise.all(
     dataExcel.map(async (row, index) => {
@@ -27,7 +27,7 @@ async function create(req, res) {
         const last_product = await product.findOne({ where: { sku: row.sku } });
         if (!row.name || !row.sku || !row.price || !row.image) {
           failed += 12;
-          object_failed.push({key: index+2,
+          failed_products.push({key: index+2,
           type: 'product'});
         } else if (last_product) {
           await product.update({
@@ -49,14 +49,14 @@ async function create(req, res) {
         }
       } catch (e) {
         failed += 10;
-        object_failed.push({key: index+2,
+        failed_products.push({key: index+2,
           type: 'product'});
       }
     }),
   );
 
   //CARACTERISTICAS
-  
+  const failed_tech_char = [];
   await Promise.all(
     dataCaracteristicas.map(async (row, index) => {
       try {
@@ -68,7 +68,7 @@ async function create(req, res) {
           });
         if (!row.key || !row.value) {
           failed += 3;
-          object_failed.push({key: index+2,
+          failed_tech_char.push({key: index+2,
           type: 'product'});
         } else if (last_product && last_key) {
           await technical_char.update({
@@ -77,7 +77,7 @@ async function create(req, res) {
           succes += 2;
         } else if ( !last_product && last_key ){
           failed += 5;
-          object_failed.push({key: index+2,
+          failed_tech_char.push({key: index+2,
           type: 'product'});
         } else {
           await technical_char.create({
@@ -90,7 +90,7 @@ async function create(req, res) {
         }
       } catch (e) {
         failed += 4;
-        object_failed.push({key: index+2,
+        failed_tech_char.push({key: index+2,
         type: 'tech_char'});
       }
     }),
@@ -98,7 +98,7 @@ async function create(req, res) {
   res.status(200).json({
     succesfully: succes,
     failed,
-    failed_products: object_failed,
+    failed_products,
   });
 }
 
