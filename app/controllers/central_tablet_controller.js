@@ -132,16 +132,29 @@ async function sdelete(req, res) {
     const current_central_tablet = await central_tablet.findOne({
       where: { serialNumber: req.body.serialNumber },
     });
+    const current_device = await device.findOne({
+      where: { serialNumber: req.body.serialNumber },
+    });
 
-    if (!current_central_tablet) {
+    if (!current_central_tablet || !current_device) {
       res.status(400).json({ state: 'F', error: 'Central tablet serial number doesn\'t exist' });
       return;
     }
-    await central_tablet.destroy({
-      where: {
-        serialNumber: req.body.serialNumber,
-      },
-    });
+
+    if (current_central_tablet) {
+      await central_tablet.destroy({
+        where: {
+          serialNumber: req.body.serialNumber,
+        },
+      });
+      return;
+    }
+
+    await device.destroy({
+        where: {
+          serialNumber: req.body.serialNumber,
+        },
+      });
     res.status(200).json({
       state: 'OK',
     });
