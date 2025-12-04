@@ -277,8 +277,8 @@ async function only_assistant(req, res, next) {
   );
 }
 
-async function only_administrator(req, res, next) {
-  if (req.rol === 'administrator') {
+async function only_adminstrator(req, res, next) {
+  if (req.rol === 'adminstrator') {
     next();
     return;
   }
@@ -315,7 +315,7 @@ module.exports = {
     only_user,
     only_device,
     only_assistant,
-    only_administrator,
+    only_adminstrator,
     administrator_or_assistant,
   },
 };
