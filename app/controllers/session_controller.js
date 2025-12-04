@@ -86,7 +86,7 @@ async function log_in_user(req, res) {
     });
     const match = ((curr_user) ? await curr_user.checkPassword(req.body.password) : false);
     if (curr_user && match) {
-      const token = jwt.sign(req.body.email, process.env.JWT_SECRET);
+      const token = jwt.sign({email: req.body.email}, process.env.JWT_SECRET);
       await user.update({ token },
         { where: { email: req.body.email } });
       res.status(200).json({ state: 'OK', token, rol: curr_user.rol });
@@ -156,7 +156,7 @@ async function log_in_devices(req, res) {
 
     const match = ((curr_device) ? await curr_device.checkPassword(req.body.password) : false);
     if (curr_device && match) {
-      const token = jwt.sign(req.body.serialNumber, process.env.JWT_SECRET);
+      const token = jwt.sign({serialNumber: req.body.serialNumber}, process.env.JWT_SECRET);
       if (type_device === 'device') {
         await device.update({ token },
           { where: { serialNumber: req.body.serialNumber } });
