@@ -34,14 +34,18 @@ async function set_middleware(req, res, next) {
       );
       return null;
     }
+
+    const payload = await jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+
     if (curr_user) {
       try {
-        const payload = await jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
-        req.logged = true;
-        req.email = payload;
-        req.rol = curr_user.rol;
+        req.user = {
+          logged: true,
+          email: payload,
+          rol: curr_user.rol
+        };
         if (curr_user.rol === 'assistant') {
-          req.assistantId = curr_user.id;
+          req.user.assistantId = curr_user.id;
         }
         return next();
       } catch (err) {
@@ -50,10 +54,11 @@ async function set_middleware(req, res, next) {
     }
     if (curr_entity) {
       try {
-        const payload = await jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
-        req.logged = true;
-        req.device = ((curr_device) ? 'device' : 'central_tablet');
-        req.serialNumber = payload;
+        req.entity = {
+          logged: true,
+          device: (curr_device) ? 'device' : 'central_tablet',
+          serialNumber: payload,
+        }
         return next();
       } catch (err) {
         return next();
